@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_db
+from sqlalchemy import select, update
+from app.db.session import get_db, AsyncSessionLocal
 from app.services.ai_service import ai_service
 from app.services.chat_service import chat_service  # Legacy service for DB CRUD
 from app.schemas.chat import ChatRequest
@@ -14,6 +15,10 @@ router = APIRouter()
 from typing import List
 from uuid import UUID
 from app.schemas.chat import ChatRequest, ConversationResponse, MessageResponse
+
+@router.get("/test")
+async def test_endpoint():
+    return {"status": "ok", "message": "Chat Router Passed"}
 
 @router.get("/history", response_model=List[ConversationResponse])
 async def get_chat_history(
@@ -52,59 +57,90 @@ async def stream_chat(
     Uses 'Reasoning' events to show the AI's thought process.
     """
     # 1. Monetization & Access Control
-    # ---------------------------------------------------------
-    if not current_user:
-        raise HTTPException(
-            status_code=401, 
-            detail="Please Sign In to use the Enterprise AI Platform. You get 30 Free Credits on signup!"
-        )
 
-    # Minimum Balance Check (Need at least 0.1 credit to start)
-    if current_user.credits < 0.1:
-        raise HTTPException(
-            status_code=402,
-            detail="Insufficient Credits. Please upgrade your plan."
-        )
     # ---------------------------------------------------------
+    try:
+        if not current_user:
+            raise HTTPException(
+                status_code=401, 
+                detail="Please Sign In to use the Enterprise AI Platform. You get 30 Free Credits on signup!"
+            )
 
-    # 2. Conversation Management
-    user_id = current_user.id
-    
-    conversation_id = request.conversation_id
-    if not conversation_id:
-        conv = await chat_service.create_conversation(db, current_user.id, request.message[:50])
-        conversation_id = conv.id
-        await chat_service.add_message(db, conversation_id, "user", request.message)
-    
-    # 2. Get History for Context
-    history = []
-    if conversation_id and current_user:
-        history_objs = await chat_service.get_history(db, conversation_id, limit=6)
-        history = [{"role": msg.sender, "content": msg.content} for msg in history_objs]
-        history.reverse()
+        # Minimum Balance Check (Need at least 0.1 credit to start)
+        if current_user.credits < 0.1:
+            raise HTTPException(
+                status_code=402,
+                detail="Insufficient Credits. Please upgrade your plan."
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        with open("server_error.log", "w") as f:
+            f.write(traceback.format_exc())
+            f.write(f"\nError: {e}")
+        raise HTTPException(status_code=500, detail=f"Auth/Check Error: {str(e)}")
+
+    try:
+        # ---------------------------------------------------------
+        # 2. Conversation Management
+        user_id = current_user.id
+        
+        conversation_id = request.conversation_id
+        if not conversation_id:
+            conv = await chat_service.create_conversation(db, current_user.id, request.message[:50])
+            conversation_id = conv.id
+            await chat_service.add_message(db, conversation_id, "user", request.message)
+        
+        # 2. Get History for Context
+        history = []
+        if conversation_id and current_user:
+            history_objs = await chat_service.get_history(db, conversation_id, limit=6)
+            history = [{"role": msg.role, "content": msg.content} for msg in history_objs]
+            history.reverse()
+    except Exception as e:
+        import traceback
+        with open("server_error.log", "w") as f:
+            f.write(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Setup Error: {str(e)}")
 
     # 3. Stream Response & Calculate Usage
+    print(f">>> STARTING STREAM GENERATOR Logic for user={user_id}")
+    
     async def event_generator():
+        print(">>> GENERATOR STARTED ITERATION")
         full_response = ""
+        
         try:
+            # Create a fresh session for the streaming lifetime if needed, or just for the end.
+            
             async for chunk in ai_service.generate_response_stream(
                 request.message, 
                 history, 
-                db, 
+                None, # Pass None
                 language=request.language or "en"
             ):
+                # print(f">>> CHUNK: {chunk[:20]}...") 
                 yield f"data: {chunk}\n\n"
                 
-                data = json.loads(chunk)
-                if data["event"] == "token":
-                    full_response += data["data"]
-            
-            # 4. Save AI Response
-            if full_response and conversation_id and current_user:
-                await chat_service.add_message(db, conversation_id, "ai", full_response)
-                
-                # 5. Calculate & Deduct Credits (Token Based)
                 try:
+                    data = json.loads(chunk)
+                    if data["event"] == "token":
+                        full_response += data["data"]
+                except:
+                    pass
+            
+            print(f">>> GENERATION COMPLETE. Length: {len(full_response)}")
+            
+            # 4. Save AI Response & Billing (Atomic & Fresh Session)
+            if full_response and conversation_id and current_user:
+                print(">>> SAVING TO DB (Fresh Session)...")
+                # Use module-level AsyncSessionLocal import
+                async with AsyncSessionLocal() as final_db:
+                    # Re-fetch conversation/messages if needed, but we just need IDs
+                    await chat_service.add_message(final_db, conversation_id, "ai", full_response)
+                    
+                    # 5. Calculate & Deduct Credits
                     import tiktoken
                     enc = tiktoken.encoding_for_model("gpt-4o")
                     
@@ -112,32 +148,29 @@ async def stream_chat(
                     output_tokens = len(enc.encode(full_response))
                     total_tokens = input_tokens + output_tokens
                     
-                    # Formula: 1 Credit = 500 Tokens (User Request)
                     cost = total_tokens / 500.0 
                     
-                    current_user.credits -= cost
-                    
-                    # Atomic Update: UPDATE users SET credits = credits - cost WHERE id = user_id
-                    # This prevents race conditions better than ORM object manipulation
-                    from sqlalchemy import update
-                    await db.execute(
+                    # Deduct
+                    await final_db.execute(
                         update(User)
                         .where(User.id == user_id)
                         .values(credits=User.credits - cost)
                     )
-                    await db.commit()
+                    await final_db.commit()
                     
-                    # Refresh to get exact DB value
-                    await db.refresh(current_user)
+                    # Get updated balance for UI
+                    result = await final_db.execute(select(User.credits).where(User.id == user_id))
+                    updated_credits = result.scalar()
                     
-                    # Notify Frontend of new balance
-                    yield f"data: {json.dumps({'event': 'billing', 'data': {'cost': cost, 'remaining': current_user.credits}})}\n\n"
-                except Exception as e:
-                    print(f"Billing Error: {e}")
+                    print(f">>> BILLING COMPLETE. Remaining: {updated_credits}")
+                    yield f"data: {json.dumps({'event': 'billing', 'data': {'cost': cost, 'remaining': updated_credits}})}\n\n"
                 
             yield "data: [DONE]\n\n"
             
         except Exception as e:
+            print(f">>> STREAM EXCEPTION: {e}")
+            import traceback
+            traceback.print_exc()
             yield f"data: {json.dumps({'event': 'error', 'data': str(e)})}\n\n"
 
     return StreamingResponse(
