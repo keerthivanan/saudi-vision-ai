@@ -115,6 +115,11 @@ class AIService:
                     sources = [doc.get("source", "Unknown") for doc in relevant_docs if isinstance(doc, dict)]
                     # Deduplicate
                     unique_sources = list(set(sources))
+                    
+                    # USER EXPERIENCE: Tell them EXACTLY what we found so they trust it.
+                    yield json.dumps({"event": "status", "data": f"📑 Reading {len(unique_sources)} Official Documents..."}) + "\n"
+                    # yield json.dumps({"event": "sources", "data": unique_sources}) + "\n" # Send sources event separately or frontend handles it? 
+                    # Usually frontend handles "sources" event to display chips.
                     yield json.dumps({"event": "sources", "data": unique_sources}) + "\n"
 
             except Exception:
@@ -180,11 +185,12 @@ class AIService:
                - Structure: Use clear headings, rich formatting (bolding), and concise bullet points.
                - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge. You are the expert.
 
-            4. **MANDATORY FACT-VERIFICATION PROTOCOL**:
-               - Before including ANY number, date, or percentage, **VERIFY** it against the "STRATEGIC BRIEFING" text below.
-               - If the text says "70%" and you think "60%", you MUST write **"70%"**.
-               - Your Goal: **0% Hallucination**. Truth is paramount.
-               - If the context contradicts your general knowledge, the **Context Wins**.
+            4. **STRICT FACT-VERIFICATION (ZERO HALLUCINATION)**:
+               - You are a STRICT Document Analyst.
+               - **DO NOT** use your own outside knowledge about Vision 2030 (e.g., do not invent pillars or targets if they are not in the text below).
+               - **ONLY** use facts present in the "STRATEGIC BRIEFING".
+               - If the answer is NOT in the Briefing, say: "The provided document does not contain specific details about [topic], but generally..."
+               - **CITATION REQUIRED**: Every claim must be backed by the source text.
             
             ---
             STRATEGIC BRIEFING (INTERNAL KNOWLEDGE):

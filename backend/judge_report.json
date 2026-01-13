@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-01-13T14:40:09.652401",
+  "query": "What year of Vision 2030 are we in and what is the Kingdom delivering?",
+  "ground_truth_snippet": "As Vision 2030 marks its ninth \nyear, Saudi Arabia  stands at a \npivotal moment. The Kingdom \nis delivering on its promise of \ntransformation – empowering its \npeople, reshaping its economic \nlandscape, and unlocking new \nopportunities at scale. The past \nyear has delivered concrete \nprogress across economic, social, \nand institutional fronts confirming \nthe strength of the Kingdom’s \nstrategic direction and the \ncommitment driving it.\nVision 2030 is built on the \nKingdom’s core strengths: its \n",
+  "ai_answer": "**Current Year of Vision 2030:**\n\nAs of today, January 13, 2026, we are in the ninth year of Vision 2030. This marks a pivotal moment in the Kingdom's transformative journey.\n\n**Deliverables of the Kingdom:**\n\n- **Empowerment and Transformation**: Saudi Arabia is delivering on its promise of transformation by empowering its people and reshaping its economic landscape. This includes unlocking new opportunities at scale across various sectors.\n\n- **Economic, Social, and Institutional Progress**: The past year has seen concrete progress across economic, social, and institutional fronts, confirming the strength of the Kingdom’s strategic direction and the commitment driving it.\n\n- **Phased Progression**: Vision 2030 has progressed through clear phases, with the current phase focusing on entering full delivery mode and expanding opportunities across every sector.\n\n- **Sustainable Development**: The Kingdom is focused on sustainable development and long-term planning to ensure prosperity for all, supported by its vast resources, diverse investments, and skilled workforce.\n\nThese efforts have positioned Saudi Arabia as a hub of opportunities, with a strong, diversified economy and rapidly growing sectors that have boosted non-oil revenues and created jobs.",
+  "verdict": {
+    "is_accurate": true,
+    "hallucination_score": 5,
+    "truth_score": 95,
+    "reasoning": "The AI Testimony is largely supported by the Ground Truth. It accurately reflects the current year of Vision 2030 as the ninth year, aligns with the deliverables of empowerment, transformation, and progress across economic, social, and institutional fronts. It also correctly mentions the phased progression and focus on sustainable development. However, the specific date 'January 13, 2026' is not mentioned in the Ground Truth, which slightly affects the score."
+  }
+}
