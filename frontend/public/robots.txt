@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://saudivision2030.ai/sitemap.xml

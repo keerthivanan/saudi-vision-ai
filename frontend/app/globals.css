@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   ROYAL ENTERPRISE DESIGN SYSTEM
+   Professional. Human. Luxury.
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* CLASSICAL ENTERPRISE PALETTE */
+    --background: 210 20% 99%;
+    /* #fcfdfe - Almost Pure White */
+    --foreground: 222 47% 11%;
+    /* #0f172a - Slate 900 */
+
+    /* Primary - Deep Saudi Green/Blue Hybrid (Trustworthy) */
+    --primary: 215 25% 27%;
+    /* #334155 - Professional Slate Navy */
+    --primary-foreground: 0 0% 100%;
+
+    /* Accent - Refined Gold (subtle) */
+    --accent: 35 25% 50%;
+    /* #a08c64 - Antique Gold */
+    --accent-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+
+    /* Functional Colors */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 40%;
+    /* Darker for legibility */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --border: 214 32% 88%;
+    /* Slightly darker border for definition */
+    --input: 214 32% 88%;
+    --ring: 215 25% 27%;
+
+    /* Status */
+    --success: 142 70% 35%;
+    --warning: 38 90% 45%;
+    --error: 0 84% 55%;
+
+    /* Spacing & Borders - CLASSICAL CRISPNESS */
+    --radius: 0.375rem;
+    /* 6px - Standard Enterprise Radius */
+    --header-height: 3.5rem;
+    /* 56px - Compact Professional */
+    --sidebar-width: 260px;
+  }
+
+  .dark {
+    /* ROYAL PALETTE (Dark Mode) */
+    --background: 222 47% 6%;
+    /* Slate 950 - Deepest Blue/Black */
+    --foreground: 210 40% 98%;
+    /* Slate 50 */
+
+    /* Primary - White/Off-White for dark mode contrast */
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+
+    /* Accent - Gold glow */
+    --accent: 43 50% 59%;
+    --accent-foreground: 222 47% 11%;
+
+    /* Secondary */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Functional */
+    --muted: 217 33% 12%;
+    --muted-foreground: 215 20% 65%;
+    --card: 217 33% 12%;
+    /* Slate 900 */
+    --card-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 213 27% 84%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground tracking-tight;
+    font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+  }
+
+  /* Modern Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+
+  /* Professional Layout Utilities */
+  .layout-shell {
+    @apply flex min-h-screen w-full bg-background font-sans;
+  }
+
+  /* Sidebar Professional */
+  .sidebar-professional {
+    @apply hidden md:flex flex-col border-r border-border bg-card h-screen fixed left-0 top-0 z-30 transition-all duration-300;
+    width: var(--sidebar-width);
+  }
+
+  /* Main Content Area */
+  .main-content {
+    @apply flex-1 flex flex-col min-h-screen transition-all duration-300 bg-background;
+    margin-left: 0;
+  }
+
+  @media (min-width: 768px) {
+    .main-content {
+      margin-left: var(--sidebar-width);
+    }
+  }
+
+  /* Enterprise Card */
+  .card-enterprise {
+    @apply bg-card border border-border rounded-lg shadow-sm;
+  }
+
+  /* Inputs - Crisp */
+  .input-enterprise {
+    @apply flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Buttons - Crisp */
+  .btn-enterprise {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-muted hover:text-foreground shadow-none;
+  }
+
+  /* Chat Bubbles - Classical */
+  .bubble-user {
+    @apply bg-primary text-primary-foreground rounded-lg px-4 py-2 shadow-sm max-w-[85%];
+  }
+
+  .bubble-ai {
+    @apply bg-card border border-border text-foreground rounded-lg px-4 py-2 shadow-sm max-w-[85%];
+  }
+
+  /* Markdown Content Styles - Stricter Typography */
+  .prose-enterprise {
+    @apply prose prose-slate dark:prose-invert max-w-none;
+    @apply prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground;
+    @apply prose-p:leading-7 prose-p:text-foreground/90;
+    @apply prose-a:text-primary prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary/80;
+    @apply prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:text-foreground;
+    @apply prose-strong:font-semibold prose-strong:text-foreground;
+    @apply prose-code:text-primary prose-code:bg-secondary prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:before:content-none prose-code:after:content-none;
+  }
+}
