@@ -4,7 +4,8 @@ import os
 import sys
 
 # Add app to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
+# Add backend root to path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.db.session import AsyncSessionLocal
 from app.models.user import User
