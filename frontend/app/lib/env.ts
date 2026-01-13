@@ -87,11 +87,11 @@ export const API_ENDPOINTS = {
     callback: '/api/auth/callback/google',
   },
   api: {
-    query: `${env.backend.url}/query`,
-    upload: `${env.backend.url}/upload`,
-    health: `${env.backend.url}/health`,
+    query: `${env.backend.url}/api/v1/chat/stream`, // Updated to V1
+    upload: `${env.backend.url}/api/v1/documents/`, // Updated to V1
+    health: `${env.backend.url}/`,
     storeUser: '/api/store-user',
-    conversations: `${env.backend.url}/user/conversations`,
+    conversations: `${env.backend.url}/api/v1/chat/history`, // Updated to V1
   },
 } as const;
 
