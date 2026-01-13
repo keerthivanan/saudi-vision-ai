@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic, Playfair_Display } from "next/font/google";
+import { Inter, IBM_Plex_Sans_Arabic, Playfair_Display } from "next/font/google";
 import { Providers } from "./providers";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "./globals.css";
@@ -9,9 +9,9 @@ const ProvidersAny = Providers as any;
 const ErrorBoundaryAny = ErrorBoundary as any;
 
 // Initialize fonts
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-inter",
   display: "swap",
 });
 

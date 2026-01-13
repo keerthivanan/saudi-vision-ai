@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,15 +17,35 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function ChatSidebar() {
+// Add Props Interface
+interface ChatSidebarProps {
+    refreshTrigger?: number;
+    onSelectChat?: (id: string) => void;
+}
+
+export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSidebarProps) {
     const { data: session } = useSession();
     const { t } = useLanguage();
     const [collapsed, setCollapsed] = useState(false);
-    const [chats, setChats] = useState([
-        { id: 1, title: t('Chat1'), date: t('Today') },
-        { id: 2, title: t('Chat2'), date: t('Yesterday') },
-        { id: 3, title: t('Chat3'), date: t('LastWeek') },
-    ]);
+    const [chats, setChats] = useState<any[]>([]);
+
+    // Fetch History
+    useEffect(() => {
+        if (session?.user) {
+            fetch('/api/v1/chat/history')
+                .then(res => res.json())
+                .then(data => {
+                    setChats(data);
+                })
+                .catch(err => console.error("Failed to fetch history", err));
+        }
+    }, [session, refreshTrigger]);
+
+    // Format Date Helper
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    };
 
     return (
         <motion.div
@@ -35,7 +55,7 @@ export default function ChatSidebar() {
             {/* Header / New Chat */}
             <div className="p-4">
                 <button
-                    onClick={() => console.log("New Chat")}
+                    onClick={() => window.location.href = '/chat'} // Simple reload/reset for new chat
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white transition-all shadow-lg shadow-primary/10 group
             ${collapsed ? 'justify-center' : ''}`}
                 >
@@ -55,13 +75,15 @@ export default function ChatSidebar() {
                 {chats.map((chat) => (
                     <button
                         key={chat.id}
+                        onClick={() => onSelectChat ? onSelectChat(chat.id) : (window.location.href = `/chat?id=${chat.id}`)}
                         className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors group text-left
               ${collapsed ? 'justify-center' : ''}`}
                     >
                         <MessageSquare className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors flex-shrink-0" />
                         {!collapsed && (
                             <div className="flex-1 overflow-hidden">
-                                <p className="text-sm truncate">{chat.title}</p>
+                                <p className="text-sm truncate font-medium text-slate-300">{chat.title || "New Chat"}</p>
+                                <p className="text-[10px] text-slate-600">{formatDate(chat.updated_at || chat.created_at)}</p>
                             </div>
                         )}
                     </button>

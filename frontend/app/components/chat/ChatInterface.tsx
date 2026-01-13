@@ -7,6 +7,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 // ElevenLabs Integration Config
 const ELEVENLABS_API_KEY = process.env.NEXT_PUBLIC_ELEVENLABS_KEY;
@@ -18,7 +20,11 @@ type Message = {
     sources?: string[];
 };
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+    onChatCreated?: () => void;
+}
+
+export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     const { t, language } = useLanguage();
     const { data: session } = useSession();
     const searchParams = useSearchParams();
@@ -52,41 +58,27 @@ export default function ChatInterface() {
         }
     }, [session, messages]); // Refresh when messages change (deduction happened)
 
-    // 2. Fetch History on Mount
-    useEffect(() => {
-        const fetchHistory = async () => {
-            if (session?.user && !conversationId) {
-                try {
-                    const res = await fetch('/api/v1/chat/history');
-                    if (res.ok) {
-                        const history = await res.json();
-                        if (history && history.length > 0) {
-                            const latestConv = history[0];
-                            const msgRes = await fetch(`/api/v1/chat/${latestConv.id}`);
-                            if (msgRes.ok) {
-                                const pastMessages = await msgRes.json();
-                                const restoredMessages = pastMessages.reverse().map((m: any) => ({
-                                    role: m.sender,
-                                    content: m.content
-                                }));
-                                setMessages(restoredMessages);
-                                setConversationId(latestConv.id);
-                                toast.success("Chat history restored", { icon: '🔄' });
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.error("History fetch failed", e);
-                }
-            }
-        };
-        fetchHistory();
-    }, [session, conversationId]);
+
 
     // 3. Handle URL Query Params & Language
     useEffect(() => {
         const queryParam = searchParams?.get('q');
-        if (queryParam && messages.length === 1 && messages[0]?.role === 'ai') {
+        const idParam = searchParams?.get('id');
+
+        if (idParam) {
+            setConversationId(idParam);
+            // Fetch messages for this ID
+            fetch(`/api/v1/chat/${idParam}`)
+                .then(res => res.json())
+                .then(data => {
+                    const restoredMessages = data.reverse().map((m: any) => ({
+                        role: m.role || m.sender,
+                        content: m.content
+                    }));
+                    setMessages(restoredMessages);
+                });
+        }
+        else if (queryParam && messages.length === 1 && messages[0]?.role === 'ai') {
             setInput(queryParam);
             handleSubmit(undefined, queryParam);
             return;
@@ -181,7 +173,8 @@ export default function ChatInterface() {
                 },
                 body: JSON.stringify({
                     message: messageToSend,
-                    language: language
+                    language: language,
+                    conversation_id: conversationId // Pass ID to append
                 }),
             });
 
@@ -225,7 +218,10 @@ export default function ChatInterface() {
                             if (dataStr === '[DONE]') break;
                             try {
                                 const data = JSON.parse(dataStr);
-                                if (data.event === 'status') {
+                                if (data.event === 'conversation_created') {
+                                    setConversationId(data.data.id);
+                                    if (onChatCreated) onChatCreated(); // Refresh Sidebar
+                                } else if (data.event === 'status') {
                                     setThinkingText(data.data);
                                 } else if (data.event === 'token') {
                                     aiResponseContent += data.data;
@@ -372,7 +368,25 @@ export default function ChatInterface() {
                                 ${msg.role === 'user'
                                     ? 'bg-primary text-white rounded-tr-sm'
                                     : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'}`}>
-                                {msg.content}
+                                {msg.role === 'ai' ? (
+                                    <ReactMarkdown
+                                        className="
+                                            prose prose-sm max-w-none 
+                                            prose-p:text-slate-700 prose-p:leading-relaxed prose-p:my-2
+                                            prose-headings:text-emerald-saudi prose-headings:font-serif prose-headings:my-3 prose-headings:font-bold
+                                            prose-strong:text-slate-900 prose-strong:font-bold
+                                            prose-ul:my-2 prose-li:my-1 prose-li:text-slate-700
+                                            prose-li:marker:text-gold-saudi prose-li:marker:font-bold
+                                            prose-a:text-emerald-saudi prose-a:underline prose-a:font-medium hover:prose-a:text-emerald-600
+                                            prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-4
+                                            marker:text-gold-saudi
+                                        "
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                ) : (
+                                    <span className="font-medium">{msg.content}</span>
+                                )}
                             </div>
 
                             {/* TTS Button for AI messages */}

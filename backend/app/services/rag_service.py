@@ -40,7 +40,7 @@ class RAGService:
             
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
-            chunk_overlap=200,
+            chunk_overlap=400, # Increased for better context in large docs
             separators=["\n\n## ", "\n\n# ", "\n\n", "\n", " ", ""]
         )
         if self.embeddings:
@@ -120,29 +120,49 @@ class RAGService:
             logger.error(f"Multi-query generation failed: {e}")
             return [original_query]
 
-    async def search(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
+    async def search(self, query: str, top_k: int = 10, user_id: str = None) -> List[Dict[str, Any]]:
         """
-        Ultimate RAG Search:
-        1. Multi-Query Generation (3+ variations)
-        2. Broad Parallel Retrieval
-        3. Reciprocal Rank Fusion & Deduplication
-        4. Keyword-Weighted Re-ranking
+        Ultimate RAG Search with PRIVACY FILTERING:
+        1. Access Control: Checks 'scope' and 'user_id' metadata.
+        2. Multi-Query Generation
+        3. Fusion & Ranking
         """
         if not self.vectorstore:
             logger.warning("Search attempted on empty index")
             return []
 
-        # 1. OPTIMIZATION: Use Direct Query for Instant Speed (Multi-query is too slow for perceived latency)
-        # queries = await self.generate_queries(query)
+        # 1. OPTIMIZATION: Use Direct Query for Instant Speed
         queries = [query]
         
         # 2. Parallel Retrieval (Broad Fetch)
         fetch_k = max(20, top_k * 2)
         all_results = []
         
+        # DEFINE FILTER FUNCTION
+        # FAISS (Langchain) supports a callable filter in newer versions, or we filter post-fetch.
+        # But post-fetch is inefficient if k is small. 
+        # For this codebase, we use post-fetch filtering if FAISS doesn't support complex SQL-like filters natively.
+        # Assuming we can filter via simple dict or callable.
+        # SAFE APPROACH: Fetch more (fetch_k*2), then filter in Python to ensure perfect privacy.
+        
         for q in queries:
-            sub_results = self.vectorstore.similarity_search_with_score(q, k=fetch_k)
-            all_results.extend(sub_results)
+            sub_results = self.vectorstore.similarity_search_with_score(q, k=fetch_k * 2) # Fetch extra for filtering
+            
+            for doc, score in sub_results:
+                metadata = doc.metadata
+                scope = metadata.get("scope", "public") # Default to public if missing
+                doc_user_id = metadata.get("user_id")
+                
+                # ACCESS CONTROL LOGIC
+                is_accessible = False
+                if scope == "public" or scope == "system":
+                    is_accessible = True
+                elif scope == "private" and user_id and doc_user_id == user_id:
+                    is_accessible = True
+                    
+                if is_accessible:
+                    all_results.append((doc, score))
+
             
         # 3. Deduplication & Fusion
         unique_docs = {}
@@ -188,11 +208,18 @@ class RAGService:
             
             final_score = similarity + fusion_boost + keyword_boost
             
+            # Format Source to be Explicitly S3
+            source = doc.metadata.get("source", doc.metadata.get("filename", "Unknown"))
+            if not source.startswith("s3://") and not source.startswith("http"):
+                 # It's likely just a filename from the legacy index
+                 bucket = settings.S3_BUCKET_NAME or "saudi-vision-2030"
+                 source = f"s3://{bucket}/documents/{source}"
+
             fused_results.append({
                 "content": doc.page_content,
                 "metadata": doc.metadata,
                 "score": float(final_score),
-                "source": doc.metadata.get("filename", "Unknown")
+                "source": source
             })
             
         # 4. Final Sort

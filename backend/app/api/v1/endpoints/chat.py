@@ -109,16 +109,34 @@ async def stream_chat(
     
     async def event_generator():
         print(">>> GENERATOR STARTED ITERATION")
+        
+        # 0. NOTIFY FRONTEND OF CONVERSATION ID (Critical for History Sync)
+        yield f"data: {json.dumps({'event': 'conversation_created', 'data': {'id': str(conversation_id), 'title': request.message[:50]}})}\n\n"
+        
         full_response = ""
         
         try:
             # Create a fresh session for the streaming lifetime if needed, or just for the end.
             
+            # Determine Model based on Tier ("GPT-5 Access" for Royal)
+            # Default to "gpt-4o-mini" for speed/efficiency for normal users
+            # Use "gpt-4o" (The Flagship) for Premium/Royal users 
+            
+            user_model = "gpt-4o-mini" # Standard/Free
+            if current_user and current_user.tier in ['premium', 'royal', 'enterprise']:
+                user_model = "gpt-4o" # The "GPT-5" Equivalent
+            
+            # If user has high credits (bought a Royal pack), we can also treat them as premium
+            if current_user and current_user.credits > 150:
+                 user_model = "gpt-4o"
+
             async for chunk in ai_service.generate_response_stream(
                 request.message, 
                 history, 
-                None, # Pass None
-                language=request.language or "en"
+                None, 
+                language=request.language or "en",
+                model=user_model,
+                user_id=str(current_user.id) if current_user else None
             ):
                 # print(f">>> CHUNK: {chunk[:20]}...") 
                 yield f"data: {chunk}\n\n"
