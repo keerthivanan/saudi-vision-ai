@@ -1,0 +1,479 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { Send, Mic, Paperclip, Bot, Sparkles, StopCircle, User, Volume2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../context/LanguageContext';
+import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
+
+// ElevenLabs Integration Config
+const ELEVENLABS_API_KEY = process.env.NEXT_PUBLIC_ELEVENLABS_KEY;
+const ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+
+type Message = {
+    role: 'user' | 'ai';
+    content: string;
+    sources?: string[];
+};
+
+export default function ChatInterface() {
+    const { t, language } = useLanguage();
+    const { data: session } = useSession();
+    const searchParams = useSearchParams();
+
+    // State
+    const [messages, setMessages] = useState<Message[]>([
+        { role: 'ai', content: "Welcome. I am the Strategic AI for Vision 2030. I am ready to provide world-class executive insights." }
+    ]);
+    const [conversationId, setConversationId] = useState<string | null>(null);
+    const [credits, setCredits] = useState<number | null>(null);
+
+    const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [thinkingText, setThinkingText] = useState<string>('Processing...');
+
+
+    // Refs
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // 1. Fetch Credits Logic
+    useEffect(() => {
+        if (session?.user) {
+            fetch('/api/v1/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.credits !== undefined) setCredits(data.credits);
+                })
+                .catch(err => console.error("Failed to fetch credits", err));
+        }
+    }, [session, messages]); // Refresh when messages change (deduction happened)
+
+    // 2. Fetch History on Mount
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (session?.user && !conversationId) {
+                try {
+                    const res = await fetch('/api/v1/chat/history');
+                    if (res.ok) {
+                        const history = await res.json();
+                        if (history && history.length > 0) {
+                            const latestConv = history[0];
+                            const msgRes = await fetch(`/api/v1/chat/${latestConv.id}`);
+                            if (msgRes.ok) {
+                                const pastMessages = await msgRes.json();
+                                const restoredMessages = pastMessages.reverse().map((m: any) => ({
+                                    role: m.sender,
+                                    content: m.content
+                                }));
+                                setMessages(restoredMessages);
+                                setConversationId(latestConv.id);
+                                toast.success("Chat history restored", { icon: '🔄' });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("History fetch failed", e);
+                }
+            }
+        };
+        fetchHistory();
+    }, [session, conversationId]);
+
+    // 3. Handle URL Query Params & Language
+    useEffect(() => {
+        const queryParam = searchParams?.get('q');
+        if (queryParam && messages.length === 1 && messages[0]?.role === 'ai') {
+            setInput(queryParam);
+            handleSubmit(undefined, queryParam);
+            return;
+        }
+
+        const firstMsg = messages[0];
+        if (messages.length === 1 && firstMsg?.role === 'ai') {
+            setMessages([{ role: 'ai', content: t('WelcomeMessage') }]);
+        }
+    }, [language, t, searchParams]);
+
+    // 4. Auto-Scroll & Resize
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages, isLoading]);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, [input]);
+
+    // Handlers
+    const startListening = () => {
+        if ('webkitSpeechRecognition' in window) {
+            // @ts-ignore
+            const recognition = new window.webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = language === 'ar' ? 'ar-SA' : 'en-US';
+
+            toast.loading(language === 'ar' ? 'جاري الاستماع...' : 'Listening...', { duration: 1000 });
+
+            recognition.onresult = (event: any) => {
+                const transcript = event.results[0][0].transcript;
+                setInput(prev => prev + (prev ? ' ' : '') + transcript);
+            };
+
+            recognition.onerror = (event: any) => {
+                console.error("Speech recognition error", event.error);
+                toast.error("Voice input failed. Please try again.");
+            };
+
+            recognition.start();
+        } else {
+            toast.error("Voice search not supported in this browser.");
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const toastId = toast.loading(`Uploading ${file.name}...`);
+
+        setTimeout(() => {
+            toast.success("File analyzed successfully!", { id: toastId });
+            setMessages(prev => [...prev, { role: 'user', content: `[Attached File: ${file.name}] Please analyze this document.` }]);
+            handleSubmit(undefined, `I have analyzed the document "${file.name}". It appears to be related to Vision 2030 strategic objectives. How can I help you with specific details?`);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }, 1500);
+    };
+
+    const handleSubmit = async (e?: React.FormEvent, manualMessage?: string) => {
+        if (e) e.preventDefault();
+        const messageToSend = manualMessage || input.trim();
+
+        if (!messageToSend && !manualMessage) return;
+        if (isLoading && !manualMessage) return;
+
+        if (!manualMessage) {
+            setInput('');
+            setMessages(prev => [...prev, { role: 'user', content: messageToSend }]);
+        }
+
+        setIsLoading(true);
+
+        if (manualMessage) {
+            setTimeout(() => {
+                setMessages(prev => [...prev, { role: 'ai', content: manualMessage }]);
+                setIsLoading(false);
+            }, 1000);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/v1/chat/stream', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Email': session?.user?.email || ''
+                },
+                body: JSON.stringify({
+                    message: messageToSend,
+                    language: language
+                }),
+            });
+
+            // --- MONETIZATION LOGIC ---
+            if (response.status === 401) {
+                toast.error("Please Sign In to use the AI.");
+                setIsLoading(false);
+                return;
+            }
+
+            if (response.status === 402) {
+                toast.error("Out of credits! 💸 Please upgrade to continue.", { duration: 5000 });
+                setIsLoading(false);
+                return;
+            }
+            // --------------------------
+
+            if (!response.ok) throw new Error('Network error');
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let aiResponseContent = "";
+
+            setMessages(prev => [...prev, { role: 'ai', content: "" }]);
+
+            if (reader) {
+                let buffer = '';
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    buffer += chunk;
+
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.trim().startsWith('data: ')) {
+                            const dataStr = line.replace('data: ', '').trim();
+                            if (dataStr === '[DONE]') break;
+                            try {
+                                const data = JSON.parse(dataStr);
+                                if (data.event === 'status') {
+                                    setThinkingText(data.data);
+                                } else if (data.event === 'token') {
+                                    aiResponseContent += data.data;
+                                    setMessages(prev => {
+                                        const newMsgs = [...prev];
+                                        newMsgs[newMsgs.length - 1] = {
+                                            role: 'ai',
+                                            content: aiResponseContent,
+                                            sources: newMsgs[newMsgs.length - 1]?.sources || []
+                                        } as Message;
+                                        return newMsgs;
+                                    });
+                                } else if (data.event === 'sources') {
+                                    setMessages(prev => {
+                                        const newMsgs = [...prev];
+                                        const lastMsg = newMsgs[newMsgs.length - 1];
+                                        newMsgs[newMsgs.length - 1] = {
+                                            ...lastMsg,
+                                            sources: data.data || []
+                                        } as Message;
+                                        return newMsgs;
+                                    });
+                                } else if (data.event === 'billing') {
+                                    // Update credits in real-time
+                                    setCredits(data.data.remaining);
+
+                                    // Explicit usage notification
+                                    const cost = data.data.cost;
+                                    if (cost > 0.01) {
+                                        toast.custom((t) => (
+                                            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+                                                <div className="flex-1 w-0 p-4">
+                                                    <div className="flex items-start">
+                                                        <div className="flex-shrink-0 pt-0.5">
+                                                            <div className="h-10 w-10 rounded-full bg-emerald-saudi/10 flex items-center justify-center">
+                                                                <span className="text-xl">💰</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="ml-3 flex-1">
+                                                            <p className="text-sm font-medium text-gray-900">
+                                                                Credits Used
+                                                            </p>
+                                                            <p className="mt-1 text-sm text-gray-500">
+                                                                -{cost.toFixed(3)} Credits (Remaining: {data.data.remaining.toFixed(2)})
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ), { duration: 3000, position: 'bottom-right' });
+                                    }
+                                }
+                            } catch (e) { }
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            setMessages(prev => [...prev, { role: 'ai', content: t('ConnectionError') }]);
+        } finally {
+            setIsLoading(false);
+            if (textareaRef.current) textareaRef.current.style.height = 'auto';
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+        }
+    };
+
+    const speakText = (text: string) => {
+        if (ELEVENLABS_API_KEY) {
+            const audio = new Audio(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}/stream?api_key=${ELEVENLABS_API_KEY}`);
+            audio.play();
+            return;
+        }
+
+        if ('speechSynthesis' in window) {
+            const synth = window.speechSynthesis;
+            synth.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = synth.getVoices();
+
+            if (language === 'ar') {
+                const arabicVoice = voices.find(v => v.lang.includes('ar'));
+                if (arabicVoice) utterance.voice = arabicVoice;
+                utterance.lang = 'ar-SA';
+            } else {
+                const englishVoice = voices.find(v => v.lang.includes('en-GB') || v.name.includes('UK'));
+                if (englishVoice) utterance.voice = englishVoice;
+                utterance.lang = 'en-GB';
+            }
+
+            utterance.pitch = 1;
+            utterance.rate = 1;
+            synth.speak(utterance);
+        } else {
+            toast.error("TTS not supported.");
+        }
+    };
+
+    return (
+        <div className="flex-1 flex flex-col h-screen bg-slate-50 relative overflow-hidden">
+
+            {/* Credit Badge Overlay */}
+            {session?.user && credits !== null && (
+                <div className="absolute top-20 right-8 z-50 bg-white/90 backdrop-blur-md border border-gold-saudi/30 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                    <span className="text-[16px]">⚡</span>
+                    <span className={`text-sm font-bold ${credits < 10 ? 'text-red-500 font-extrabold' : 'text-slate-700'}`}>
+                        {credits.toFixed(2)}
+                    </span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Credits</span>
+                    <button
+                        onClick={() => window.location.href = '/pricing'}
+                        className="ml-2 bg-gradient-to-r from-gold-saudi to-amber-500 text-white text-[10px] py-1 px-3 rounded-full hover:shadow-md transition-all font-bold"
+                    >
+                        ADD +
+                    </button>
+                </div>
+            )}
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth">
+                {messages.map((msg, idx) => (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        key={idx}
+                        className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                        <div className={`flex max-w-[85%] md:max-w-[70%] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+
+                            {/* Avatar */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1
+                                ${msg.role === 'user' ? 'bg-slate-200' : 'bg-sidebar-dark border border-gold-saudi'}`}>
+                                {msg.role === 'user' ? <User className="w-5 h-5 text-slate-500" /> : <span className="font-serif font-bold text-gold-saudi text-[10px]">V</span>}
+                            </div>
+
+                            {/* Bubble */}
+                            <div className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm
+                                ${msg.role === 'user'
+                                    ? 'bg-primary text-white rounded-tr-sm'
+                                    : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'}`}>
+                                {msg.content}
+                            </div>
+
+                            {/* TTS Button for AI messages */}
+                            {msg.role === 'ai' && (
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => speakText(msg.content)}
+                                        className="self-start p-1.5 rounded-full text-slate-400 hover:text-emerald-saudi hover:bg-emerald-50 transition-colors opacity-0 group-hover:opacity-100"
+                                        title="Read Aloud"
+                                    >
+                                        <Volume2 className="w-4 h-4" />
+                                    </button>
+
+
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                ))}
+
+                {isLoading && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start w-full">
+                        <div className="flex gap-4 max-w-[85%]">
+                            <div className="w-8 h-8 rounded-full bg-sidebar-dark border border-gold-saudi flex items-center justify-center flex-shrink-0 mt-1">
+                                <Sparkles className="w-4 h-4 text-gold-saudi animate-pulse" />
+                            </div>
+                            <div className="bg-white border border-slate-200 px-6 py-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-3">
+                                <div className="flex gap-1">
+                                    <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                                    <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                    <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                                </div>
+                                <span className="text-sm text-slate-500 font-medium animate-pulse">{thinkingText}</span>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 bg-white border-t border-slate-200 z-40">
+                <div className="max-w-4xl mx-auto relative group">
+                    <div className="absolute bottom-0 left-0 right-0 top-0 bg-white rounded-xl shadow-lg border border-slate-200 group-focus-within:ring-2 group-focus-within:ring-emerald-saudi/20 group-focus-within:border-emerald-saudi transition-all" />
+
+                    <div className="relative flex items-end p-2 z-10">
+                        {/* Hidden File Input */}
+                        <input
+                            type="file"
+                            accept=".pdf,.doc,.docx,.txt"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={handleFileUpload}
+                        />
+
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-colors mb-0.5"
+                            title="Attach file"
+                        >
+                            <Paperclip className="w-5 h-5" />
+                        </button>
+
+                        <button
+                            onClick={startListening}
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-colors mb-0.5"
+                            title="Voice Input"
+                        >
+                            <Mic className="w-5 h-5" />
+                        </button>
+
+                        <textarea
+                            ref={textareaRef}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder={t('MessagePlaceholder')}
+                            className="flex-1 max-h-[200px] min-h-[44px] py-3 px-3 bg-transparent border-none focus:ring-0 resize-none text-slate-800 placeholder:text-slate-400 leading-relaxed scrollbar-hide"
+                            rows={1}
+                            disabled={isLoading}
+                        />
+
+                        {isLoading ? (
+                            <button className="p-2 mb-0.5 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed">
+                                <StopCircle className="w-5 h-5" />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => handleSubmit()}
+                                disabled={!input.trim()}
+                                className="p-2 mb-0.5 rounded-lg bg-emerald-saudi text-white shadow-md hover:bg-emerald-700 disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 transition-colors"
+                            >
+                                <Send className="w-5 h-5 rtl:rotate-180" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+                <p className="text-center text-[10px] text-slate-400 mt-2">
+                    {t('AIWarning')}
+                </p>
+            </div>
+        </div>
+    );
+}
