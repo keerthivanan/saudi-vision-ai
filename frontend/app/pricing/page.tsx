@@ -1,114 +1,264 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Zap, Crown } from 'lucide-react';
+import { Check, Zap, Crown, Sparkles, Gem } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function PricingPage() {
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    // Inject Razorpay Script
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    const handlePurchase = async (plan: 'standard' | 'royal') => {
+        if (!session) {
+            // New User: Redirect to Signup with plan intent
+            router.push(`/auth/signup?plan=${plan}`);
+            return;
+        }
+
+        try {
+            const token = (session as any).accessToken || (session as any).user?.accessToken;
+
+            // 1. Create Order
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/payment/checkout?plan=${plan}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || "Payment Failed");
+            }
+
+            const data = await res.json();
+
+            // 2. Open Razorpay Options
+            const options = {
+                key: data.key_id, // Enter the Key ID generated from the Dashboard
+                amount: data.amount,
+                currency: data.currency,
+                name: "The Global Oracle",
+                description: plan === 'royal' ? "Royal Access Pack" : "Standard Credit Pack",
+                image: "", // Optional: Add a Logo URL
+                order_id: data.order_id,
+                handler: async function (response: any) {
+                    // 3. Verify Payment on Backend
+                    const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/payment/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            plan: plan
+                        })
+                    });
+
+                    if (verifyRes.ok) {
+                        alert("Payment Successful! Credits Added. 💎");
+                        router.refresh();
+                    } else {
+                        alert("Payment Verification Failed.");
+                    }
+                },
+                prefill: {
+                    name: session.user?.name || "",
+                    email: session.user?.email || "",
+                    contact: "" // Optional
+                },
+                theme: {
+                    color: "#10B981" // Emerald
+                }
+            };
+
+            const rzp1 = new (window as any).Razorpay(options);
+            rzp1.on('payment.failed', function (response: any) {
+                alert("Payment Failed: " + response.error.description);
+            });
+            rzp1.open();
+
+        } catch (error: any) {
+            console.error("Payment Error:", error);
+            alert(`Payment Error: ${error.message}`);
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-slate-50 relative overflow-hidden flex flex-col items-center justify-center p-4">
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-emerald-saudi/5 to-transparent pointer-events-none" />
+        <div className="min-h-screen bg-slate-50 relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans">
+            {/* Background Decor - Dynamic Aurora */}
+            <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-emerald-saudi/5 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-gold-saudi/5 rounded-full blur-[100px] pointer-events-none" />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-12 relative z-10"
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="text-center mb-16 relative z-10"
             >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sidebar-dark border border-gold-saudi mb-6 shadow-lg">
-                    <Crown className="w-8 h-8 text-gold-saudi" />
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-sidebar-dark border-2 border-gold-saudi mb-8 shadow-2xl relative">
+                    <div className="absolute inset-0 rounded-full bg-gold-saudi/20 animate-ping" />
+                    <Crown className="w-10 h-10 text-gold-saudi relative z-10" />
                 </div>
-                <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">
-                    Choose Your <span className="text-emerald-saudi">Vision</span> Plan
+                <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-6 tracking-tight">
+                    Power Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-saudi to-emerald-600">Vision</span>
                 </h1>
-                <p className="text-slate-500 max-w-lg mx-auto text-lg leading-relaxed">
-                    Unlock the full potential of the Saudi Vision 2030 Enterprise AI. Select a plan that fits your strategic needs.
+                <p className="text-slate-500 max-w-2xl mx-auto text-xl leading-relaxed font-light">
+                    Purchase <span className="font-semibold text-slate-700">Credit Packs</span> on demand. No subscriptions. No hidden fees.
+                    <br />Pure strategic power, exactly when you need it.
                 </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl w-full relative z-10">
-                {/* Free Plan */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative overflow-hidden group hover:border-emerald-saudi/30 transition-all"
-                >
-                    <div className="absolute top-0 left-0 w-full h-2 bg-slate-200 group-hover:bg-slate-300 transition-colors" />
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2">Starter</h3>
-                    <div className="flex items-baseline gap-1 mb-6">
-                        <span className="text-4xl font-bold text-slate-900">Free</span>
-                        <span className="text-slate-400">/ forever</span>
-                    </div>
-                    <p className="text-slate-500 mb-8 h-12">Perfect for exploring the platform capabilities.</p>
+            <div className="grid md:grid-cols-3 gap-8 max-w-7xl w-full relative z-10 px-4 items-center">
 
-                    <ul className="space-y-4 mb-8">
+                {/* 1. Starter Pack (Free) */}
+                <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                    whileHover={{ y: -10 }}
+                    className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 border border-slate-200 shadow-xl relative overflow-hidden flex flex-col h-[500px] group"
+                >
+                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+
+                    <h3 className="text-2xl font-bold text-slate-800 mb-2 font-serif">Starter</h3>
+                    <div className="flex items-baseline gap-1 mb-6">
+                        <span className="text-5xl font-bold text-slate-900">0</span>
+                        <span className="text-xl text-emerald-saudi font-serif">SAR</span>
+                    </div>
+                    <p className="text-emerald-saudi font-medium mb-8 text-sm uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" /> Just Visiting
+                    </p>
+
+                    <div className="flex-1 space-y-4">
                         {[
-                            '30 Free Credits',
-                            'Basic Chat Access',
-                            'Standard RAG Retrieval',
-                            'Community Support'
+                            '30 Credits (One-time)',
+                            'Access to Standard Engine',
+                            'Basic Document Search',
+                            'No Expiry on Credits'
                         ].map((item, i) => (
                             <li key={i} className="flex items-center gap-3 text-slate-600">
-                                <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                                    <Check className="w-3 h-3" />
+                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                                    <Check className="w-3.5 h-3.5 text-slate-500" />
                                 </div>
-                                {item}
+                                <span className="text-sm font-medium">{item}</span>
                             </li>
                         ))}
-                    </ul>
+                    </div>
 
-                    <Link href="/" className="block w-full py-4 rounded-xl bg-slate-100 text-slate-600 font-bold text-center hover:bg-slate-200 transition-colors">
-                        Continue Free
+                    <Link href="/auth/signup" className="block w-full py-4 rounded-2xl bg-slate-100 text-slate-700 font-bold text-center hover:bg-slate-200 transition-all hover:scale-[1.02]">
+                        Claim Free Pack
                     </Link>
                 </motion.div>
 
-                {/* Pro Plan */}
+                {/* 2. Standard Pack (Popular) */}
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-sidebar-dark rounded-3xl p-8 border border-gold-saudi shadow-2xl relative overflow-hidden transform md:-translate-y-4"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    whileHover={{ y: -15 }}
+                    className="bg-white rounded-[2.5rem] p-8 border-2 border-emerald-saudi shadow-2xl shadow-emerald-saudi/10 relative overflow-hidden flex flex-col h-[560px] transform scale-105 z-20"
                 >
-                    <div className="absolute top-0 right-0 bg-gold-saudi text-sidebar-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
-                        POPULAR
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-saudi to-teal-500" />
+                    <div className="absolute top-6 right-6 flex flex-col items-end">
+                        <span className="bg-emerald-saudi text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-1">Most Popular</span>
                     </div>
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gold-saudi to-amber-500" />
 
-                    <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                        Enterprise <Zap className="w-5 h-5 text-gold-saudi fill-gold-saudi animate-pulse" />
-                    </h3>
+                    <h3 className="text-3xl font-bold text-slate-900 mb-2 font-serif">Standard</h3>
                     <div className="flex items-baseline gap-1 mb-6">
-                        <span className="text-4xl font-bold text-white">$49</span>
-                        <span className="text-slate-400">/ month</span>
+                        <span className="text-6xl font-bold text-slate-900 tracking-tighter">50</span>
+                        <span className="text-2xl text-emerald-saudi font-serif">SAR</span>
                     </div>
-                    <p className="text-slate-400 mb-8 h-12">For power users requiring unlimited strategic insights.</p>
+                    <p className="text-emerald-600 font-medium mb-8 text-sm uppercase tracking-wider flex items-center gap-2">
+                        <Gem className="w-4 h-4" /> 130 Solid Credits
+                    </p>
 
-                    <ul className="space-y-4 mb-8">
+                    <div className="flex-1 space-y-5">
                         {[
-                            'Unlimited Credits',
-                            'Priority AI Processing',
-                            'Advanced RAG (Deep Search)',
-                            'Multiple File Uploads',
-                            '24/7 Dedicated Support'
+                            '130 Professional Credits',
+                            'Priority RAG Processing',
+                            'Deep Document Analysis',
+                            'Smart PDF Summary',
+                            'Email Support'
                         ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-3 text-slate-300">
-                                <div className="w-5 h-5 rounded-full bg-gold-saudi/20 flex items-center justify-center text-gold-saudi">
-                                    <Check className="w-3 h-3" />
+                            <li key={i} className="flex items-center gap-3 text-slate-700">
+                                <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                                    <Check className="w-4 h-4 text-emerald-saudi" />
                                 </div>
-                                {item}
+                                <span className="text-sm font-semibold">{item}</span>
                             </li>
                         ))}
-                    </ul>
+                    </div>
 
-                    <button
-                        onClick={() => alert("Payment Gateway Integration Coming Soon!")}
-                        className="block w-full py-4 rounded-xl bg-gradient-to-r from-gold-saudi to-amber-500 text-white font-bold text-center shadow-lg hover:shadow-gold-saudi/20 hover:scale-[1.02] transition-all"
-                    >
-                        Upgrade Now
+                    <button onClick={() => handlePurchase('standard')} className="block w-full py-5 rounded-2xl bg-gradient-to-r from-emerald-saudi to-emerald-700 text-white font-bold text-lg text-center shadow-lg shadow-emerald-saudi/30 hover:shadow-xl hover:scale-[1.03] transition-all">
+                        Buy Standard Pack
                     </button>
-                    <p className="text-center text-xs text-slate-500 mt-3">14-day money back guarantee</p>
+                    <p className="text-center text-xs text-slate-400 mt-4 font-medium">One-time payment. Use anytime.</p>
                 </motion.div>
+
+                {/* 3. Royal Pack (Premium) */}
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                    whileHover={{ y: -10 }}
+                    className="bg-[#1a2e35] rounded-[2.5rem] p-8 border border-gold-saudi shadow-2xl relative overflow-hidden flex flex-col h-[500px] group"
+                >
+                    {/* Golden Glow Effect */}
+                    <div className="absolute -right-20 -top-20 w-64 h-64 bg-gold-saudi rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity" />
+
+                    <h3 className="text-2xl font-bold text-white mb-2 font-serif flex items-center gap-2">
+                        Royal <Crown className="w-5 h-5 text-gold-saudi fill-gold-saudi" />
+                    </h3>
+                    <div className="flex items-baseline gap-1 mb-6">
+                        <span className="text-5xl font-bold text-white tracking-tighter">120</span>
+                        <span className="text-xl text-gold-saudi font-serif">SAR</span>
+                    </div>
+                    <p className="text-gold-saudi/80 font-medium mb-8 text-sm uppercase tracking-wider flex items-center gap-2">
+                        <Zap className="w-4 h-4" /> 200 Ultimate Credits
+                    </p>
+
+                    <div className="flex-1 space-y-4">
+                        {[
+                            '200 Elite Credits',
+                            'GPT-5.1 (Exclusive Access)',
+                            'Strategic Forecasting',
+                            'Dedicated Advisor Support',
+                            'Early Access to Features'
+                        ].map((item, i) => (
+                            <li key={i} className="flex items-center gap-3 text-slate-300">
+                                <div className="w-6 h-6 rounded-full bg-gold-saudi/10 flex items-center justify-center flex-shrink-0 border border-gold-saudi/20">
+                                    <Check className="w-3.5 h-3.5 text-gold-saudi" />
+                                </div>
+                                <span className="text-sm font-medium">{item}</span>
+                            </li>
+                        ))}
+                    </div>
+
+                    <button onClick={() => handlePurchase('royal')} className="block w-full py-4 rounded-2xl bg-gradient-to-r from-gold-saudi to-amber-600 text-white font-bold text-center shadow-lg shadow-gold-saudi/20 hover:scale-[1.02] transition-all border border-gold-saudi/30">
+                        Acquire Royal Pack
+                    </button>
+                    <p className="text-center text-xs text-slate-500 mt-4">One-time payment.</p>
+                </motion.div>
+
             </div>
         </div>
     );

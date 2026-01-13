@@ -85,7 +85,9 @@ class AIService:
         query: str, 
         history: List[Dict[str, str]], 
         db_session: AsyncSession,
-        language: str = "en" # Frontend hint, but we will auto-detect to be sure
+        language: str = "en",
+        model: str = "gpt-4o",
+        user_id: Optional[str] = None # Added for RAG security
     ) -> AsyncGenerator[str, None]:
         """
         Generates a streaming response with RAG augmentation and reasoning.
@@ -107,8 +109,8 @@ class AIService:
             # or keep it if we want to simulate search time.
             # let's try to search even in sim mode if possible, but safely.
             try:
-                # USE TRANSLATED QUERY FOR SEARCH
-                relevant_docs = await self.rag_service.search(search_query, top_k=10)
+                # USE TRANSLATED QUERY FOR SEARCH with USER ID FILTER
+                relevant_docs = await self.rag_service.search(search_query, top_k=10, user_id=user_id)
                 
                 # Yield Sources to Client
                 if relevant_docs:

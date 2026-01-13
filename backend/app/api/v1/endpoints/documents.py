@@ -2,6 +2,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy import select, desc, delete
 from app.db.session import get_db, AsyncSession
+from app.api.deps import get_current_user
 from app.models.document import Document
 from app.schemas.user import UserResponse  # Reuse or create document schema if needed
 
@@ -47,6 +48,7 @@ async def list_documents(
 @router.post("/upload")
 async def upload_document(
     file: UploadFile = File(...),
+    current_user = Depends(get_current_user), # Require Auth
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -67,20 +69,22 @@ async def upload_document(
             shutil.copyfileobj(file.file, buffer)
             
         # 2. Process (Upload to S3 + Index in RAG)
-        # Note: In a real app, successful ingestion should also save a record in DB 'documents' table.
-        # document_service.process_file DOES checking + RAG.
-        # We assume it interacts with DB if configured, primarily it returns ProcessedDocument
-        
-        processed_doc = await document_service.process_file(temp_path, original_filename=file.filename)
+        # Pass User ID and Scope='private' to secure this document
+        processed_doc = await document_service.process_file(
+            temp_path, 
+            original_filename=file.filename,
+            metadata={"user_id": str(current_user.id), "scope": "private"}
+        )
         
         # 3. Create DB Record
         new_doc = Document(
             filename=file.filename,
-            file_size=0, # Simplified
+            file_size=0, 
             mime_type=file.content_type,
             storage_path=processed_doc.metadata.get("source", "s3"),
             processing_status="completed",
-            content_hash="hash" 
+            content_hash="hash",
+            user_id=str(current_user.id) # Associate with User
         )
         db.add(new_doc)
         await db.commit()
@@ -89,7 +93,7 @@ async def upload_document(
         # Cleanup
         os.remove(temp_path)
         
-        return {"status": "success", "id": new_doc.id, "filename": new_doc.filename, "message": "Indexed Successfully and Saved to S3"}
+        return {"status": "success", "id": new_doc.id, "filename": new_doc.filename, "message": "Indexed Successfully (Private Scope)"}
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")

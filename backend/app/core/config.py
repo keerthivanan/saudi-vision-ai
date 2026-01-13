@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     AWS_REGION: str = "eu-central-1"
     S3_BUCKET_NAME: str = "saudi-vision-ai-storage-917"
 
+    # Razorpay Payments
+    RAZORPAY_KEY_ID: Optional[str] = None
+    RAZORPAY_KEY_SECRET: Optional[str] = None
+
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: str | List[str]) -> List[str] | str:
         if isinstance(v, str) and not v.startswith("["):

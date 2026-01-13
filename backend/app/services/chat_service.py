@@ -27,7 +27,7 @@ class ChatService:
             logger.error(f"Failed to initialize OpenAI Client: {e}")
             self.client = None
             
-        self.model = "gpt-4-turbo"
+        self.model = "gpt-4o"
 
     async def create_conversation(self, db: AsyncSession, user_id: UUID, title: str) -> Conversation:
         """Create a new conversation entry."""
@@ -75,7 +75,7 @@ class ChatService:
         
         try:
             response = await self.client.chat.completions.create(
-                model="gpt-3.5-turbo", # Use faster model for routing
+                model="gpt-4o-mini", # Use latest lightweight model for routing
                 messages=[
                     {"role": "system", "content": system_router_prompt},
                     {"role": "user", "content": message}
@@ -94,8 +94,21 @@ class ChatService:
         self, 
         message: str, 
         history: List[Dict[str, str]], 
-        use_rag: bool = True
+        use_rag: bool = True,
+        model: str = "gpt-4-turbo"  # Default fallback
     ) -> AsyncGenerator[str, None]:
+        """
+        Enterprise-grade message processing with intelligent routing.
+        """
+        # ... (redacted pii, etc)
+
+        # ... (routing and rag logic same as before) ...
+        # I need to ensure I don't delete the logic, so I will copy the function internal parts carefully if I were replacing the whole thing.
+        # But wait, looking at 'replace_file_content', I should target specific blocks. 
+
+        # Let's replace the signature and the call.
+        pass
+
         """
         Enterprise-grade message processing with intelligent routing.
         """
@@ -115,9 +128,6 @@ class ChatService:
         if final_use_rag:
             results = await rag_service.search(safe_message, top_k=8)
             if results:
-                sources = [res["source"] for res in results]
-                # Send source metadata first as special JSON chunk
-                yield json.dumps({"type": "sources", "data": sources}) + "\n"
                 
                 context_blocks = [
                     f"source: {res['source']}\ncontent: {res['content']}" 
@@ -138,7 +148,13 @@ class ChatService:
         2. **Cultural Usage**: 
            - When speaking Arabic, use professional/formal tone (Modern Standard Arabic).
            - Respect Islamic values and Saudi Vision 2030 themes.
-        3. **Accuracy**: Use the provided CONTEXT to answer. If the answer is not in the context, say "I don't have that information" in the appropriate language.
+        3. **Accuracy**: Use the provided CONTEXT to answer.
+        
+        4. **SAFETY & MODERATION (CRITICAL)**:
+           - **PROHIBITED CONTENT**: You must REFUSE queries related to NSFW (Sexual content), Crime, Violence, Illegal Acts, or Hate Speech.
+           - **RESPONSE STRATEGY**: If a user asks about these topics, DO NOT lecture them. Instead, politely pivot the conversation.
+           - **Example Response**: "I prefer we keep our conversation focused on constructive topics like Innovation, Business, or Vision 2030. Why don't we talk about something else?"
+           - Ensure this refusal is polite, firm, and "Royal".
         """
 
         messages = [
@@ -153,7 +169,7 @@ class ChatService:
 
         try:
             stream = await self.client.chat.completions.create(
-                model=self.model,
+                model=model,  # Use dynamic model
                 messages=messages,
                 stream=True,
                 temperature=0.3

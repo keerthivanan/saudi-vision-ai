@@ -99,7 +99,7 @@
 
   body {
     @apply bg-background text-foreground tracking-tight;
-    font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+    font-family: var(--font-inter), 'IBM Plex Sans Arabic', sans-serif;
   }
 
   /* Modern Scrollbar */
@@ -185,7 +185,7 @@
   /* Markdown Content Styles - Stricter Typography */
   .prose-enterprise {
     @apply prose prose-slate dark:prose-invert max-w-none;
-    @apply prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground;
+    @apply prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground;
     @apply prose-p:leading-7 prose-p:text-foreground/90;
     @apply prose-a:text-primary prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary/80;
     @apply prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:text-foreground;
