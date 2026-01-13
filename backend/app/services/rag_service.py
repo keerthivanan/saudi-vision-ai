@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 
 # Langchain Imports
-from langchain.docstore.document import Document as LangchainDocument
+from langchain_core.documents import Document as LangchainDocument
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -132,8 +132,9 @@ class RAGService:
             logger.warning("Search attempted on empty index")
             return []
 
-        # 1. Generate Multiple Perspectives
-        queries = await self.generate_queries(query)
+        # 1. OPTIMIZATION: Use Direct Query for Instant Speed (Multi-query is too slow for perceived latency)
+        # queries = await self.generate_queries(query)
+        queries = [query]
         
         # 2. Parallel Retrieval (Broad Fetch)
         fetch_k = max(20, top_k * 2)

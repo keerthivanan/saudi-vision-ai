@@ -26,3 +26,6 @@ asyncpg
 pydantic-settings
 boto3
 tiktoken
+passlib[bcrypt]
+python-jose[cryptography]
+email-validator
