@@ -22,10 +22,24 @@ This is not just a chatbot. It is a **State-of-the-Art Intelligence Platform** b
 
 ---
 
-## 🚀 Deployment Status
-*   **Frontend**: Ready for Vercel.
-*   **Backend**: Ready for Railway (Docker).
-*   **Database**: PostgreSQL (Atomic Transactions).
+## 🚀 Deployment Guide (How to Go Live)
+
+### Phase 1: The Brain (Railway) 🧠
+1.  **Repo**: Deploy this repo to **Railway**.
+2.  **Database**: Add a PostgreSQL service.
+3.  **Variables**: Set `DATABASE_URL`, `OPENAI_API_KEY`, etc.
+4.  **Domain**: Generate a domain in Settings -> Networking (e.g. `https://backend.up.railway.app`).
+
+### Phase 2: The Face (Vercel) 🎨
+1.  **Repo**: Import this repo to **Vercel**.
+2.  **Root Directory**: Set to `frontend`.
+3.  **Variables**: Add `NEXT_PUBLIC_BACKEND_URL` (The Railway Domain).
+4.  **Deploy**: Click "Deploy".
+
+### Phase 3: The Connection 🔗
+1.  Copy your new **Vercel URL**.
+2.  Add it to **Google Cloud Console** (Authorized Redirect URIs).
+3.  **Done**. You are live.
 
 ## 🛠️ Tech Stack
 *   **Frontend**: Next.js 14, Tailwind CSS, Framer Motion, Lucide Icons.
