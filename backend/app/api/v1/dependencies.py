@@ -4,21 +4,14 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
-from app.core.config import settings
-from app.core import security
-# Import models if needed for user fetching, but keeping it minimal for now to fix import error
+from app.db.session import AsyncSessionLocal
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
-)
-
-def get_db() -> Generator:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    async with AsyncSessionLocal() as db:
+        try:
+            yield db
+        finally:
+            await db.close()
 
 def get_current_user(
     db: Session = Depends(get_db),
