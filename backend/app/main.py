@@ -47,6 +47,7 @@ if "http://127.0.0.1:3000" not in origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex="https://.*", # Allow all Vercel/Railway HTTPS domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
