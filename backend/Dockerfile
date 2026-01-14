@@ -1,49 +1,27 @@
-# 🧠 BACKEND DOCKERFILE (NEW & OPTIMIZED)
-# Stage 1: Builder (Compiling Dependencies)
-FROM python:3.11-slim as builder
+# Use official Python runtime as a parent image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-# Prevent Python from buffering stdout/stderr
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install GCC and System Libs
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
+# Install system dependencies (Required for OpenCV, PDF Processing)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Dependencies into a wheel directory
+# Copy requirements file
 COPY requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
-# Stage 2: Runner (Runtime Only)
-FROM python:3.11-slim
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app
-
-# Install only huge runtime libs (Postgres)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy compiled wheels from Builder
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-
-# Install dependencies from wheels
-RUN pip install --no-cache --no-index /wheels/*
-
-# Copy Application Code
+# Copy the rest of the application
 COPY . .
 
-# Security: Create non-root user
-RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
-USER appuser
-
-# Expose Port
+# Expose port (Internal Container Port)
 EXPOSE 8000
 
-# Start Command via Native Module
+# Command to run the application using Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
