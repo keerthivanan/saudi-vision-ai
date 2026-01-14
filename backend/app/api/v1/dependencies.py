@@ -6,6 +6,13 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app.db.session import AsyncSessionLocal
 
+from app.core.config import settings
+from app.core import security
+
+reusable_oauth2 = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+)
+
 async def get_db():
     async with AsyncSessionLocal() as db:
         try:
