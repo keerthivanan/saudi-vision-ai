@@ -33,11 +33,23 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
     useEffect(() => {
         if (session?.user) {
             fetch('/api/v1/chat/history')
-                .then(res => res.json())
-                .then(data => {
-                    setChats(data);
+                .then(res => {
+                    if (!res.ok) throw new Error("Not Authorized");
+                    return res.json();
                 })
-                .catch(err => console.error("Failed to fetch history", err));
+                .then(data => {
+                    // Safety: Ensure it is an array
+                    if (Array.isArray(data)) {
+                        setChats(data);
+                    } else {
+                        console.warn("History API returned non-array:", data);
+                        setChats([]);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to fetch history", err);
+                    setChats([]);
+                });
         }
     }, [session, refreshTrigger]);
 

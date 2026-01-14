@@ -69,14 +69,22 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             setConversationId(idParam);
             // Fetch messages for this ID
             fetch(`/api/v1/chat/${idParam}`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to load chat");
+                    return res.json();
+                })
                 .then(data => {
-                    const restoredMessages = data.reverse().map((m: any) => ({
-                        role: m.role || m.sender,
-                        content: m.content
-                    }));
-                    setMessages(restoredMessages);
-                });
+                    if (Array.isArray(data)) {
+                        const restoredMessages = data.reverse().map((m: any) => ({
+                            role: m.role || m.sender,
+                            content: m.content
+                        }));
+                        setMessages(restoredMessages);
+                    } else {
+                        console.warn("Chat API returned non-array:", data);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch chat", err));
         }
         else if (queryParam && messages.length === 1 && messages[0]?.role === 'ai') {
             setInput(queryParam);
