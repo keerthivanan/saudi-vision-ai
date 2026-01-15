@@ -48,7 +48,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     // 1. Fetch Credits Logic
     useEffect(() => {
         if (session?.user) {
-            fetch('/api/v1/user/me', { // Fixed endpoint from previous context check 
+            fetch('/api/v1/auth/me', {
                 headers: { 'X-User-Email': session.user.email || '' }
             }).catch(err => console.log("Credits fetch silent fail", err));
         }
