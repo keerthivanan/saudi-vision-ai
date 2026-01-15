@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Globe, Bell, User, LogOut, ChevronDown, Moon, Sun } from 'lucide-react';
+import { Menu, X, Globe, Bell, User, LogOut, ChevronDown, Moon, Sun, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { useLanguage } from '../context/LanguageContext';
@@ -127,13 +127,29 @@ export default function Navbar() {
                                                     <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Signed in as</p>
                                                     <p className="text-sm text-slate-700 dark:text-slate-200 font-medium truncate">{session.user?.name || "User"}</p>
                                                 </div>
-                                                <button
-                                                    onClick={() => signOut({ callbackUrl: '/' })}
-                                                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                                                <a
+                                                    href="/profile"
+                                                    className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
                                                 >
-                                                    <LogOut size={14} />
-                                                    Sign Out
-                                                </button>
+                                                    <User size={14} />
+                                                    Profile
+                                                </a>
+                                                <a
+                                                    href="/settings"
+                                                    className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                                                >
+                                                    <Settings size={14} />
+                                                    Settings
+                                                </a>
+                                                <div className="border-t border-slate-50 dark:border-slate-800 mt-1 pt-1">
+                                                    <button
+                                                        onClick={() => signOut({ callbackUrl: '/' })}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                                                    >
+                                                        <LogOut size={14} />
+                                                        Sign Out
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                     </>

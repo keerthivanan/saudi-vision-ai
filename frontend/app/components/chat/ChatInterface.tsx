@@ -140,14 +140,31 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const toastId = toast.loading(`Uploading ${file.name}...`);
+        // Check file type
+        const allowedTypes = ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Please upload a PDF, TXT, or DOC file.');
+            return;
+        }
 
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error('File size must be under 10MB.');
+            return;
+        }
+
+        const toastId = toast.loading(`Analyzing ${file.name}...`);
+
+        // Simulate analysis (in production, this would upload to S3 and process via RAG)
         setTimeout(() => {
-            toast.success("File analyzed successfully!", { id: toastId });
-            setMessages(prev => [...prev, { role: 'user', content: `[Attached File: ${file.name}] Please analyze this document.` }]);
-            handleSubmit(undefined, `I have analyzed the document "${file.name}". It appears to be related to Vision 2030 strategic objectives. How can I help you with specific details?`);
+            toast.success(`"${file.name}" analyzed! You can now ask questions about it.`, { id: toastId, duration: 4000 });
+            setMessages(prev => [...prev, { role: 'user', content: `📎 [Attached: ${file.name}] Please analyze this document.` }]);
+            setMessages(prev => [...prev, {
+                role: 'ai',
+                content: `I've received your document "${file.name}". In the current demo mode, I'm simulating document analysis.\n\n**For full document processing:**\n- Configure AWS S3 in Railway\n- Set up the document ingestion pipeline\n\nFor now, you can ask me general questions about Vision 2030 topics!`
+            }]);
             if (fileInputRef.current) fileInputRef.current.value = '';
-        }, 1500);
+        }, 2000);
     };
 
     const handleSubmit = async (e?: React.FormEvent, manualMessage?: string) => {
