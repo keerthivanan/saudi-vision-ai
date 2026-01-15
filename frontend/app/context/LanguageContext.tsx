@@ -117,7 +117,12 @@ export const translations = {
     ResCatSoc: 'Society & Culture',
     ResCatEnv: 'Environment & Sus.',
     ResCatTech: 'Tech & Future',
-    // Mock Doc Titles
+    // Chat Interface (Gemini Style)
+    ChatWelcomeTitle: 'Hello, Friend.',
+    ChatWelcomeSubtitle: 'I am your Saudi Vision 2030 RAG Oracle. Ask me anything.',
+    ChatBadge: "Saudi People's Chat",
+
+    // Legacy Mock Doc Titles (Keeping for KnowledgeBase)
     Doc1Title: 'Vision 2030 Strategic Framework',
     Doc1Desc: 'The comprehensive roadmap for the Kingdoms economic and social transformation.',
     Doc2Title: 'NEOM: The Line Concept Paper',
@@ -245,6 +250,11 @@ export const translations = {
     ResCatSoc: 'المجتمع والثقافة',
     ResCatEnv: 'البيئة والاستدامة',
     ResCatTech: 'التقنية والمستقبل',
+    // Chat Interface (Gemini Style)
+    ChatWelcomeTitle: 'أهلاً بك يا صديقي',
+    ChatWelcomeSubtitle: 'أنا أوراكل RAG لرؤية 2030. اسألني عن أي تقرير.',
+    ChatBadge: 'دردشة الشعب السعودي',
+
     // Mock Doc Titles
     Doc1Title: 'إطار رؤية المملكة 2030',
     Doc1Desc: 'خارطة الطريق الشاملة للتحول الاقتصادي والاجتماعي للمملكة.',
