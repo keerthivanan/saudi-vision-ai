@@ -39,10 +39,10 @@ export default function Pillars() {
     ];
 
     return (
-        <section id="pillars" className="py-24 bg-slate-50 relative overflow-hidden">
+        <section id="pillars" className="py-24 bg-slate-50 dark:bg-slate-900 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center mb-16">
-                    <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                    <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
                         {t('PillarsTitle')}
                     </h2>
                     <div className="w-24 h-1 bg-gold-saudi mx-auto rounded-full" />
@@ -56,7 +56,7 @@ export default function Pillars() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                             viewport={{ once: true }}
-                            className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 hover:shadow-2xl hover:border-emerald-saudi/20 transition-all duration-500 flex flex-col h-full"
+                            className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:border-emerald-saudi/20 transition-all duration-500 flex flex-col h-full"
                         >
                             {/* Image Header */}
                             <div className="relative h-64 overflow-hidden">
@@ -77,7 +77,7 @@ export default function Pillars() {
 
                             {/* Content */}
                             <div className="p-8 flex-1 flex flex-col">
-                                <p className="text-slate-600 leading-relaxed mb-8 flex-1">
+                                <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8 flex-1">
                                     {pillar.description}
                                 </p>
 

@@ -125,7 +125,7 @@ export default function ChatPreview() {
     };
 
     return (
-        <section id="chat" className="py-24 bg-white relative">
+        <section id="chat" className="py-24 bg-white dark:bg-slate-900 relative">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
                 {/* Header */}
@@ -134,7 +134,7 @@ export default function ChatPreview() {
                         <Sparkles className="w-6 h-6 text-gold-saudi" />
                         <span className="text-emerald-saudi font-bold tracking-widest text-sm uppercase">{t('ChatPreSubtitle')}</span>
                     </div>
-                    <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900">
+                    <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
                         {t('ChatPreTitle')}
                     </h2>
                 </div>
@@ -145,7 +145,7 @@ export default function ChatPreview() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="relative bg-white rounded-[2rem] shadow-[0_32px_64px_rgba(0,108,53,0.08)] border border-slate-100 overflow-hidden"
+                    className="relative bg-white dark:bg-slate-800 rounded-[2rem] shadow-[0_32px_64px_rgba(0,108,53,0.08)] border border-slate-100 dark:border-slate-700 overflow-hidden"
                 >
                     {/* Authentication Lock Overlay */}
                     {!session && (
@@ -174,7 +174,7 @@ export default function ChatPreview() {
                     )}
 
                     {/* Chat Body */}
-                    <div className={`p-8 md:p-12 min-h-[500px] max-h-[600px] overflow-y-auto flex flex-col bg-gradient-to-b from-slate-50/50 to-white ${!session ? 'blur-sm' : ''}`}>
+                    <div className={`p-8 md:p-12 min-h-[500px] max-h-[600px] overflow-y-auto flex flex-col bg-gradient-to-b from-slate-50/50 dark:from-slate-800/50 to-white dark:to-slate-800 ${!session ? 'blur-sm' : ''}`}>
 
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex w-full mb-8 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -187,7 +187,7 @@ export default function ChatPreview() {
                                 <div className={`max-w-xl px-8 py-6 rounded-2xl text-lg leading-relaxed shadow-sm
                             ${msg.role === 'user'
                                         ? 'bg-emerald-saudi text-white rounded-tr-sm shadow-emerald-saudi/10 rtl:rounded-tr-2xl rtl:rounded-tl-sm'
-                                        : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-sm rtl:rounded-tl-2xl rtl:rounded-tr-sm'
+                                        : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-tl-sm rtl:rounded-tl-2xl rtl:rounded-tr-sm'
                                     }`}>
                                     {msg.content}
                                 </div>
@@ -209,8 +209,8 @@ export default function ChatPreview() {
                     </div>
 
                     {/* Input Area */}
-                    <div className={`border-t border-slate-100 p-6 md:p-8 bg-white ${!session ? 'blur-sm pointer-events-none' : ''}`}>
-                        <form onSubmit={handleSubmit} className="relative flex items-center bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-emerald-saudi/20">
+                    <div className={`border-t border-slate-100 dark:border-slate-700 p-6 md:p-8 bg-white dark:bg-slate-800 ${!session ? 'blur-sm pointer-events-none' : ''}`}>
+                        <form onSubmit={handleSubmit} className="relative flex items-center bg-white dark:bg-slate-700 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-emerald-saudi/20">
                             <button type="button" className="p-4 text-slate-400 hover:text-emerald-saudi transition-colors">
                                 <Paperclip size={24} />
                             </button>
@@ -220,7 +220,7 @@ export default function ChatPreview() {
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={session ? t('ChatPlaceholder') : t('GuestPlaceholder')}
                                 disabled={isLoading || !session}
-                                className="flex-1 py-4 text-lg bg-transparent border-none focus:ring-0 placeholder:text-slate-400 text-slate-800 disabled:opacity-50"
+                                className="flex-1 py-4 text-lg bg-transparent border-none focus:ring-0 placeholder:text-slate-400 text-slate-800 dark:text-white disabled:opacity-50"
                             />
                             <div className="flex items-center gap-2 pr-2">
                                 <button type="button" className="p-3 text-slate-400 hover:text-emerald-saudi transition-colors">
