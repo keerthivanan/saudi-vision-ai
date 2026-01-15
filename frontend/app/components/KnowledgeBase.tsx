@@ -25,7 +25,7 @@ export default function KnowledgeBase() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categories.map((cat, idx) => (
-                        <div key={idx} onClick={() => alert(`Accessing ${cat.title} archive...`)} className="group p-6 rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xl hover:border-emerald-saudi/20 transition-all duration-300 cursor-pointer flex items-center justify-between">
+                        <div key={idx} onClick={() => window.location.href = `/resources?category=${cat.title.replace(/\s+/g, '')}`} className="group p-6 rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xl hover:border-emerald-saudi/20 transition-all duration-300 cursor-pointer flex items-center justify-between">
                             <div className="flex items-center gap-5">
                                 <div className="w-14 h-14 rounded-full bg-emerald-saudi/5 flex items-center justify-center text-emerald-saudi group-hover:bg-emerald-saudi group-hover:text-white transition-colors">
                                     <cat.icon size={24} />
