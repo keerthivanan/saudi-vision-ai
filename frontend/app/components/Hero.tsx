@@ -66,9 +66,9 @@ export default function Hero() {
                         <Image
                             src="/images/vision2030-logo.png"
                             alt="Saudi Vision 2030"
-                            width={280}
-                            height={140}
-                            className="h-24 md:h-32 w-auto brightness-0 invert drop-shadow-2xl"
+                            width={500}
+                            height={300}
+                            className="h-40 md:h-60 w-auto brightness-0 invert drop-shadow-2xl"
                             unoptimized
                         />
                     </div>
