@@ -42,15 +42,13 @@ export default function Hero() {
     };
 
     return (
-        <section className="relative min-h-[800px] flex flex-col items-center justify-center overflow-hidden bg-midnight-blue pt-20">
-            {/* Background Gradients & Patterns */}
-            <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-midnight-blue via-[#0A1628] to-emerald-saudi/40" />
-                {/* Saudi Arabesque pattern overlay */}
-                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] mix-blend-overlay" />
-                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-saudi/20 rounded-full blur-[120px] -mr-64 -mt-64 animate-pulse" />
-                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold-saudi/10 rounded-full blur-[100px] -ml-40 -mb-40" />
-            </div>
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+
+            {/* Background Grid Pattern (Code Wiki style) */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+
+            {/* Ambient Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-emerald-saudi/5 rounded-full blur-[120px] pointer-events-none" />
 
             {/* Content Container */}
             <div className="relative z-10 w-full max-w-5xl mx-auto px-4 text-center">
@@ -80,85 +78,89 @@ export default function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
-                        <Sparkles className="w-4 h-4 text-gold-saudi" />
-                        <span className="text-sm font-medium text-white/90 tracking-wide">{t('HeroTagline')}</span>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-saudi/10 border border-emerald-saudi/20 mb-8 backdrop-blur-md">
+                        <Sparkles className="w-4 h-4 text-emerald-bright" />
+                        <span className="text-sm font-medium text-emerald-bright tracking-wide">{t('HeroTagline')}</span>
                     </div>
 
                     <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
                         {t('HeroTitle1')} <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-200">{t('HeroTitle2')}</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-bright to-emerald-saudi">{t('HeroTitle2')}</span>
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-slate-200/90 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
+                    <p className="text-xl md:text-2xl text-slate-300 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
                         {t('HeroSubtitle')}
                     </p>
                 </motion.div>
 
-                {/* Enhanced RAG Search Interface */}
+                {/* Search Card - Dark Glassmorphism with Emerald Glow */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative max-w-3xl mx-auto"
+                    transition={{ duration: 1 }}
+                    className="max-w-3xl mx-auto mb-12"
                 >
-                    {/* Main Search Card - Dark Glassmorphism */}
-                    <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-visible z-20 transform hover:-translate-y-1 transition-transform duration-300">
-                        <div className="relative flex items-center">
-                            <Search className="absolute left-6 w-6 h-6 text-emerald-400 opacity-70 rtl:right-6 rtl:left-auto" />
+                    <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-800 
+                        focus-within:border-emerald-saudi focus-within:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">
+                        <div className="flex items-center gap-3 bg-slate-800/50 rounded-xl px-4 py-3">
+                            <Search className="w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && query.trim() && (window.location.href = `/chat?q=${encodeURIComponent(query)}`)}
                                 placeholder={t('SearchPlaceholder')}
-                                onKeyDown={(e) => e.key === 'Enter' && (window.location.href = `/chat?q=${encodeURIComponent(query)}`)}
-                                className="w-full text-lg md:text-xl py-6 pl-16 pr-32 rtl:pr-16 rtl:pl-32 bg-transparent border-none focus:ring-0 focus:outline-none text-white placeholder:text-slate-400 font-medium"
+                                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-slate-400 text-base"
                             />
-                            <div className="absolute right-4 rtl:right-auto rtl:left-4 flex items-center gap-3">
-                                <button onClick={startListening} className="p-2.5 rounded-full hover:bg-white/10 text-emerald-400 transition-colors group" title="Voice Search">
-                                    <Mic className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                </button>
-                                <a
-                                    href={`/chat?q=${encodeURIComponent(query)}`}
-                                    className="hidden md:flex items-center gap-2 bg-gradient-to-r from-emerald-saudi to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-emerald-500/30"
-                                >
-                                    {t('Explore')} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
-                                </a>
-                                <a
-                                    href={`/chat?q=${encodeURIComponent(query)}`}
-                                    className="md:hidden p-3.5 bg-emerald-saudi text-white rounded-xl"
-                                >
-                                    <ArrowRight className="w-6 h-6 rtl:rotate-180" />
-                                </a>
-                            </div>
+                            <button
+                                onClick={startListening}
+                                className="p-2 hover:bg-emerald-saudi/10 rounded-lg text-slate-400 hover:text-emerald-bright transition-colors"
+                                title="Voice Search"
+                            >
+                                <Mic className="w-5 h-5" />
+                            </button>
+                            <button
+                                onClick={() => query.trim() && (window.location.href = `/chat?q=${encodeURIComponent(query)}`)}
+                                disabled={!query.trim()}
+                                className="px-5 py-2 bg-emerald-saudi text-white rounded-lg hover:bg-emerald-bright disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium shadow-lg hover:shadow-emerald-saudi/50"
+                            >
+                                {t('Explore')}
+                            </button>
                         </div>
                     </div>
+                </motion.div>
 
-                    {/* Quick Prompt Chips */}
-                    <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-                        <span className="text-sm font-medium text-white/60 mr-2">{t('TryAsking')}</span>
-                        {suggestions.map((suggestion, idx) => (
-                            <button
+                {/* Quick Prompt Suggestions */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.8 }}
+                    className="text-center"
+                >
+                    <p className="text-sm text-slate-400 mb-4 font-medium">{t('TryAsking')}</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        {[t('Suggestion1'), t('Suggestion2'), t('Suggestion3')].map((suggestion, idx) => (
+                            <motion.button
                                 key={idx}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => {
-                                    setQuery(suggestion);
                                     window.location.href = `/chat?q=${encodeURIComponent(suggestion)}`;
                                 }}
-                                className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-emerald-saudi/30 text-emerald-100 text-sm font-medium backdrop-blur-md transition-all hover:scale-105"
+                                className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full text-sm text-slate-300 
+                                    hover:bg-emerald-saudi/10 hover:border-emerald-saudi hover:text-emerald-bright transition-all backdrop-blur-sm"
                             >
                                 {suggestion}
-                            </button>
+                            </motion.button>
                         ))}
                     </div>
                 </motion.div>
-            </div>
-
-            {/* Saudi Futuristic Skyline - KAFD Night View (Premium) */}
+            </div>      {/* Saudi Futuristic Skyline - KAFD Night View (Premium) */}
             <div className="absolute bottom-0 left-0 right-0 h-full w-full z-0 pointer-events-none">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1597214738421-4bef39c279c1?q=80&w=3840&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-midnight-blue via-midnight-blue/90 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-b from-midnight-blue/80 via-transparent to-transparent" />
             </div>
-        </section>
+        </div>
     );
 }

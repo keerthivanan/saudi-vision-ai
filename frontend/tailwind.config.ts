@@ -22,9 +22,13 @@ const config: Config = {
         arabic: ["var(--font-arabic)", "sans-serif"],
       },
       colors: {
-        'emerald-saudi': '#006C35',
+        'emerald-saudi': '#10B981',    // Vibrant emerald (main accent)
+        'emerald-bright': '#34D399',   // Lighter for hovers
+        'emerald-dark': '#059669',     // Darker for borders
         'gold-saudi': '#FFD700',
         'midnight-blue': '#0A1628',
+        'deep-black': '#0A0A0A',       // Almost pure black
+        'slate-dark': '#1E293B',       // Card backgrounds
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -54,6 +58,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        'sidebar-dark': '#1E293B',
       },
       backgroundImage: {
         'hero-dunes': "url('/images/dunes-bg.jpg')", // Placeholder if needed, but we use strict CSS gradients in Hero
