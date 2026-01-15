@@ -34,6 +34,7 @@ export default function Navbar() {
         { name: t('Progress'), href: '#metrics' },
         { name: t('AIAssistant'), href: '/chat' },
         { name: t('Resources'), href: '/resources' },
+        { name: 'Pricing', href: '/pricing' },
     ];
 
 
@@ -185,7 +186,7 @@ export default function Navbar() {
                                 >
                                     {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />} Theme
                                 </button>
-                                <button className="flex items-center gap-2 text-sm font-medium text-emerald-saudi">
+                                <button onClick={toggleLanguage} className="flex items-center gap-2 text-sm font-medium text-emerald-saudi">
                                     <Globe size={16} /> Language
                                 </button>
                             </div>
