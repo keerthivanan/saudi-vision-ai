@@ -33,7 +33,7 @@ export default function PricingPage() {
             const token = (session as any).accessToken || (session as any).user?.accessToken;
 
             // 1. Create Order
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/payment/checkout?plan=${plan}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/api/v1/payment/checkout?plan=${plan}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export default function PricingPage() {
                 order_id: data.order_id,
                 handler: async function (response: any) {
                     // 3. Verify Payment on Backend
-                    const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/payment/verify`, {
+                    const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/api/v1/payment/verify`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans">
             {/* Background Decor - Dynamic Aurora */}
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-emerald-saudi/5 rounded-full blur-[120px] pointer-events-none animate-pulse" />
             <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-gold-saudi/5 rounded-full blur-[100px] pointer-events-none" />
@@ -118,11 +118,11 @@ export default function PricingPage() {
                     <div className="absolute inset-0 rounded-full bg-gold-saudi/20 animate-ping" />
                     <Crown className="w-10 h-10 text-gold-saudi relative z-10" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-6 tracking-tight">
+                <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
                     Power Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-saudi to-emerald-600">Vision</span>
                 </h1>
-                <p className="text-slate-500 max-w-2xl mx-auto text-xl leading-relaxed font-light">
-                    Purchase <span className="font-semibold text-slate-700">Credit Packs</span> on demand. No subscriptions. No hidden fees.
+                <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-xl leading-relaxed font-light">
+                    Purchase <span className="font-semibold text-slate-700 dark:text-slate-200">Credit Packs</span> on demand. No subscriptions. No hidden fees.
                     <br />Pure strategic power, exactly when you need it.
                 </p>
             </motion.div>
@@ -135,13 +135,13 @@ export default function PricingPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.6 }}
                     whileHover={{ y: -10 }}
-                    className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 border border-slate-200 shadow-xl relative overflow-hidden flex flex-col h-[500px] group"
+                    className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-700 shadow-xl relative overflow-hidden flex flex-col h-[500px] group"
                 >
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
 
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2 font-serif">Starter</h3>
+                    <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2 font-serif">Starter</h3>
                     <div className="flex items-baseline gap-1 mb-6">
-                        <span className="text-5xl font-bold text-slate-900">0</span>
+                        <span className="text-5xl font-bold text-slate-900 dark:text-white">0</span>
                         <span className="text-xl text-emerald-saudi font-serif">SAR</span>
                     </div>
                     <p className="text-emerald-saudi font-medium mb-8 text-sm uppercase tracking-wider flex items-center gap-2">
@@ -155,7 +155,7 @@ export default function PricingPage() {
                             'Basic Document Search',
                             'No Expiry on Credits'
                         ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-3 text-slate-600">
+                            <li key={i} className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
                                 <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                                     <Check className="w-3.5 h-3.5 text-slate-500" />
                                 </div>
@@ -164,7 +164,7 @@ export default function PricingPage() {
                         ))}
                     </div>
 
-                    <Link href="/auth/signup" className="block w-full py-4 rounded-2xl bg-slate-100 text-slate-700 font-bold text-center hover:bg-slate-200 transition-all hover:scale-[1.02]">
+                    <Link href="/auth/signup" className="block w-full py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all hover:scale-[1.02]">
                         Claim Free Pack
                     </Link>
                 </motion.div>
@@ -175,16 +175,16 @@ export default function PricingPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
                     whileHover={{ y: -15 }}
-                    className="bg-white rounded-[2.5rem] p-8 border-2 border-emerald-saudi shadow-2xl shadow-emerald-saudi/10 relative overflow-hidden flex flex-col h-[560px] transform scale-105 z-20"
+                    className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border-2 border-emerald-saudi shadow-2xl shadow-emerald-saudi/10 relative overflow-hidden flex flex-col h-[560px] transform scale-105 z-20"
                 >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-saudi to-teal-500" />
                     <div className="absolute top-6 right-6 flex flex-col items-end">
                         <span className="bg-emerald-saudi text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-1">Most Popular</span>
                     </div>
 
-                    <h3 className="text-3xl font-bold text-slate-900 mb-2 font-serif">Standard</h3>
+                    <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 font-serif">Standard</h3>
                     <div className="flex items-baseline gap-1 mb-6">
-                        <span className="text-6xl font-bold text-slate-900 tracking-tighter">50</span>
+                        <span className="text-6xl font-bold text-slate-900 dark:text-white tracking-tighter">50</span>
                         <span className="text-2xl text-emerald-saudi font-serif">SAR</span>
                     </div>
                     <p className="text-emerald-600 font-medium mb-8 text-sm uppercase tracking-wider flex items-center gap-2">
@@ -199,7 +199,7 @@ export default function PricingPage() {
                             'Smart PDF Summary',
                             'Email Support'
                         ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-3 text-slate-700">
+                            <li key={i} className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
                                 <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
                                     <Check className="w-4 h-4 text-emerald-saudi" />
                                 </div>

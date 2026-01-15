@@ -16,7 +16,7 @@ export default function ContactPage() {
         const form = e.target as HTMLFormElement;
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/contact`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/v1/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -43,7 +43,7 @@ export default function ContactPage() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
             <Navbar />
 
             <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -52,10 +52,10 @@ export default function ContactPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
                 >
-                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-serif">
+                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 font-serif">
                         Get in Touch
                     </h1>
-                    <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                    <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                         Connect with the Vision 2030 Intelligence Team for partnerships, data access, or technical support.
                     </p>
                 </motion.div>
@@ -112,28 +112,28 @@ export default function ContactPage() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-white rounded-3xl p-10 shadow-xl border border-slate-100"
+                        className="bg-white dark:bg-slate-900 rounded-3xl p-10 shadow-xl border border-slate-100 dark:border-slate-800"
                     >
                         <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">First Name</label>
-                                    <input required type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all" placeholder="Mohammed" />
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">First Name</label>
+                                    <input required type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Mohammed" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Last Name</label>
-                                    <input required type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all" placeholder="Al-Saud" />
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Last Name</label>
+                                    <input required type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Al-Saud" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                                <input required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all" placeholder="name@company.com" />
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                                <input required type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="name@company.com" />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Message</label>
-                                <textarea required rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all" placeholder="How can we help you achieve your Vision 2030 goals?"></textarea>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message</label>
+                                <textarea required rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-saudi focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="How can we help you achieve your Vision 2030 goals?"></textarea>
                             </div>
 
                             <button disabled={isSubmitting} className="w-full bg-emerald-saudi hover:bg-emerald-800 disabled:bg-emerald-saudi/50 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-emerald-saudi/30 flex items-center justify-center gap-2">

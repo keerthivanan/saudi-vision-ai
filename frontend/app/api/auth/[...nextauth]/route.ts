@@ -30,20 +30,21 @@ const authOptions: any = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     })
   ],
-  secret: "saudi_vision_secret_key_12345",
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
   pages: {
     signIn: '/auth/signin',
-    error: '/auth/signin', // Force errors to show on our custom page
+    error: '/auth/error',
   },
   callbacks: {
     async signIn({ user, account }: { user: LooseUser; account: any }) {
       if (user) {
         try {
           // Sync user to Backend API
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/v1/auth/store-user`, {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+          const response = await fetch(`${backendUrl}/api/v1/auth/store-user`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
