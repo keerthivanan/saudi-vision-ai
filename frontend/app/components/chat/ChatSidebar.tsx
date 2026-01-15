@@ -32,7 +32,9 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
     // Fetch History
     useEffect(() => {
         if (session?.user) {
-            fetch('/api/v1/chat/history')
+            fetch('/api/v1/chat/history', {
+                headers: { 'X-User-Email': session.user.email || '' }
+            })
                 .then(res => {
                     if (!res.ok) throw new Error("Not Authorized");
                     return res.json();

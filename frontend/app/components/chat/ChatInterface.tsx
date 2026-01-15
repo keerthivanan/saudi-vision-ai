@@ -49,7 +49,9 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     // 1. Fetch Credits Logic
     useEffect(() => {
         if (session?.user) {
-            fetch('/api/v1/auth/me')
+            fetch('/api/v1/auth/me', {
+                headers: { 'X-User-Email': session.user.email || '' }
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.credits !== undefined) setCredits(data.credits);
