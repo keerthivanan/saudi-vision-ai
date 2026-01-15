@@ -6,6 +6,7 @@ import { Check, Zap, Crown, Sparkles, Gem } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function PricingPage() {
     const { data: session } = useSession();
@@ -74,10 +75,10 @@ export default function PricingPage() {
                     });
 
                     if (verifyRes.ok) {
-                        alert("Payment Successful! Credits Added. 💎");
+                        toast.success('Payment Successful! Credits Added. 💎');
                         router.refresh();
                     } else {
-                        alert("Payment Verification Failed.");
+                        toast.error('Payment verification failed. Please contact support.');
                     }
                 },
                 prefill: {
@@ -92,13 +93,12 @@ export default function PricingPage() {
 
             const rzp1 = new (window as any).Razorpay(options);
             rzp1.on('payment.failed', function (response: any) {
-                alert("Payment Failed: " + response.error.description);
+                toast.error('Payment Failed: ' + response.error.description);
             });
             rzp1.open();
 
         } catch (error: any) {
-            console.error("Payment Error:", error);
-            alert(`Payment Error: ${error.message}`);
+            toast.error(`Payment Error: ${error.message}`);
         }
     };
 
@@ -114,10 +114,9 @@ export default function PricingPage() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="text-center mb-16 relative z-10"
             >
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-sidebar-dark border-2 border-gold-saudi mb-8 shadow-2xl relative">
-                    <div className="absolute inset-0 rounded-full bg-gold-saudi/20 animate-ping" />
-                    <Crown className="w-10 h-10 text-gold-saudi relative z-10" />
-                </div>
+                <span className="inline-block px-4 py-2 rounded-full bg-emerald-saudi/10 text-emerald-saudi text-sm font-semibold mb-6 uppercase tracking-wider">
+                    Pricing
+                </span>
                 <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
                     Power Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-saudi to-emerald-600">Vision</span>
                 </h1>
