@@ -32,8 +32,15 @@ export default function ProfilePage() {
         }
 
         if (session?.user) {
-            fetch('/api/v1/auth/me')
-                .then(res => res.json())
+            fetch('/api/v1/auth/me', {
+                headers: {
+                    'X-User-Email': session.user.email || ''
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch profile');
+                    return res.json();
+                })
                 .then(data => {
                     if (data.email) {
                         setProfile(data);

@@ -136,7 +136,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         }
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -153,18 +153,43 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             return;
         }
 
-        const toastId = toast.loading(`Analyzing ${file.name}...`);
+        const toastId = toast.loading(`Uploading ${file.name} to cloud...`);
 
-        // Simulate analysis (in production, this would upload to S3 and process via RAG)
-        setTimeout(() => {
-            toast.success(`"${file.name}" analyzed! You can now ask questions about it.`, { id: toastId, duration: 4000 });
-            setMessages(prev => [...prev, { role: 'user', content: `📎 [Attached: ${file.name}] Please analyze this document.` }]);
+        try {
+            // Create FormData for file upload
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Upload to S3 via backend
+            const response = await fetch('/api/v1/documents/upload', {
+                method: 'POST',
+                headers: {
+                    'X-User-Email': session?.user?.email || ''
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Upload failed');
+            }
+
+            const result = await response.json();
+
+            toast.success(`"${file.name}" uploaded to S3 and indexed for RAG!`, { id: toastId, duration: 4000 });
+
+            setMessages(prev => [...prev, { role: 'user', content: `📎 [Uploaded: ${file.name}] Document uploaded and indexed.` }]);
             setMessages(prev => [...prev, {
                 role: 'ai',
-                content: `I've received your document "${file.name}". In the current demo mode, I'm simulating document analysis.\n\n**For full document processing:**\n- Configure AWS S3 in Railway\n- Set up the document ingestion pipeline\n\nFor now, you can ask me general questions about Vision 2030 topics!`
+                content: `✅ Your document "${file.name}" has been:\n\n1. **Stored in AWS S3** (secure cloud storage)\n2. **Indexed in your private RAG** (only you can query it)\n\nYou can now ask me questions about this document! For example:\n- "Summarize the key points"\n- "What are the main findings?"\n- "Extract the data tables"`
             }]);
+
+        } catch (error: any) {
+            console.error('Upload failed:', error);
+            toast.error(error.message || 'Upload failed. Please try again.', { id: toastId });
+        } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
-        }, 2000);
+        }
     };
 
     const handleSubmit = async (e?: React.FormEvent, manualMessage?: string) => {
