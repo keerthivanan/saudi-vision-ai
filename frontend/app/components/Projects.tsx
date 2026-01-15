@@ -14,28 +14,32 @@ export default function Projects() {
             title: t('Project1Title'),
             desc: t('Project1Desc'),
             location: t('Project1Loc'),
-            image: 'https://images.unsplash.com/photo-1487887235947-a955ef187fcc?auto=format&fit=crop&q=80',
+            // NEOM - Futuristic city in desert
+            image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
             officialUrl: 'https://www.neom.com',
         },
         {
             title: t('Project2Title'),
             desc: t('Project2Desc'),
             location: t('Project2Loc'),
-            image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80',
+            // Red Sea Project - Crystal clear waters
+            image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80',
             officialUrl: 'https://www.redseaglobal.com',
         },
         {
             title: t('Project3Title'),
             desc: t('Project3Desc'),
             location: t('Project3Loc'),
-            image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&q=80',
+            // Qiddiya - Entertainment & Sports (Stadium/Arena)
+            image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80',
             officialUrl: 'https://qiddiya.com',
         },
         {
             title: t('Project4Title'),
             desc: t('Project4Desc'),
             location: t('Project4Loc'),
-            image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80',
+            // ROSHN - Modern residential community
+            image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
             officialUrl: 'https://www.roshn.sa',
         }
     ];

@@ -58,6 +58,7 @@ async def store_user(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 from app.api.deps import get_current_user
+
 @router.get("/me", response_model=UserResponse)
 async def read_users_me(
     current_user: User = Depends(get_current_user)
@@ -66,3 +67,76 @@ async def read_users_me(
     Get current user profile (including credits).
     """
     return current_user
+
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    image: Optional[str] = None
+
+
+class SettingsUpdate(BaseModel):
+    theme: Optional[str] = None  # 'light' or 'dark'
+    language: Optional[str] = None  # 'en' or 'ar'
+    notifications: Optional[bool] = None
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_profile(
+    profile_data: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update current user's profile information.
+    """
+    try:
+        if profile_data.name is not None:
+            current_user.name = profile_data.name
+        if profile_data.image is not None:
+            current_user.image = profile_data.image
+        current_user.updated_at = datetime.utcnow()
+        
+        await db.commit()
+        await db.refresh(current_user)
+        return current_user
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Update failed: {str(e)}")
+
+
+@router.patch("/settings", response_model=UserResponse)
+async def update_settings(
+    settings_data: SettingsUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update current user's settings/preferences.
+    """
+    try:
+        # Store settings as JSON in a preferences field or separate columns
+        # For now, we'll just acknowledge the request (settings stored in frontend localStorage)
+        current_user.updated_at = datetime.utcnow()
+        await db.commit()
+        await db.refresh(current_user)
+        return current_user
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Settings update failed: {str(e)}")
+
+
+@router.delete("/me")
+async def delete_account(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Delete current user's account (soft delete or hard delete).
+    """
+    try:
+        # For demo mode, we don't actually delete
+        # In production: await db.delete(current_user)
+        return {"message": "Account deletion is disabled in demo mode", "status": "demo"}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Deletion failed: {str(e)}")

@@ -15,8 +15,8 @@ export default function Pillars() {
             description: t('Pillar1Desc'),
             icon: Users,
             color: 'emerald-saudi',
-            // Reliable: "Group of friends" / Community (High traffic ID)
-            image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80',
+            // Saudi Youth / Community - Saudi Arabia specific
+            image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80',
         },
         {
             id: 'economy',
@@ -24,8 +24,8 @@ export default function Pillars() {
             description: t('Pillar2Desc'),
             icon: TrendingUp,
             color: 'gold-saudi',
-            // Reliable: Business / Skyscraper (High traffic ID)
-            image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80',
+            // Riyadh Skyline / Saudi Business District
+            image: 'https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?auto=format&fit=crop&q=80',
         },
         {
             id: 'nation',
@@ -33,8 +33,8 @@ export default function Pillars() {
             description: t('Pillar3Desc'),
             icon: Building2,
             color: 'midnight-blue',
-            // Reliable: Historical Architecture (High traffic ID) - PROVEN REPLACEMENT
-            image: 'https://images.unsplash.com/photo-1552556755-27a964952044?auto=format&fit=crop&q=80',
+            // Masmak Fortress / Saudi Heritage
+            image: 'https://images.unsplash.com/photo-1578895101408-1a36b834405b?auto=format&fit=crop&q=80',
         },
     ];
 
