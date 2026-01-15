@@ -399,7 +399,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             )}
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 scroll-smooth">
                 {messages.map((msg, idx) => (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -407,19 +407,19 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                         key={idx}
                         className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                        <div className={`flex max-w-[85%] md:max-w-[70%] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <div className={`flex max-w-[90%] md:max-w-[600px] gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
 
                             {/* Avatar */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1
-                                ${msg.role === 'user' ? 'bg-slate-200' : 'bg-sidebar-dark border border-gold-saudi'}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                ${msg.role === 'user' ? 'bg-slate-200' : 'bg-sidebar-dark border border-gold-saudi/30'}`}>
                                 {msg.role === 'user' ? <User className="w-5 h-5 text-slate-500" /> : <span className="font-serif font-bold text-gold-saudi text-[10px]">V</span>}
                             </div>
 
                             {/* Bubble */}
-                            <div className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm
+                            <div className={`px-4 py-3 rounded-2xl text-[15px] leading-relaxed shadow-sm transition-all duration-200
                                 ${msg.role === 'user'
-                                    ? 'bg-primary text-white rounded-tr-sm'
-                                    : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'}`}>
+                                    ? 'bg-primary text-white rounded-tr-sm hover:shadow-md'
+                                    : 'bg-white border border-slate-100 text-slate-800 rounded-tl-sm hover:shadow-md hover:border-slate-200'}`}>
                                 {msg.role === 'ai' ? (
                                     <ReactMarkdown
                                         className="
@@ -461,11 +461,11 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                 {isLoading && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start w-full">
-                        <div className="flex gap-4 max-w-[85%]">
-                            <div className="w-8 h-8 rounded-full bg-sidebar-dark border border-gold-saudi flex items-center justify-center flex-shrink-0 mt-1">
+                        <div className="flex gap-3 max-w-[600px]">
+                            <div className="w-8 h-8 rounded-full bg-sidebar-dark border border-gold-saudi/30 flex items-center justify-center flex-shrink-0">
                                 <Sparkles className="w-4 h-4 text-gold-saudi animate-pulse" />
                             </div>
-                            <div className="bg-white border border-slate-200 px-6 py-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-3">
+                            <div className="bg-white border border-slate-100 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-3 transition-all duration-200">
                                 <div className="flex gap-1">
                                     <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
                                     <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
@@ -482,7 +482,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             {/* Input Area */}
             <div className="p-4 bg-white border-t border-slate-200 z-40">
                 <div className="max-w-4xl mx-auto relative group">
-                    <div className="absolute bottom-0 left-0 right-0 top-0 bg-white rounded-xl shadow-lg border border-slate-200 group-focus-within:ring-2 group-focus-within:ring-emerald-saudi/20 group-focus-within:border-emerald-saudi transition-all" />
+                    <div className="absolute bottom-0 left-0 right-0 top-0 bg-white rounded-xl shadow-md border border-slate-200 group-focus-within:shadow-lg group-focus-within:ring-2 group-focus-within:ring-emerald-saudi/20 group-focus-within:border-emerald-saudi transition-all duration-200" />
 
                     <div className="relative flex items-end p-2 z-10">
                         {/* Hidden File Input */}
@@ -496,7 +496,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-colors mb-0.5"
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-all duration-200 mb-0.5"
                             title="Attach file"
                         >
                             <Paperclip className="w-5 h-5" />
@@ -504,7 +504,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                         <button
                             onClick={startListening}
-                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-colors mb-0.5"
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-all duration-200 mb-0.5"
                             title="Voice Input"
                         >
                             <Mic className="w-5 h-5" />
@@ -529,7 +529,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                             <button
                                 onClick={() => handleSubmit()}
                                 disabled={!input.trim()}
-                                className="p-2 mb-0.5 rounded-lg bg-emerald-saudi text-white shadow-md hover:bg-emerald-700 disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 transition-colors"
+                                className="p-2 mb-0.5 rounded-lg bg-emerald-saudi text-white shadow-md hover:bg-emerald-700 hover:scale-105 disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:hover:scale-100 transition-all duration-200"
                             >
                                 <Send className="w-5 h-5 rtl:rotate-180" />
                             </button>

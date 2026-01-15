@@ -60,7 +60,7 @@ export default function Hero() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}
-                    className="mb-8"
+                    className="mb-12"
                 >
                     <div className="inline-flex items-center justify-center">
                         <Image
@@ -80,17 +80,17 @@ export default function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
                         <Sparkles className="w-4 h-4 text-gold-saudi" />
                         <span className="text-sm font-medium text-white/90 tracking-wide">{t('HeroTagline')}</span>
                     </div>
 
-                    <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-2xl">
+                    <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
                         {t('HeroTitle1')} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-200">{t('HeroTitle2')}</span>
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-slate-200/90 font-medium max-w-3xl mx-auto mb-16 leading-relaxed">
+                    <p className="text-xl md:text-2xl text-slate-200/90 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
                         {t('HeroSubtitle')}
                     </p>
                 </motion.div>
