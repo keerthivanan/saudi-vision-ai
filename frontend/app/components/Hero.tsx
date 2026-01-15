@@ -100,25 +100,25 @@ export default function Hero() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="relative max-w-3xl mx-auto"
                 >
-                    {/* Main Search Card */}
-                    <div className="bg-white rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 backdrop-blur-sm relative overflow-visible z-20 transform hover:-translate-y-1 transition-transform duration-300">
+                    {/* Main Search Card - Dark Glassmorphism */}
+                    <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-visible z-20 transform hover:-translate-y-1 transition-transform duration-300">
                         <div className="relative flex items-center">
-                            <Search className="absolute left-6 w-6 h-6 text-emerald-saudi opacity-50 rtl:right-6 rtl:left-auto" />
+                            <Search className="absolute left-6 w-6 h-6 text-emerald-400 opacity-70 rtl:right-6 rtl:left-auto" />
                             <input
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                                 placeholder={t('SearchPlaceholder')}
                                 onKeyDown={(e) => e.key === 'Enter' && (window.location.href = `/chat?q=${encodeURIComponent(query)}`)}
-                                className="w-full text-lg md:text-xl py-6 pl-16 pr-32 rtl:pr-16 rtl:pl-32 bg-transparent border-none focus:ring-0 text-slate-800 placeholder:text-slate-400 font-medium"
+                                className="w-full text-lg md:text-xl py-6 pl-16 pr-32 rtl:pr-16 rtl:pl-32 bg-transparent border-none focus:ring-0 focus:outline-none text-white placeholder:text-slate-400 font-medium"
                             />
                             <div className="absolute right-4 rtl:right-auto rtl:left-4 flex items-center gap-3">
-                                <button onClick={startListening} className="p-2.5 rounded-full hover:bg-slate-100 text-emerald-saudi transition-colors group" title="Voice Search">
+                                <button onClick={startListening} className="p-2.5 rounded-full hover:bg-white/10 text-emerald-400 transition-colors group" title="Voice Search">
                                     <Mic className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 </button>
                                 <a
                                     href={`/chat?q=${encodeURIComponent(query)}`}
-                                    className="hidden md:flex items-center gap-2 bg-gradient-to-r from-emerald-saudi to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-emerald-saudi/30"
+                                    className="hidden md:flex items-center gap-2 bg-gradient-to-r from-emerald-saudi to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-emerald-500/30"
                                 >
                                     {t('Explore')} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                                 </a>
@@ -151,9 +151,12 @@ export default function Hero() {
                 </motion.div>
             </div>
 
-            {/* Saudi Desert Dunes Silhouette - Using Riyadh Skyline */}
-            <div className="absolute bottom-0 left-0 right-0 h-48 sm:h-80 z-10 pointer-events-none opacity-30 bg-[url('https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?auto=format&fit=crop&q=80')] bg-cover bg-bottom mix-blend-luminosity brightness-0 invert translate-y-16" />
-            <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-midnight-blue to-transparent z-10" />
+            {/* Saudi Futuristic Skyline - KAFD Night View (Premium) */}
+            <div className="absolute bottom-0 left-0 right-0 h-full w-full z-0 pointer-events-none">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1597214738421-4bef39c279c1?q=80&w=3840&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight-blue via-midnight-blue/90 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-b from-midnight-blue/80 via-transparent to-transparent" />
+            </div>
         </section>
     );
 }
