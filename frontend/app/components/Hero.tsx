@@ -55,7 +55,7 @@ export default function Hero() {
             {/* Content Container */}
             <div className="relative z-10 w-full max-w-5xl mx-auto px-4 text-center">
 
-                {/* Vision 2030 Logo */}
+                {/* Vision 2030 Logo (Official High-Res) */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -64,11 +64,11 @@ export default function Hero() {
                 >
                     <div className="inline-flex items-center justify-center">
                         <Image
-                            src="/images/vision2030-logo.png"
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Saudi_Vision_2030_logo.svg/800px-Saudi_Vision_2030_logo.svg.png"
                             alt="Saudi Vision 2030"
-                            width={500}
-                            height={300}
-                            className="h-40 md:h-60 w-auto brightness-0 invert drop-shadow-2xl"
+                            width={600}
+                            height={400}
+                            className="h-32 md:h-48 w-auto brightness-0 invert drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
                             unoptimized
                         />
                     </div>
