@@ -14,32 +14,32 @@ export default function Projects() {
             title: t('Project1Title'),
             desc: t('Project1Desc'),
             location: t('Project1Loc'),
-            // NEOM - Futuristic city in desert
-            image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80',
+            // NEOM - Futuristic, Mirror, Desert Architecture (Representative)
+            image: 'https://images.unsplash.com/photo-1549608276-5786777e6587?q=80&w=2000&auto=format&fit=crop',
             officialUrl: 'https://www.neom.com',
         },
         {
             title: t('Project2Title'),
             desc: t('Project2Desc'),
             location: t('Project2Loc'),
-            // Red Sea Project - Crystal clear waters
-            image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80',
+            // Red Sea - Turquoise Waters, Luxury, Ummahat Islands vibe
+            image: 'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=2000&auto=format&fit=crop',
             officialUrl: 'https://www.redseaglobal.com',
         },
         {
             title: t('Project3Title'),
             desc: t('Project3Desc'),
             location: t('Project3Loc'),
-            // Qiddiya - Entertainment & Sports (Stadium/Arena)
-            image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80',
+            // Qiddiya - Tuwaiq Mountains, Adventure, Desert Landscape
+            image: 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=2000&auto=format&fit=crop',
             officialUrl: 'https://qiddiya.com',
         },
         {
             title: t('Project4Title'),
             desc: t('Project4Desc'),
             location: t('Project4Loc'),
-            // ROSHN - Modern residential community
-            image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
+            // ROSHN - Modern Saudi Community Architecture
+            image: 'https://images.unsplash.com/photo-1600596542815-e32870110233?q=80&w=2000&auto=format&fit=crop',
             officialUrl: 'https://www.roshn.sa',
         }
     ];

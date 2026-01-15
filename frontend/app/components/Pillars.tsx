@@ -15,8 +15,8 @@ export default function Pillars() {
             description: t('Pillar1Desc'),
             icon: Users,
             color: 'emerald-saudi',
-            // Saudi Youth / Community - Saudi Arabia specific
-            image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80',
+            // Vibrant Society: Saudi Culture / Diriyah / Traditional-Modern Blend
+            image: 'https://images.unsplash.com/photo-1559586616-361e18714958?q=80&w=2000&auto=format&fit=crop',
         },
         {
             id: 'economy',
@@ -24,8 +24,8 @@ export default function Pillars() {
             description: t('Pillar2Desc'),
             icon: TrendingUp,
             color: 'gold-saudi',
-            // Riyadh Skyline / Saudi Business District
-            image: 'https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?auto=format&fit=crop&q=80',
+            // Thriving Economy: Riyadh KAFD Financial District
+            image: 'https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?q=80&w=2000&auto=format&fit=crop',
         },
         {
             id: 'nation',
@@ -33,8 +33,8 @@ export default function Pillars() {
             description: t('Pillar3Desc'),
             icon: Building2,
             color: 'midnight-blue',
-            // Masmak Fortress / Saudi Heritage
-            image: 'https://images.unsplash.com/photo-1578895101408-1a36b834405b?auto=format&fit=crop&q=80',
+            // Ambitious Nation: Saudi Flag / Government / Progress
+            image: 'https://images.unsplash.com/photo-1565552629477-ff1459a0f449?q=80&w=2000&auto=format&fit=crop',
         },
     ];
 
