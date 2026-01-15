@@ -5,6 +5,7 @@ import { Search, Mic, ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function Hero() {
     const { t, language } = useLanguage();
@@ -54,21 +55,22 @@ export default function Hero() {
             {/* Content Container */}
             <div className="relative z-10 w-full max-w-5xl mx-auto px-4 text-center">
 
-                {/* Vision 2030 Logo - Text Based */}
+                {/* Vision 2030 Logo */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}
                     className="mb-8"
                 >
-                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-saudi to-emerald-700 flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">V</span>
-                        </div>
-                        <div className="text-left">
-                            <div className="text-white font-bold text-xl tracking-tight">VISION 2030</div>
-                            <div className="text-emerald-400 text-xs font-medium tracking-widest">KINGDOM OF SAUDI ARABIA</div>
-                        </div>
+                    <div className="inline-flex items-center justify-center">
+                        <Image
+                            src="/images/vision2030-logo.png"
+                            alt="Saudi Vision 2030"
+                            width={280}
+                            height={140}
+                            className="h-24 md:h-32 w-auto brightness-0 invert drop-shadow-2xl"
+                            unoptimized
+                        />
                     </div>
                 </motion.div>
 
