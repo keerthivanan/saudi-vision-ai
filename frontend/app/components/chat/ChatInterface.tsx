@@ -102,8 +102,8 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     // Handlers
     const startListening = () => {
         if ('webkitSpeechRecognition' in window) {
-            // @ts-ignore
-            const recognition = new window.webkitSpeechRecognition();
+            const SpeechRecognition = (window as any).webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
             recognition.continuous = false;
             recognition.lang = language === 'ar' ? 'ar-SA' : 'en-US';
             toast.loading(language === 'ar' ? 'جاري الاستماع...' : 'Listening...', { duration: 1000 });
@@ -268,10 +268,16 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-950 to-transparent z-20 pointer-events-none" />
 
-            {/* Credit Badge */}
-            {session?.user && (
-                <div className="absolute top-6 right-6 z-50">
-                    {/* Simplified Credit display if needed */}
+            {/* Credit Badge Overlay */}
+            {session?.user && credits !== null && (
+                <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50 flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+                    <div className="bg-slate-900/40 backdrop-blur-md border border-emerald-saudi/20 px-4 py-2 rounded-full shadow-lg shadow-emerald-saudi/5 flex items-center gap-2">
+                        <span className="text-emerald-saudi animate-pulse">⚡</span>
+                        <span className={`text-sm font-bold font-mono ${credits < 10 ? 'text-red-400' : 'text-emerald-100'}`}>
+                            {credits.toFixed(1)}
+                        </span>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-medium">Credits</span>
+                    </div>
                 </div>
             )}
 
