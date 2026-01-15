@@ -100,18 +100,6 @@ class ChatService:
         """
         Enterprise-grade message processing with intelligent routing.
         """
-        # ... (redacted pii, etc)
-
-        # ... (routing and rag logic same as before) ...
-        # I need to ensure I don't delete the logic, so I will copy the function internal parts carefully if I were replacing the whole thing.
-        # But wait, looking at 'replace_file_content', I should target specific blocks. 
-
-        # Let's replace the signature and the call.
-        pass
-
-        """
-        Enterprise-grade message processing with intelligent routing.
-        """
         # 1. PII Redaction
         safe_message = redact_pii(message)
         

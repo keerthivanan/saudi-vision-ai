@@ -88,7 +88,7 @@ export default function ResourcesPage() {
     });
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-900 dark:text-slate-100">
             <Navbar />
 
             <main className="flex-1 pt-24 pb-20">
@@ -158,25 +158,25 @@ export default function ResourcesPage() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     key={doc.id}
-                                    className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:border-emerald-saudi/30 transition-all duration-300 group flex flex-col"
+                                    className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:border-emerald-saudi/30 transition-all duration-300 group flex flex-col"
                                 >
                                     <div className="flex items-start justify-between mb-4">
-                                        <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-emerald-saudi/10 transition-colors">
+                                        <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-emerald-saudi/10 transition-colors">
                                             <FileText className="w-6 h-6 text-slate-500 group-hover:text-emerald-saudi transition-colors" />
                                         </div>
-                                        <span className="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase tracking-wider">
+                                        <span className="text-xs font-bold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                             {doc.type}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 leading-tight group-hover:text-emerald-saudi transition-colors">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 leading-tight group-hover:text-emerald-saudi transition-colors">
                                         {doc.title}
                                     </h3>
-                                    <p className="text-slate-500 text-sm mb-6 flex-1 bg-white">
+                                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 flex-1">
                                         {doc.desc}
                                     </p>
 
-                                    <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
+                                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
                                         <div className="text-xs text-slate-400 font-medium space-y-1">
                                             <p>{doc.size}</p>
                                             <p>{doc.date}</p>
@@ -185,7 +185,7 @@ export default function ResourcesPage() {
                                             <a href="/chat" className="p-2 rounded-lg hover:bg-emerald-saudi/10 text-emerald-saudi transition-colors" title={t('AnalyzeWithAI')}>
                                                 <Sparkles className="w-5 h-5" />
                                             </a>
-                                            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-emerald-saudi transition-colors shadow-lg shadow-black/5">
+                                            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold hover:bg-emerald-saudi transition-colors shadow-lg shadow-black/5">
                                                 <Download className="w-3.5 h-3.5" />
                                                 <span>{t('Download')}</span>
                                             </button>
