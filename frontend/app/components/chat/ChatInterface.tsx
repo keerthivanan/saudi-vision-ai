@@ -379,19 +379,22 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     };
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-slate-50 relative overflow-hidden">
+        <div className="flex-1 flex flex-col h-screen bg-slate-950 relative overflow-hidden">
+
+            {/* Background Grid Pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
             {/* Credit Badge Overlay */}
             {session?.user && credits !== null && (
-                <div className="absolute top-20 right-8 z-50 bg-white/90 backdrop-blur-md border border-gold-saudi/30 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                <div className="absolute top-20 right-8 z-50 bg-slate-900/90 backdrop-blur-md border border-emerald-saudi/30 px-4 py-2 rounded-full shadow-lg shadow-emerald-saudi/10 flex items-center gap-2 animate-in fade-in zoom-in duration-300">
                     <span className="text-[16px]">⚡</span>
-                    <span className={`text-sm font-bold ${credits < 10 ? 'text-red-500 font-extrabold' : 'text-slate-700'}`}>
+                    <span className={`text-sm font-bold ${credits < 10 ? 'text-red-400 font-extrabold' : 'text-emerald-bright'}`}>
                         {credits.toFixed(2)}
                     </span>
                     <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Credits</span>
                     <button
                         onClick={() => window.location.href = '/pricing'}
-                        className="ml-2 bg-gradient-to-r from-gold-saudi to-amber-500 text-white text-[10px] py-1 px-3 rounded-full hover:shadow-md transition-all font-bold"
+                        className="ml-2 bg-gradient-to-r from-emerald-saudi to-emerald-dark text-white text-[10px] py-1 px-3 rounded-full hover:shadow-md hover:shadow-emerald-saudi/30 transition-all font-bold"
                     >
                         ADD +
                     </button>
@@ -399,7 +402,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             )}
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 scroll-smooth">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 scroll-smooth relative z-10">
                 {messages.map((msg, idx) => (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -411,27 +414,28 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                             {/* Avatar */}
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-                                ${msg.role === 'user' ? 'bg-slate-200' : 'bg-sidebar-dark border border-gold-saudi/30'}`}>
-                                {msg.role === 'user' ? <User className="w-5 h-5 text-slate-500" /> : <span className="font-serif font-bold text-gold-saudi text-[10px]">V</span>}
+                                ${msg.role === 'user' ? 'bg-slate-800' : 'bg-slate-900 border border-emerald-saudi/30'}`}>
+                                {msg.role === 'user' ? <User className="w-5 h-5 text-slate-400" /> : <span className="font-serif font-bold text-emerald-saudi text-[10px]">V</span>}
                             </div>
 
                             {/* Bubble */}
                             <div className={`px-4 py-3 rounded-2xl text-[15px] leading-relaxed shadow-sm transition-all duration-200
                                 ${msg.role === 'user'
-                                    ? 'bg-primary text-white rounded-tr-sm hover:shadow-md'
-                                    : 'bg-white border border-slate-100 text-slate-800 rounded-tl-sm hover:shadow-md hover:border-slate-200'}`}>
+                                    ? 'bg-emerald-saudi text-white rounded-tr-sm hover:shadow-emerald-saudi/30 hover:shadow-md'
+                                    : 'bg-slate-900/90 border border-slate-800 text-slate-200 rounded-tl-sm hover:shadow-md hover:border-emerald-saudi/20'}`}>
                                 {msg.role === 'ai' ? (
                                     <ReactMarkdown
                                         className="
-                                            prose prose-sm max-w-none 
-                                            prose-p:text-slate-700 prose-p:leading-relaxed prose-p:my-2
-                                            prose-headings:text-emerald-saudi prose-headings:font-serif prose-headings:my-3 prose-headings:font-bold
-                                            prose-strong:text-slate-900 prose-strong:font-bold
-                                            prose-ul:my-2 prose-li:my-1 prose-li:text-slate-700
-                                            prose-li:marker:text-gold-saudi prose-li:marker:font-bold
-                                            prose-a:text-emerald-saudi prose-a:underline prose-a:font-medium hover:prose-a:text-emerald-600
+                                            prose prose-sm max-w-none prose-invert
+                                            prose-p:text-slate-300 prose-p:leading-relaxed prose-p:my-2
+                                            prose-headings:text-emerald-bright prose-headings:font-serif prose-headings:my-3 prose-headings:font-bold
+                                            prose-strong:text-white prose-strong:font-bold
+                                            prose-ul:my-2 prose-li:my-1 prose-li:text-slate-300
+                                            prose-li:marker:text-emerald-saudi prose-li:marker:font-bold
+                                            prose-a:text-emerald-bright prose-a:underline prose-a:font-medium hover:prose-a:text-emerald-saudi
                                             prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-4
-                                            marker:text-gold-saudi
+                                            prose-code:text-emerald-bright prose-code:bg-slate-800/50 prose-code:px-1 prose-code:rounded
+                                            marker:text-emerald-saudi
                                         "
                                     >
                                         {msg.content}
@@ -446,7 +450,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                 <div className="flex flex-col gap-2">
                                     <button
                                         onClick={() => speakText(msg.content)}
-                                        className="self-start p-1.5 rounded-full text-slate-400 hover:text-emerald-saudi hover:bg-emerald-50 transition-colors opacity-0 group-hover:opacity-100"
+                                        className="self-start p-1.5 rounded-full text-slate-500 hover:text-emerald-saudi hover:bg-emerald-saudi/10 transition-colors opacity-0 group-hover:opacity-100"
                                         title="Read Aloud"
                                     >
                                         <Volume2 className="w-4 h-4" />
@@ -462,16 +466,16 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 {isLoading && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start w-full">
                         <div className="flex gap-3 max-w-[600px]">
-                            <div className="w-8 h-8 rounded-full bg-sidebar-dark border border-gold-saudi/30 flex items-center justify-center flex-shrink-0">
-                                <Sparkles className="w-4 h-4 text-gold-saudi animate-pulse" />
+                            <div className="w-8 h-8 rounded-full bg-slate-900 border border-emerald-saudi/30 flex items-center justify-center flex-shrink-0">
+                                <Sparkles className="w-4 h-4 text-emerald-saudi animate-pulse" />
                             </div>
-                            <div className="bg-white border border-slate-100 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-3 transition-all duration-200">
+                            <div className="bg-slate-900/90 border border-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-3 transition-all duration-200">
                                 <div className="flex gap-1">
                                     <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
                                     <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                                     <div className="w-2 h-2 bg-emerald-saudi rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                                 </div>
-                                <span className="text-sm text-slate-500 font-medium animate-pulse">{thinkingText}</span>
+                                <span className="text-sm text-slate-400 font-medium animate-pulse">{thinkingText}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -480,9 +484,11 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-white border-t border-slate-200 z-40">
+            <div className="p-4 bg-slate-900/50 backdrop-blur-md border-t border-slate-800 z-40 relative">
                 <div className="max-w-4xl mx-auto relative group">
-                    <div className="absolute bottom-0 left-0 right-0 top-0 bg-white rounded-xl shadow-md border border-slate-200 group-focus-within:shadow-lg group-focus-within:ring-2 group-focus-within:ring-emerald-saudi/20 group-focus-within:border-emerald-saudi transition-all duration-200" />
+                    <div className="absolute bottom-0 left-0 right-0 top-0 bg-slate-900/90 rounded-xl shadow-md border border-slate-800 
+                        group-focus-within:shadow-lg group-focus-within:ring-2 group-focus-within:ring-emerald-saudi/50 
+                        group-focus-within:border-emerald-saudi group-focus-within:shadow-emerald-saudi/20 transition-all duration-200" />
 
                     <div className="relative flex items-end p-2 z-10">
                         {/* Hidden File Input */}
@@ -496,7 +502,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-all duration-200 mb-0.5"
+                            className="p-2 hover:bg-emerald-saudi/10 rounded-lg text-slate-400 hover:text-emerald-bright transition-all duration-200 mb-0.5"
                             title="Attach file"
                         >
                             <Paperclip className="w-5 h-5" />
@@ -504,7 +510,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                         <button
                             onClick={startListening}
-                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-saudi transition-all duration-200 mb-0.5"
+                            className="p-2 hover:bg-emerald-saudi/10 rounded-lg text-slate-400 hover:text-emerald-bright transition-all duration-200 mb-0.5"
                             title="Voice Input"
                         >
                             <Mic className="w-5 h-5" />
@@ -516,27 +522,27 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder={t('MessagePlaceholder')}
-                            className="flex-1 max-h-[200px] min-h-[44px] py-3 px-3 bg-transparent border-none focus:ring-0 resize-none text-slate-800 placeholder:text-slate-400 leading-relaxed scrollbar-hide"
+                            className="flex-1 max-h-[200px] min-h-[44px] py-3 px-3 bg-transparent border-none focus:ring-0 resize-none text-slate-200 placeholder:text-slate-500 leading-relaxed scrollbar-hide"
                             rows={1}
                             disabled={isLoading}
                         />
 
                         {isLoading ? (
-                            <button className="p-2 mb-0.5 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed">
+                            <button className="p-2 mb-0.5 rounded-lg bg-slate-800 text-slate-500 cursor-not-allowed">
                                 <StopCircle className="w-5 h-5" />
                             </button>
                         ) : (
                             <button
                                 onClick={() => handleSubmit()}
                                 disabled={!input.trim()}
-                                className="p-2 mb-0.5 rounded-lg bg-emerald-saudi text-white shadow-md hover:bg-emerald-700 hover:scale-105 disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:hover:scale-100 transition-all duration-200"
+                                className="p-2 mb-0.5 rounded-lg bg-emerald-saudi text-white shadow-md shadow-emerald-saudi/30 hover:bg-emerald-bright hover:scale-105 disabled:opacity-50 disabled:bg-slate-800 disabled:text-slate-500 disabled:hover:scale-100 transition-all duration-200"
                             >
                                 <Send className="w-5 h-5 rtl:rotate-180" />
                             </button>
                         )}
                     </div>
                 </div>
-                <p className="text-center text-[10px] text-slate-400 mt-2">
+                <p className="text-center text-[10px] text-slate-500 mt-2">
                     {t('AIWarning')}
                 </p>
             </div>
