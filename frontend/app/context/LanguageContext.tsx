@@ -287,9 +287,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = language;
-    document.documentElement.dir = direction;
+    // document.documentElement.dir = direction; // DISABLED: Prevent layout flipping as per user request
     localStorage.setItem('language', language);
-  }, [language, direction]);
+  }, [language]);
 
   const toggleLanguage = () => {
     setLanguage((prev) => {
