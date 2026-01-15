@@ -64,7 +64,7 @@ export default function Hero() {
                 >
                     <div className="inline-flex items-center justify-center">
                         <Image
-                            src="https://www.vision2030.gov.sa/media/rc3lsyqn/vision-2030-logo.png"
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Saudi_Vision_2030_logo.svg/512px-Saudi_Vision_2030_logo.svg.png"
                             alt="Saudi Vision 2030"
                             width={200}
                             height={80}
