@@ -88,11 +88,16 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
                     const lastWeek = new Date(today);
                     lastWeek.setDate(lastWeek.getDate() - 7);
 
-                    const groups = {
-                        [t('Today') || 'Today']: [] as any[],
-                        [t('Yesterday') || 'Yesterday']: [] as any[],
-                        [t('Previous7Days') || 'Previous 7 Days']: [] as any[],
-                        [t('Older') || 'Older']: [] as any[]
+                    const labelToday = t('Today') || 'Today';
+                    const labelYesterday = t('Yesterday') || 'Yesterday';
+                    const labelWeek = t('Previous7Days') || 'Previous 7 Days';
+                    const labelOlder = t('Older') || 'Older';
+
+                    const groups: Record<string, any[]> = {
+                        [labelToday]: [],
+                        [labelYesterday]: [],
+                        [labelWeek]: [],
+                        [labelOlder]: []
                     };
 
                     chats.forEach(chat => {
@@ -101,13 +106,13 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
                         const chatDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
                         if (chatDate.getTime() === today.getTime()) {
-                            groups[t('Today') || 'Today'].push(chat);
+                            groups[labelToday].push(chat);
                         } else if (chatDate.getTime() === yesterday.getTime()) {
-                            groups[t('Yesterday') || 'Yesterday'].push(chat);
+                            groups[labelYesterday].push(chat);
                         } else if (chatDate > lastWeek) {
-                            groups[t('Previous7Days') || 'Previous 7 Days'].push(chat);
+                            groups[labelWeek].push(chat);
                         } else {
-                            groups[t('Older') || 'Older'].push(chat);
+                            groups[labelOlder].push(chat);
                         }
                     });
 
