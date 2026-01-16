@@ -22,24 +22,24 @@ export default function Projects() {
             title: t('Project2Title'),
             desc: t('Project2Desc'),
             location: t('Project2Loc'),
-            // Red Sea - Turquoise Waters, Luxury, Ummahat Islands vibe
-            image: 'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=2000&auto=format&fit=crop',
+            // Red Sea - Official Resort Image (User Provided)
+            image: '/images/redsea-resort.jpg',
             officialUrl: 'https://www.redseaglobal.com',
         },
         {
             title: t('Project3Title'),
             desc: t('Project3Desc'),
             location: t('Project3Loc'),
-            // Qiddiya - Tuwaiq Mountains, Adventure, Desert Landscape
-            image: 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=2000&auto=format&fit=crop',
+            // Qiddiya - Official City Render (User Provided)
+            image: '/images/qiddiya-city.jpg',
             officialUrl: 'https://qiddiya.com',
         },
         {
             title: t('Project4Title'),
             desc: t('Project4Desc'),
             location: t('Project4Loc'),
-            // ROSHN - Modern Saudi Community Architecture
-            image: 'https://images.unsplash.com/photo-1600596542815-e32870110233?q=80&w=2000&auto=format&fit=crop',
+            // ROSHN - Saudi Modern Community Housing
+            image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop',
             officialUrl: 'https://www.roshn.sa',
         }
     ];
