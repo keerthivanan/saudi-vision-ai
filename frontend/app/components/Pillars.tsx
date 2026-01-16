@@ -33,8 +33,8 @@ export default function Pillars() {
             description: t('Pillar3Desc'),
             icon: Building2,
             color: 'midnight-blue',
-            // Ambitious Nation: Saudi Flag / Government / Progress
-            image: 'https://images.unsplash.com/photo-1565552629477-ff1459a0f449?q=80&w=2000&auto=format&fit=crop',
+            // Ambitious Nation: Saudi Government / Progress / Modern Architecture
+            image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?q=80&w=2000&auto=format&fit=crop',
         },
     ];
 
@@ -86,7 +86,7 @@ export default function Pillars() {
                                         ? 'border-emerald-saudi text-emerald-saudi hover:bg-emerald-saudi hover:text-white'
                                         : pillar.color === 'gold-saudi'
                                             ? 'border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white'
-                                            : 'border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white'
+                                            : 'border-slate-400 text-slate-300 dark:text-slate-200 hover:bg-slate-600 hover:text-white dark:border-slate-500'
                                     }`}>
                                     {t('LearnMore')} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                                 </button>

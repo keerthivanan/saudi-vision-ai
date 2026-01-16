@@ -74,7 +74,7 @@ export default function Navbar() {
                             <div className="relative w-12 h-12 flex items-center justify-center">
                                 {/* Official High-Res Logo */}
                                 <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Saudi_Vision_2030_logo.svg/800px-Saudi_Vision_2030_logo.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Saudi_Vision_2030_logo.svg/1200px-Saudi_Vision_2030_logo.svg.png"
                                     alt="Saudi Vision 2030"
                                     className="w-full h-full object-contain dark:brightness-0 dark:invert transition-all duration-300 group-hover:scale-105"
                                 />

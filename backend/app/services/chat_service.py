@@ -4,7 +4,7 @@ import logging
 from uuid import UUID
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, update
 from openai import AsyncOpenAI
 from app.core.config import settings
 from app.services.rag_service import rag_service
