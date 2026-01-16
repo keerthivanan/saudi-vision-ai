@@ -289,20 +289,20 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     );
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-slate-950 relative overflow-hidden font-sans">
-            {/* Background Effects */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-950 to-transparent z-20 pointer-events-none" />
+        <div className="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden font-sans transition-colors duration-300">
+            {/* Background Effects (Subtle grid for light, dark grid for dark) */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-50 dark:from-slate-950 to-transparent z-20 pointer-events-none" />
 
             {/* Credit Badge Overlay - Purple Neon "Static" Style */}
             {session?.user && credits !== null && (
                 <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50 flex items-center gap-3">
-                    <div className="bg-slate-900/80 backdrop-blur-xl border border-purple-500/50 px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center gap-3 transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]">
-                        <span className="text-purple-400 drop-shadow-[0_0_5px_rgba(168,85,247,0.8)]">⚡</span>
-                        <span className={`text-base font-bold font-mono ${credits < 10 ? 'text-red-400' : 'text-purple-100'} drop-shadow-md`}>
+                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-purple-500/50 px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.2)] dark:shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center gap-3 transition-all">
+                        <span className="text-purple-600 dark:text-purple-400 drop-shadow-sm">⚡</span>
+                        <span className={`text-base font-bold font-mono ${credits < 10 ? 'text-red-500 dark:text-red-400' : 'text-purple-900 dark:text-purple-100'}`}>
                             {credits.toFixed(1)}
                         </span>
-                        <span className="text-[10px] text-purple-300/80 uppercase tracking-widest font-bold">Credits</span>
+                        <span className="text-[10px] text-purple-700/80 dark:text-purple-300/80 uppercase tracking-widest font-bold">Credits</span>
                     </div>
                 </div>
             )}
@@ -311,7 +311,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             {!isWelcomeState && (
                 <button
                     onClick={handleNewChat}
-                    className="absolute top-6 left-6 z-50 p-2 rounded-xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-emerald-saudi/20 border border-slate-700 hover:border-emerald-saudi/50 transition-all"
+                    className="absolute top-6 left-6 z-50 p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-white hover:bg-emerald-50 dark:hover:bg-emerald-saudi/20 border border-slate-200 dark:border-slate-700 transition-all"
                     title={t('NewChat')}
                 >
                     <Sparkles className="w-5 h-5" />
@@ -339,16 +339,18 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                 <div className={`flex max-w-[85%] md:max-w-[700px] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                                     {/* Avatar */}
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1
-                                        ${msg.role === 'user' ? 'bg-slate-800' : 'bg-slate-900 border border-emerald-saudi/30 shadow-lg shadow-emerald-saudi/10'}`}>
-                                        {msg.role === 'user' ? <User className="w-4 h-4 text-slate-400" /> : <Bot className="w-4 h-4 text-emerald-saudi" />}
+                                        ${msg.role === 'user'
+                                            ? 'bg-slate-200 dark:bg-slate-800'
+                                            : 'bg-white dark:bg-slate-900 border border-emerald-500/20 shadow-md'}`}>
+                                        {msg.role === 'user' ? <User className="w-4 h-4 text-slate-500 dark:text-slate-400" /> : <Bot className="w-4 h-4 text-emerald-600 dark:text-emerald-saudi" />}
                                     </div>
 
                                     {/* Bubble */}
                                     <div className={`px-6 py-4 rounded-3xl text-[16px] leading-relaxed shadow-sm transition-all
                                         ${msg.role === 'user'
-                                            ? 'bg-emerald-saudi text-white rounded-tr-md shadow-emerald-saudi/10'
-                                            : 'bg-slate-900/80 border border-slate-800 text-slate-200 rounded-tl-md'}`}>
-                                        <ReactMarkdown className="prose prose-invert prose-p:leading-relaxed prose-pre:bg-slate-950/50 prose-pre:border prose-pre:border-slate-800">
+                                            ? 'bg-emerald-600 dark:bg-emerald-saudi text-white rounded-tr-md shadow-emerald-500/20'
+                                            : 'bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-md shadow-sm'}`}>
+                                        <ReactMarkdown className="prose prose-slate dark:prose-invert prose-p:leading-relaxed prose-pre:bg-slate-100 dark:prose-pre:bg-slate-950/50 prose-pre:border prose-pre:border-slate-200 dark:prose-pre:border-slate-800">
                                             {msg.content}
                                         </ReactMarkdown>
                                     </div>
@@ -357,12 +359,12 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                         ))}
                         {isLoading && (
                             <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-slate-900 border border-emerald-saudi/30 flex items-center justify-center"><Bot className="w-4 h-4 text-emerald-saudi" /></div>
-                                <div className="bg-slate-900/50 border border-slate-800 px-6 py-4 rounded-3xl rounded-tl-md flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-emerald-500/30 flex items-center justify-center"><Bot className="w-4 h-4 text-emerald-600 dark:text-emerald-saudi" /></div>
+                                <div className="bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 px-6 py-4 rounded-3xl rounded-tl-md flex items-center gap-3">
                                     <div className="flex gap-1">
-                                        <div className="w-1.5 h-1.5 bg-emerald-saudi rounded-full animate-bounce" />
-                                        <div className="w-1.5 h-1.5 bg-emerald-saudi rounded-full animate-bounce delay-75" />
-                                        <div className="w-1.5 h-1.5 bg-emerald-saudi rounded-full animate-bounce delay-150" />
+                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce" />
+                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce delay-75" />
+                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce delay-150" />
                                     </div>
                                     <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{thinkingText}</span>
                                 </div>
@@ -374,13 +376,13 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             </AnimatePresence>
 
             {/* Input Area - Dynamic Position/Style */}
-            <div className={`z-40 transition-all duration-500 ease-in-out ${isWelcomeState ? 'w-full max-w-2xl mx-auto mb-12 px-4' : 'w-full bg-slate-900/80 backdrop-blur-xl border-t border-slate-800 p-4'}`}>
+            <div className={`z-40 transition-all duration-500 ease-in-out ${isWelcomeState ? 'w-full max-w-2xl mx-auto mb-12 px-4' : 'w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 p-4'}`}>
                 <div className={`relative group ${!isWelcomeState ? 'max-w-4xl mx-auto' : ''}`}>
-                    <div className={`absolute inset-0 bg-slate-800/50 rounded-2xl border border-slate-700 transition-all duration-300
-                        ${isWelcomeState ? 'shadow-[0_0_50px_rgba(16,185,129,0.1)] group-focus-within:shadow-[0_0_80px_rgba(16,185,129,0.2)] group-focus-within:border-emerald-saudi/50' : 'shadow-none'}`} />
+                    <div className={`absolute inset-0 bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 transition-all duration-300
+                        ${isWelcomeState ? 'shadow-[0_0_30px_rgba(16,185,129,0.1)] group-focus-within:border-emerald-500/50' : 'shadow-none'}`} />
 
                     <div className="relative flex items-end p-2 md:p-3">
-                        <button onClick={startListening} className="p-3 text-slate-400 hover:text-emerald-saudi transition-colors"><Mic className="w-5 h-5" /></button>
+                        <button onClick={startListening} className="p-3 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-saudi transition-colors"><Mic className="w-5 h-5" /></button>
                         <textarea
                             ref={textareaRef}
                             value={input}
@@ -392,20 +394,20 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                 }
                             }}
                             placeholder={t('MessagePlaceholder')}
-                            className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-slate-200 placeholder:text-slate-500 text-lg max-h-[150px] py-3 mx-2"
+                            className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-lg max-h-[150px] py-3 mx-2"
                             rows={1}
                         />
                         <button
                             onClick={() => handleSubmit()}
                             disabled={!input.trim() || isLoading}
-                            className={`p-3 rounded-xl transition-all duration-300 ${input.trim() ? 'bg-emerald-saudi text-white shadow-lg shadow-emerald-saudi/20 scale-100' : 'bg-slate-700 text-slate-500 scale-90'}`}
+                            className={`p-3 rounded-xl transition-all duration-300 ${input.trim() ? 'bg-emerald-600 dark:bg-emerald-saudi text-white shadow-lg scale-100' : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 scale-90'}`}
                         >
                             <Send className="w-5 h-5 rtl:rotate-180" />
                         </button>
                     </div>
                 </div>
                 {isWelcomeState && (
-                    <p className="text-center text-slate-600 text-xs mt-4">{t('AIWarning')}</p>
+                    <p className="text-center text-slate-400 dark:text-slate-600 text-xs mt-4">{t('AIWarning')}</p>
                 )}
             </div>
 

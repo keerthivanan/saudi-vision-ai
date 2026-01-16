@@ -79,29 +79,69 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
             </div>
 
             {/* History List */}
-            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-thin scrollbar-thumb-white/10">
-                {!collapsed && (
-                    <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-2">
-                        {t('History')}
-                    </p>
-                )}
+            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-6 scrollbar-thin scrollbar-thumb-white/10">
+                {(() => {
+                    const now = new Date();
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const lastWeek = new Date(today);
+                    lastWeek.setDate(lastWeek.getDate() - 7);
 
-                {chats.map((chat) => (
-                    <button
-                        key={chat.id}
-                        onClick={() => onSelectChat ? onSelectChat(chat.id) : (window.location.href = `/chat?id=${chat.id}`)}
-                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors group text-left
-              ${collapsed ? 'justify-center' : ''}`}
-                    >
-                        <MessageSquare className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors flex-shrink-0" />
-                        {!collapsed && (
-                            <div className="flex-1 overflow-hidden">
-                                <p className="text-sm truncate font-medium text-slate-300">{chat.title || "New Chat"}</p>
-                                <p className="text-[10px] text-slate-600">{formatDate(chat.updated_at || chat.created_at)}</p>
+                    const groups = {
+                        [t('Today') || 'Today']: [] as any[],
+                        [t('Yesterday') || 'Yesterday']: [] as any[],
+                        [t('Previous7Days') || 'Previous 7 Days']: [] as any[],
+                        [t('Older') || 'Older']: [] as any[]
+                    };
+
+                    chats.forEach(chat => {
+                        // Handle potential timezone/format issues by creating a clean date object
+                        const d = new Date(chat.updated_at || chat.created_at);
+                        const chatDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+                        if (chatDate.getTime() === today.getTime()) {
+                            groups[t('Today') || 'Today'].push(chat);
+                        } else if (chatDate.getTime() === yesterday.getTime()) {
+                            groups[t('Yesterday') || 'Yesterday'].push(chat);
+                        } else if (chatDate > lastWeek) {
+                            groups[t('Previous7Days') || 'Previous 7 Days'].push(chat);
+                        } else {
+                            groups[t('Older') || 'Older'].push(chat);
+                        }
+                    });
+
+                    return Object.entries(groups).map(([label, groupChats]) => {
+                        if (groupChats.length === 0) return null;
+
+                        return (
+                            <div key={label} className="space-y-2">
+                                {!collapsed && (
+                                    <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-slate-400 to-slate-600">
+                                        {label}
+                                    </h3>
+                                )}
+                                <div className="space-y-1">
+                                    {groupChats.map((chat) => (
+                                        <button
+                                            key={chat.id}
+                                            onClick={() => onSelectChat ? onSelectChat(chat.id) : (window.location.href = `/chat?id=${chat.id}`)}
+                                            className={`w-full flex items-center gap-3 px-3 py-2.5 mx-1 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-all group text-left border border-transparent hover:border-emerald-saudi/10
+                                                ${collapsed ? 'justify-center' : ''}`}
+                                        >
+                                            <MessageSquare className="w-4 h-4 text-slate-600 group-hover:text-emerald-saudi transition-colors flex-shrink-0" />
+                                            {!collapsed && (
+                                                <div className="flex-1 overflow-hidden">
+                                                    <p className="text-sm truncate font-medium text-slate-300 group-hover:text-emerald-50 transition-colors">{chat.title || "Untitled Chat"}</p>
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        )}
-                    </button>
-                ))}
+                        );
+                    });
+                })()}
             </div>
 
             {/* Footer / User Profile */}
