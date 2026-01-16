@@ -289,20 +289,20 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     );
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden font-sans transition-colors duration-300">
+        <div className="flex-1 flex flex-col h-screen bg-background relative overflow-hidden font-sans transition-colors duration-500">
             {/* Background Effects (Subtle grid for light, dark grid for dark) */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-50 dark:from-slate-950 to-transparent z-20 pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+            <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-background to-transparent z-20 pointer-events-none" />
 
-            {/* Credit Badge Overlay - Purple Neon "Static" Style */}
+            {/* Credit Badge - Floating Island Style */}
             {session?.user && credits !== null && (
-                <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50 flex items-center gap-3">
-                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-purple-500/50 px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.2)] dark:shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center gap-3 transition-all">
-                        <span className="text-purple-600 dark:text-purple-400 drop-shadow-sm">⚡</span>
-                        <span className={`text-base font-bold font-mono ${credits < 10 ? 'text-red-500 dark:text-red-400' : 'text-purple-900 dark:text-purple-100'}`}>
+                <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+                    <div className="bg-background/80 backdrop-blur-xl border border-border px-4 py-2 rounded-full shadow-sm flex items-center gap-2.5 transition-all">
+                        <span className="text-purple-500 drop-shadow-sm">⚡</span>
+                        <span className={`text-[15px] font-semibold font-mono tracking-tight ${credits < 10 ? 'text-red-500' : 'text-foreground'}`}>
                             {credits.toFixed(1)}
                         </span>
-                        <span className="text-[10px] text-purple-700/80 dark:text-purple-300/80 uppercase tracking-widest font-bold">Credits</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Credits</span>
                     </div>
                 </div>
             )}
@@ -311,10 +311,10 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             {!isWelcomeState && (
                 <button
                     onClick={handleNewChat}
-                    className="absolute top-6 left-6 z-50 p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-white hover:bg-emerald-50 dark:hover:bg-emerald-saudi/20 border border-slate-200 dark:border-slate-700 transition-all"
+                    className="absolute top-6 left-6 z-50 p-2.5 rounded-xl bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground border border-border transition-all shadow-sm backdrop-blur-lg"
                     title={t('NewChat')}
                 >
-                    <Sparkles className="w-5 h-5" />
+                    <Sparkles className="w-4 h-4" />
                 </button>
             )}
 
@@ -327,7 +327,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                         key="chat-list"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth relative z-10 pt-24"
+                        className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth relative z-10 pt-28 pb-32"
                     >
                         {messages.map((msg, idx) => (
                             <motion.div
@@ -336,21 +336,21 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                 key={idx}
                                 className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div className={`flex max-w-[85%] md:max-w-[700px] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                <div className={`flex max-w-[85%] md:max-w-[720px] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                                     {/* Avatar */}
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
                                         ${msg.role === 'user'
-                                            ? 'bg-slate-200 dark:bg-slate-800'
-                                            : 'bg-white dark:bg-slate-900 border border-emerald-500/20 shadow-md'}`}>
-                                        {msg.role === 'user' ? <User className="w-4 h-4 text-slate-500 dark:text-slate-400" /> : <Bot className="w-4 h-4 text-emerald-600 dark:text-emerald-saudi" />}
+                                            ? 'bg-secondary text-muted-foreground'
+                                            : 'bg-primary text-primary-foreground'}`}>
+                                        {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                                     </div>
 
                                     {/* Bubble */}
-                                    <div className={`px-6 py-4 rounded-3xl text-[16px] leading-relaxed shadow-sm transition-all
+                                    <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-sm transition-all relative
                                         ${msg.role === 'user'
-                                            ? 'bg-emerald-600 dark:bg-emerald-saudi text-white rounded-tr-md shadow-emerald-500/20'
-                                            : 'bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-md shadow-sm'}`}>
-                                        <ReactMarkdown className="prose prose-slate dark:prose-invert prose-p:leading-relaxed prose-pre:bg-slate-100 dark:prose-pre:bg-slate-950/50 prose-pre:border prose-pre:border-slate-200 dark:prose-pre:border-slate-800">
+                                            ? 'bg-primary text-primary-foreground rounded-tr-md'
+                                            : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
+                                        <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
                                             {msg.content}
                                         </ReactMarkdown>
                                     </div>
@@ -359,14 +359,14 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                         ))}
                         {isLoading && (
                             <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-emerald-500/30 flex items-center justify-center"><Bot className="w-4 h-4 text-emerald-600 dark:text-emerald-saudi" /></div>
-                                <div className="bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 px-6 py-4 rounded-3xl rounded-tl-md flex items-center gap-3">
-                                    <div className="flex gap-1">
-                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce" />
-                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce delay-75" />
-                                        <div className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-saudi rounded-full animate-bounce delay-150" />
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><Bot className="w-4 h-4 text-primary-foreground" /></div>
+                                <div className="bg-card border border-border px-6 py-4 rounded-2xl rounded-tl-md flex items-center gap-3 shadow-sm">
+                                    <div className="flex gap-1.5">
+                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce" />
+                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-75" />
+                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-150" />
                                     </div>
-                                    <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{thinkingText}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{thinkingText}</span>
                                 </div>
                             </div>
                         )}
@@ -375,39 +375,41 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 )}
             </AnimatePresence>
 
-            {/* Input Area - Dynamic Position/Style */}
-            <div className={`z-40 transition-all duration-500 ease-in-out ${isWelcomeState ? 'w-full max-w-2xl mx-auto mb-12 px-4' : 'w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 p-4'}`}>
-                <div className={`relative group ${!isWelcomeState ? 'max-w-4xl mx-auto' : ''}`}>
-                    <div className={`absolute inset-0 bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 transition-all duration-300
-                        ${isWelcomeState ? 'shadow-[0_0_30px_rgba(16,185,129,0.1)] group-focus-within:border-emerald-500/50' : 'shadow-none'}`} />
+            {/* Input Area - Floating Island */}
+            <div className={`z-40 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isWelcomeState ? 'w-full max-w-2xl mx-auto mb-16 px-4' : 'absolute bottom-6 left-0 right-0 px-4 md:px-0 flex justify-center'}`}>
+                <div className={`w-full ${!isWelcomeState ? 'max-w-3xl' : ''}`}>
+                    <div className="relative group">
+                        <div className={`absolute inset-0 bg-background/80 rounded-3xl border border-border transition-all duration-300 shadow-2xl shadow-primary/5
+                            ${isWelcomeState ? 'shadow-[0_0_40px_rgba(0,0,0,0.05)]' : ''}`} />
 
-                    <div className="relative flex items-end p-2 md:p-3">
-                        <button onClick={startListening} className="p-3 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-saudi transition-colors"><Mic className="w-5 h-5" /></button>
-                        <textarea
-                            ref={textareaRef}
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSubmit();
-                                }
-                            }}
-                            placeholder={t('MessagePlaceholder')}
-                            className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-lg max-h-[150px] py-3 mx-2"
-                            rows={1}
-                        />
-                        <button
-                            onClick={() => handleSubmit()}
-                            disabled={!input.trim() || isLoading}
-                            className={`p-3 rounded-xl transition-all duration-300 ${input.trim() ? 'bg-emerald-600 dark:bg-emerald-saudi text-white shadow-lg scale-100' : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 scale-90'}`}
-                        >
-                            <Send className="w-5 h-5 rtl:rotate-180" />
-                        </button>
+                        <div className="relative flex items-end p-2">
+                            <button onClick={startListening} className="p-3 text-muted-foreground hover:text-primary transition-colors hover:bg-secondary/50 rounded-xl"><Mic className="w-5 h-5" /></button>
+                            <textarea
+                                ref={textareaRef}
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSubmit();
+                                    }
+                                }}
+                                placeholder={t('MessagePlaceholder')}
+                                className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-foreground placeholder:text-muted-foreground text-[16px] md:text-lg max-h-[150px] py-3 mx-2 leading-relaxed"
+                                rows={1}
+                            />
+                            <button
+                                onClick={() => handleSubmit()}
+                                disabled={!input.trim() || isLoading}
+                                className={`p-3 rounded-xl transition-all duration-300 ${input.trim() ? 'bg-primary text-primary-foreground shadow-lg scale-100' : 'bg-secondary text-muted-foreground scale-95'}`}
+                            >
+                                <Send className="w-5 h-5 rtl:rotate-180" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {isWelcomeState && (
-                    <p className="text-center text-slate-400 dark:text-slate-600 text-xs mt-4">{t('AIWarning')}</p>
+                    <p className="text-center text-muted-foreground/60 text-[11px] mt-6 tracking-wide uppercase">{t('AIWarning')}</p>
                 )}
             </div>
 
