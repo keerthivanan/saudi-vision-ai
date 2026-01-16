@@ -155,11 +155,42 @@ export default function Hero() {
                         ))}
                     </div>
                 </motion.div>
-            </div>      {/* Saudi Futuristic Skyline - KAFD Night View (Premium) */}
-            <div className="absolute bottom-0 left-0 right-0 h-full w-full z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1597214738421-4bef39c279c1?q=80&w=3840&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay opacity-60" />
-                <div className="absolute inset-0 bg-gradient-to-t from-midnight-blue via-midnight-blue/90 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-b from-midnight-blue/80 via-transparent to-transparent" />
+            </div>
+
+            {/* ANIMATED 8K RIYADH SKYLINE - Premium Cinematic Background */}
+            <div className="absolute bottom-0 left-0 right-0 h-full w-full z-0 pointer-events-none overflow-hidden">
+                {/* Ken Burns Animated Background - Slow Zoom Effect */}
+                <motion.div
+                    initial={{ scale: 1 }}
+                    animate={{ scale: 1.1 }}
+                    transition={{
+                        duration: 30,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "linear"
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                >
+                    {/* 8K Quality Riyadh KAFD Night Skyline */}
+                    <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{
+                            backgroundImage: `url('https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?q=100&w=3840&auto=format&fit=crop')`,
+                        }}
+                    />
+                </motion.div>
+
+                {/* Breathing Glow Overlay */}
+                <motion.div
+                    animate={{ opacity: [0.4, 0.6, 0.4] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 bg-emerald-saudi/10 mix-blend-overlay"
+                />
+
+                {/* Premium Gradient Overlays for Text Contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
             </div>
         </div>
     );

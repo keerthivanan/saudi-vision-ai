@@ -15,8 +15,8 @@ export default function Pillars() {
             description: t('Pillar1Desc'),
             icon: Users,
             color: 'emerald-saudi',
-            // Vibrant Society: Saudi Culture / Diriyah / Traditional-Modern Blend
-            image: 'https://images.unsplash.com/photo-1559586616-361e18714958?q=80&w=2000&auto=format&fit=crop',
+            // Vibrant Society: Saudi Desert & Culture (Authentic)
+            image: 'https://images.unsplash.com/photo-1578895101408-1a36b834405b?q=80&w=2000&auto=format&fit=crop',
         },
         {
             id: 'economy',
@@ -33,8 +33,8 @@ export default function Pillars() {
             description: t('Pillar3Desc'),
             icon: Building2,
             color: 'midnight-blue',
-            // Ambitious Nation: Saudi Government / Progress / Modern Architecture
-            image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?q=80&w=2000&auto=format&fit=crop',
+            // Ambitious Nation: Saudi Modern Government & Progress
+            image: 'https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?q=80&w=2000&auto=format&fit=crop',
         },
     ];
 
