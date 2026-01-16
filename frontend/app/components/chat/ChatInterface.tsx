@@ -294,15 +294,15 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-950 to-transparent z-20 pointer-events-none" />
 
-            {/* Credit Badge Overlay */}
+            {/* Credit Badge Overlay - Purple Neon "Static" Style */}
             {session?.user && credits !== null && (
-                <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50 flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-                    <div className="bg-slate-900/40 backdrop-blur-md border border-emerald-saudi/20 px-4 py-2 rounded-full shadow-lg shadow-emerald-saudi/5 flex items-center gap-2">
-                        <span className="text-emerald-saudi animate-pulse">⚡</span>
-                        <span className={`text-sm font-bold font-mono ${credits < 10 ? 'text-red-400' : 'text-emerald-100'}`}>
+                <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50 flex items-center gap-3">
+                    <div className="bg-slate-900/80 backdrop-blur-xl border border-purple-500/50 px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center gap-3 transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]">
+                        <span className="text-purple-400 drop-shadow-[0_0_5px_rgba(168,85,247,0.8)]">⚡</span>
+                        <span className={`text-base font-bold font-mono ${credits < 10 ? 'text-red-400' : 'text-purple-100'} drop-shadow-md`}>
                             {credits.toFixed(1)}
                         </span>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-medium">Credits</span>
+                        <span className="text-[10px] text-purple-300/80 uppercase tracking-widest font-bold">Credits</span>
                     </div>
                 </div>
             )}
