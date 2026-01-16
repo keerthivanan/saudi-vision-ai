@@ -106,13 +106,13 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
                         const chatDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
                         if (chatDate.getTime() === today.getTime()) {
-                            groups[labelToday].push(chat);
+                            groups[labelToday]!.push(chat);
                         } else if (chatDate.getTime() === yesterday.getTime()) {
-                            groups[labelYesterday].push(chat);
+                            groups[labelYesterday]!.push(chat);
                         } else if (chatDate > lastWeek) {
-                            groups[labelWeek].push(chat);
+                            groups[labelWeek]!.push(chat);
                         } else {
-                            groups[labelOlder].push(chat);
+                            groups[labelOlder]!.push(chat);
                         }
                     });
 

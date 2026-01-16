@@ -50,7 +50,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         if (session?.user) {
             fetch('/api/v1/auth/me', {
                 headers: { 'X-User-Email': session.user.email || '' }
-            }).catch(err => console.log("Credits fetch silent fail", err));
+            }).catch(err => console.warn("Credits fetch silent fail", err));
         }
     }, [session]);
 

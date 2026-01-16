@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-emerald-saudi/30 selection:text-emerald-900 dark:selection:text-emerald-100">
+    <main className="min-h-screen bg-background font-sans selection:bg-primary/20 selection:text-primary">
       <Navbar />
       <Hero />
       <Pillars />
