@@ -54,30 +54,44 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         }
     }, [session]);
 
-    // 3. Handle URL Query Params & Language
+    // DEDICATED: Load a conversation by ID (used by sidebar click and URL param)
+    const loadConversation = async (id: string) => {
+        setIsLoading(true);
+        try {
+            const res = await fetch(`/api/v1/chat/${id}`, {
+                headers: { 'X-User-Email': session?.user?.email || '' }
+            });
+            if (!res.ok) throw new Error("Failed to load conversation");
+
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                // Messages come in DESC order from API, reverse for chronological display
+                const restoredMessages = data.reverse().map((m: any) => ({
+                    role: m.role as 'user' | 'ai',
+                    content: m.content
+                }));
+                setMessages(restoredMessages);
+                setConversationId(id);
+            }
+        } catch (err) {
+            console.error("Failed to fetch chat", err);
+            toast.error("Could not load conversation");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 3. Handle URL Query Params - CRITICAL for sidebar click navigation
     useEffect(() => {
         const queryParam = searchParams?.get('q');
         const idParam = searchParams?.get('id');
 
-        if (idParam) {
-            setConversationId(idParam);
-            fetch(`/api/v1/chat/${idParam}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) {
-                        const restoredMessages = data.reverse().map((m: any) => ({
-                            role: m.role || m.sender,
-                            content: m.content
-                        }));
-                        setMessages(restoredMessages);
-                    }
-                })
-                .catch(err => console.error("Failed to fetch chat", err));
+        if (idParam && idParam !== conversationId) {
+            // User clicked a history item -> load that conversation
+            loadConversation(idParam);
         }
         else if (queryParam && messages.length === 0) {
             setInput(queryParam);
-            // Optional: Auto-submit or just pre-fill. 
-            // Better to just pre-fill so they see the welcome screen for a moment.
         }
     }, [searchParams]);
 
@@ -209,9 +223,13 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
 
                                     case 'conversation_created':
                                         if (data.data.id) {
-                                            setConversationId(data.data.id);
-                                            // Optional: Update URL without reload
-                                            window.history.replaceState({}, '', `/chat?id=${data.data.id}`);
+                                            const newId = data.data.id;
+                                            setConversationId(newId);
+                                            // 1. Update URL without reload to persist state
+                                            window.history.replaceState({ id: newId }, '', `/chat?id=${newId}`);
+
+                                            // 2. IMPORTANT: Notify Sidebar to refresh list immediately
+                                            if (onChatCreated) onChatCreated();
                                         }
                                         break;
                                 }

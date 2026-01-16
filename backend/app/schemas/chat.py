@@ -23,7 +23,7 @@ class ConversationResponse(BaseModel):
     id: UUID
     title: str
     created_at: datetime
-    # updated_at: datetime # Optional if not in model
+    updated_at: datetime  # Added for proper "most recent first" sorting
 
     class Config:
         from_attributes = True
@@ -32,7 +32,7 @@ class MessageResponse(BaseModel):
     id: UUID
     role: str
     content: str
-    created_at: datetime
+    timestamp: datetime  # Fixed: was 'created_at' but model uses 'timestamp'
 
     class Config:
         from_attributes = True
