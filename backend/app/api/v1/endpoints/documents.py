@@ -75,6 +75,11 @@ async def upload_document(
             original_filename=file.filename,
             metadata={"user_id": str(current_user.id), "scope": "private"}
         )
+
+        # CRITICAL FIX: Ingest into Vector DB (The "Fuel" for RAG)
+        if processed_doc:
+            from app.services.rag_service import rag_service
+            await rag_service.ingest_document(processed_doc)
         
         # 3. Create DB Record
         new_doc = Document(
