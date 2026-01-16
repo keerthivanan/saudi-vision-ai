@@ -34,7 +34,6 @@ export default function Navbar() {
         { name: t('Progress'), href: '#metrics' },
         { name: t('AIAssistant'), href: '/chat' },
         { name: t('Resources'), href: '/resources' },
-        { name: 'Pricing', href: '/pricing' },
     ];
 
 

@@ -15,7 +15,11 @@ export async function middleware(req: NextRequest) {
     // 2. If User is NOT Logged In AND tries to access protected routes -> Redirect to Sign In
     // (Add any other protected routes here if needed in future)
     // 2. If User is NOT Logged In AND tries to access protected routes -> Redirect to Sign In
-    if (!isAuth && (req.nextUrl.pathname.startsWith("/profile") || req.nextUrl.pathname.startsWith("/settings"))) {
+    if (!isAuth && (
+        req.nextUrl.pathname.startsWith("/profile") ||
+        req.nextUrl.pathname.startsWith("/settings") ||
+        req.nextUrl.pathname.startsWith("/chat")
+    )) {
         return NextResponse.redirect(new URL("/auth/signin", req.url));
     }
 
