@@ -103,7 +103,7 @@ class RAGService:
             Original question: {original_query}"""
             
             response = await client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 max_tokens=100
@@ -262,7 +262,7 @@ class RAGService:
             Return ONLY the valid JSON list."""
             
             response = await client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o",
                 messages=[{"role": "system", "content": "You are a precise relevance filter."},
                           {"role": "user", "content": prompt}],
                 temperature=0,
