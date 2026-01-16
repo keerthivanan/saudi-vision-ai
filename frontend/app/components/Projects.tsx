@@ -14,8 +14,8 @@ export default function Projects() {
             title: t('Project1Title'),
             desc: t('Project1Desc'),
             location: t('Project1Loc'),
-            // NEOM - Futuristic, Mirror, Desert Architecture (Representative)
-            image: 'https://images.unsplash.com/photo-1549608276-5786777e6587?q=80&w=2000&auto=format&fit=crop',
+            // NEOM - Official Logo (User Provided)
+            image: '/images/neom-logo.jpg',
             officialUrl: 'https://www.neom.com',
         },
         {
