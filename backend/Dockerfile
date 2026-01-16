@@ -27,4 +27,6 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the application using Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Production Command: Use Gunicorn with 4 Workers for Concurrency
+# This allows handling 100+ concurrent users by splitting load across CPU cores.
+CMD ["gunicorn", "app.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--timeout", "120"]
