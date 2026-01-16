@@ -11,114 +11,115 @@
 
 @layer base {
   :root {
-    /* CLASSICAL ENTERPRISE PALETTE */
-    --background: 210 20% 99%;
-    /* #fcfdfe - Almost Pure White */
-    --foreground: 222 47% 11%;
-    /* #0f172a - Slate 900 */
+    /* APPLE SYSTEM PALETTE - LIGHT MODE */
+    /* "Apple Store" Aesthetic: Pure clean whites, soft grays */
+    --background: 0 0% 100%;
+    /* #FFFFFF */
+    --foreground: 0 0% 11%;
+    /* #1D1D1F (Apple Text Black) */
 
-    /* Primary - Deep Saudi Green/Blue Hybrid (Trustworthy) */
-    --primary: 215 25% 27%;
-    /* #334155 - Professional Slate Navy */
+    /* Primary: The Main Action Color */
+    /* Using a sophisticated "Midnight Green" / "Saudi Emerald" hybrid for branding, but darker */
+    --primary: 158 45% 15%;
+    /* #153826 */
     --primary-foreground: 0 0% 100%;
 
-    /* Accent - Refined Gold (subtle) */
-    --accent: 35 25% 50%;
-    /* #a08c64 - Antique Gold */
-    --accent-foreground: 0 0% 100%;
+    /* Secondary: Subtle Backgrounds (like iPadOS settings) */
+    --secondary: 240 5% 96%;
+    /* #F5F5F7 */
+    --secondary-foreground: 0 0% 11%;
 
-    /* Secondary */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
+    /* Accents & Functional */
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    /* #86868B (Apple Subtext) */
 
-    /* Functional Colors */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 40%;
-    /* Darker for legibility */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --border: 214 32% 88%;
-    /* Slightly darker border for definition */
-    --input: 214 32% 88%;
-    --ring: 215 25% 27%;
+    --card-foreground: 0 0% 11%;
 
-    /* Status */
-    --success: 142 70% 35%;
-    --warning: 38 90% 45%;
-    --error: 0 84% 55%;
+    --border: 240 6% 90%;
+    /* #E5E5E5 */
+    --input: 240 6% 90%;
+    --ring: 158 45% 40%;
+    /* Focus Ring */
 
-    /* Spacing & Borders - CLASSICAL CRISPNESS */
-    --radius: 0.375rem;
-    /* 6px - Standard Enterprise Radius */
+    /* Status Colors - Refined */
+    --success: 142 76% 36%;
+    --warning: 40 96% 54%;
+    --error: 348 88% 56%;
+    /* #FF3B30 (Apple Red) */
+
+    --radius: 0.75rem;
+    /* 12px - Smooth Apple Curves */
     --header-height: 3.5rem;
-    /* 56px - Compact Professional */
-    --sidebar-width: 260px;
+    --sidebar-width: 280px;
   }
 
   .dark {
-    /* ROYAL PALETTE (Dark Mode) */
-    --background: 222 47% 6%;
-    /* Slate 950 - Deepest Blue/Black */
-    --foreground: 210 40% 98%;
-    /* Slate 50 */
+    /* APPLE SYSTEM PALETTE - DARK MODE */
+    /* "iPhone Pro" Aesthetic: Deep blacks, rich grays */
+    --background: 0 0% 0%;
+    /* #000000 (OLED Black) */
+    --foreground: 0 0% 96%;
+    /* #F5F5F7 */
 
-    /* Primary - White/Off-White for dark mode contrast */
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 158 45% 50%;
+    /* Brighter Emerald for Dark Mode */
+    --primary-foreground: 0 0% 100%;
 
-    /* Accent - Gold glow */
-    --accent: 43 50% 59%;
-    --accent-foreground: 222 47% 11%;
+    /* Secondary: Dark Gray (like Control Center) */
+    --secondary: 240 4% 11%;
+    /* #1C1C1E */
+    --secondary-foreground: 0 0% 98%;
 
-    /* Secondary */
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --muted: 240 4% 11%;
+    --muted-foreground: 240 5% 64%;
+    /* #98989D */
 
-    /* Functional */
-    --muted: 217 33% 12%;
-    --muted-foreground: 215 20% 65%;
-    --card: 217 33% 12%;
-    /* Slate 900 */
-    --card-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 213 27% 84%;
+    --card: 240 4% 11%;
+    /* #1C1C1E */
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 4% 16%;
+    /* #2C2C2E */
+    --input: 240 4% 16%;
+    --ring: 158 45% 40%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    font-family: inherit;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
   }
 
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-background text-foreground tracking-tight;
-    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    @apply bg-background text-foreground tracking-tight selection:bg-primary/20 selection:text-primary;
   }
 
-  /* Modern Scrollbar */
+  /* Apple-style Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
+    width: 0px;
+    /* Hidden like iOS usually, or very thin */
     background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full transition-colors;
-  }
+  /* Show scrollbar only on hover if preferred, or extremely subtle */
+  @media (min-width: 768px) {
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
 
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    ::-webkit-scrollbar-thumb {
+      @apply bg-muted-foreground/20 rounded-full border-[2px] border-background;
+    }
   }
 }
 
