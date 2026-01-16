@@ -181,13 +181,39 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                             if (dataStr === '[DONE]') break;
                             try {
                                 const data = JSON.parse(dataStr);
-                                if (data.event === 'token') {
-                                    aiResponseContent += data.data;
-                                    setMessages(prev => {
-                                        const newMsgs = [...prev];
-                                        newMsgs[newMsgs.length - 1] = { role: 'ai', content: aiResponseContent };
-                                        return newMsgs;
-                                    });
+
+                                switch (data.event) {
+                                    case 'token':
+                                        aiResponseContent += data.data;
+                                        setMessages(prev => {
+                                            const newMsgs = [...prev];
+                                            newMsgs[newMsgs.length - 1] = { role: 'ai', content: aiResponseContent };
+                                            return newMsgs;
+                                        });
+                                        break;
+
+                                    case 'status':
+                                        setThinkingText(data.data);
+                                        break;
+
+                                    case 'billing':
+                                        if (data.data.remaining !== undefined) {
+                                            setCredits(data.data.remaining);
+                                            toast.success(`Used ${data.data.cost.toFixed(3)} credits`, {
+                                                id: 'billing-toast',
+                                                duration: 2000,
+                                                icon: '⚡'
+                                            });
+                                        }
+                                        break;
+
+                                    case 'conversation_created':
+                                        if (data.data.id) {
+                                            setConversationId(data.data.id);
+                                            // Optional: Update URL without reload
+                                            window.history.replaceState({}, '', `/chat?id=${data.data.id}`);
+                                        }
+                                        break;
                                 }
                             } catch (e) { }
                         }
