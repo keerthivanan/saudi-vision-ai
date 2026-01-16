@@ -41,6 +41,15 @@ class ChatService:
         """Add a message to the conversation history."""
         msg = Message(conversation_id=conversation_id, role=role, content=content)
         db.add(msg)
+        
+        # KEY FIX: Explicitly touch the parent conversation's updated_at
+        # This bumps the conversation to the top of the history ("ChatGPT Style")
+        await db.execute(
+            update(Conversation)
+            .where(Conversation.id == conversation_id)
+            .values(updated_at=datetime.utcnow())
+        )
+        
         await db.commit()
         await db.refresh(msg)
         return msg
@@ -58,7 +67,7 @@ class ChatService:
         """Retrieve all conversations for a user."""
         query = select(Conversation).where(
             Conversation.user_id == user_id
-        ).order_by(desc(Conversation.created_at)).limit(limit)
+        ).order_by(desc(Conversation.updated_at)).limit(limit)
         
         result = await db.execute(query)
         return result.scalars().all()
