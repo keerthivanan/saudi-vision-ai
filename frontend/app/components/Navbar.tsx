@@ -14,6 +14,8 @@ export default function Navbar() {
     const { language, toggleLanguage, t } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -21,11 +23,28 @@ export default function Navbar() {
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            const currentScrollY = window.scrollY;
+
+            // Glassmorphism effect logic
+            setIsScrolled(currentScrollY > 20);
+
+            // Smart Navbar Logic (Hide Down / Show Up)
+            if (currentScrollY > 100) { // Only trigger after some scrolling
+                if (currentScrollY > lastScrollY) {
+                    setIsVisible(false); // Scrolling Down
+                } else {
+                    setIsVisible(true);  // Scrolling Up
+                }
+            } else {
+                setIsVisible(true); // Always visible at top
+            }
+
+            setLastScrollY(currentScrollY);
         };
+
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [lastScrollY]);
 
     const navLinks = [
         { name: t('Home'), href: '/' },
@@ -41,8 +60,9 @@ export default function Navbar() {
         <>
             <motion.nav
                 initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+                animate={{ y: isVisible ? 0 : -100 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${isScrolled
                     ? 'glass-panel py-3 shadow-lg'
                     : 'bg-transparent py-6'
                     }`}
