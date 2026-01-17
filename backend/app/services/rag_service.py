@@ -8,9 +8,13 @@ from datetime import datetime
 # Langchain Imports
 from langchain_core.documents import Document as LangchainDocument
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
+
+# Qdrant Imports
+from qdrant_client import QdrantClient
+from qdrant_client.http import models
+from langchain_qdrant import QdrantVectorStore
 
 from app.core.config import settings
 from app.services.document_service import ProcessedDocument
@@ -20,13 +24,13 @@ logger = logging.getLogger("rag_service")
 class RAGService:
     """
     Enterprise RAG Service (Retrieval Augmented Generation)
-    Manages Vector Database (FAISS) and Document Indexing.
+    Manages Vector Database (Qdrant) and Document Indexing.
     """
     
     def __init__(self):
-        self.index_path = Path(settings.VECTOR_DB_PATH)
         self.embeddings = None
-        self.vectorstore: Optional[FAISS] = None
+        self.vectorstore: Optional[QdrantVectorStore] = None
+        self.qdrant_client: Optional[QdrantClient] = None
         
         try:
             self.embeddings = OpenAIEmbeddings(
@@ -35,31 +39,65 @@ class RAGService:
             )
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI Embeddings: {e}")
-            # Do NOT fallback to mock. If this fails, RAG should fail (so we know).
             self.embeddings = None
             
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
-            chunk_overlap=400, # Increased for better context in large docs
+            chunk_overlap=400,
             separators=["\n\n## ", "\n\n# ", "\n\n", "\n", " ", ""]
         )
+        
         if self.embeddings:
-            self._load_index()
+            self._init_qdrant()
 
-    def _load_index(self):
-        """Load FAISS index from disk if exists"""
-        if self.index_path.exists():
-            try:
-                self.vectorstore = FAISS.load_local(
-                    str(self.index_path), 
-                    self.embeddings,
-                    allow_dangerous_deserialization=True
+    def _init_qdrant(self):
+        """Initialize Qdrant Connection (Local or Server)"""
+        try:
+            if settings.QDRANT_MODE == "local":
+                # Ensure path exists
+                path = Path(settings.QDRANT_PATH)
+                path.mkdir(parents=True, exist_ok=True)
+                
+                logger.info(f"💾 Initializing Qdrant in LOCAL mode at: {path}")
+                self.qdrant_client = QdrantClient(path=str(path))
+            else:
+                logger.info(f"🌐 Initializing Qdrant in SERVER mode at: {settings.QDRANT_HOST}:{settings.QDRANT_PORT}")
+                self.qdrant_client = QdrantClient(
+                    host=settings.QDRANT_HOST, 
+                    port=settings.QDRANT_PORT
                 )
-                logger.info("✅ FAISS Index loaded successfully")
-            except Exception as e:
-                logger.error(f"Failed to load index: {e}")
-        else:
-            logger.info("⚠️ No existing index found. Starting fresh.")
+            
+            # Create VectorStore Wrapper
+            self.vectorstore = QdrantVectorStore(
+                client=self.qdrant_client,
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                embedding=self.embeddings,
+            )
+            logger.info("✅ Qdrant Brain Connected successfully.")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to connect to Qdrant: {e}")
+            self.vectorstore = None
+
+    def reset_index(self):
+        """
+        DANGEROUS: Wipes the entire Knowledge Base.
+        Used for fresh re-syncs.
+        """
+        if not self.qdrant_client:
+            return
+            
+        try:
+            logger.warning("🗑️ WIPING QDRANT INDEX...")
+            self.qdrant_client.delete_collection(settings.QDRANT_COLLECTION_NAME)
+            logger.info("✅ Collection deleted.")
+            
+            # Re-create is handled automatically by Langchain on next add, 
+            # OR we can force create it here if we want specific config (vectors config).
+            # For local mode/simplicity, we let Langchain lazy-create it.
+             
+        except Exception as e:
+            logger.warning(f"Could not delete collection (might not exist yet): {e}")
 
     async def ingest_document(self, doc: ProcessedDocument):
         """Wrapper for single document ingestion"""
@@ -76,6 +114,7 @@ class RAGService:
                 metadata={
                     "filename": doc.filename,
                     "type": doc.doc_type,
+                    "source": f"s3://{settings.S3_BUCKET_NAME}/documents/{doc.filename}", 
                     **doc.metadata
                 }
             ) for doc in docs
@@ -86,12 +125,33 @@ class RAGService:
 
         if self.vectorstore:
             self.vectorstore.add_documents(chunks)
+        elif self.qdrant_client:
+            # Lazy Init: Manually Create Collection & Init VectorStore
+            logger.info("🆕 Creating new Qdrant Collection...")
+            try:
+                # Text-Embedding-3-Large dim is 3072
+                self.qdrant_client.recreate_collection(
+                    collection_name=settings.QDRANT_COLLECTION_NAME,
+                    vectors_config=models.VectorParams(
+                        size=3072, 
+                        distance=models.Distance.COSINE
+                    )
+                )
+            except Exception as e:
+                logger.warning(f"⚠️ Collection creation warning: {e}")
+
+            # Now Init Store
+            self.vectorstore = QdrantVectorStore(
+                client=self.qdrant_client,
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                embedding=self.embeddings
+            )
+            self.vectorstore.add_documents(chunks)
         else:
-            self.vectorstore = FAISS.from_documents(chunks, self.embeddings)
-            
-        # Persist to disk
-        self.vectorstore.save_local(str(self.index_path))
-        logger.info("💾 Index saved to disk")
+            logger.error("❌ Cannot index: No Qdrant Client available.")
+            return
+
+        logger.info(f"✅ Indexed {len(chunks)} chunks to Qdrant")
 
     async def generate_queries(self, original_query: str) -> List[str]:
         """Generate variations of the query to improve retrieval coverage."""

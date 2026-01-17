@@ -55,3 +55,6 @@ coverage/
 # Temporary files
 *.tmp
 *.swp
+
+# Qdrant Local Storage
+backend/data/qdrant_storage/

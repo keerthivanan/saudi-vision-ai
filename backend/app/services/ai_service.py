@@ -11,7 +11,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.services.rag_service import RAGService
+from app.services.rag_service import rag_service
 
 # Configure Logging
 logger = logging.getLogger(__name__)
@@ -31,7 +31,8 @@ class AIService:
     """
     
     def __init__(self):
-        self.rag_service = RAGService()
+        # Use Singleton to prevent Qdrant Lock issues
+        self.rag_service = rag_service
         self.output_parser = JsonOutputParser(pydantic_object=LegalAnalysisResult)
         
         # Check for valid API Key
@@ -43,7 +44,7 @@ class AIService:
             try:
                 self.llm = ChatOpenAI(
                     model="gpt-4o", 
-                    temperature=0.2,
+                    temperature=0.3, # The "Golden Ratio" for RAG (Accurate but Natural)
                     api_key=settings.OPENAI_API_KEY,
                     streaming=True
                 )
@@ -52,33 +53,83 @@ class AIService:
                 logger.error(f"Failed to init OpenAI: {e}")
                 self.llm = None
                 self.is_simulation = True
+            
+            # OPTIMIZATION: Use "Mini" model for internal tasks (Translation) to keep it FAST.
+            try:
+                self.fast_llm = ChatOpenAI(
+                    model="gpt-4o-mini", 
+                    temperature=0, 
+                    api_key=settings.OPENAI_API_KEY
+                )
+            except:
+                self.fast_llm = self.llm # Fallback
 
-    async def _detect_and_translate(self, query: str) -> Dict[str, str]:
+    async def _detect_and_translate(self, query: str) -> Dict[str, Any]:
         """
         Smart Logic: 
-        1. Detects if query is Arabic (or other).
-        2. Translates to English for RAG search (to maximize hits).
-        3. Returns user language so we can reply in it.
+        1. Detects language.
+        2. Returns dictionary with BOTH English and Arabic versions for Dual-Path Search.
         """
         try:
-            # Quick check for Arabic chars to avoid API call if obviously English
-            has_arabic = any('\u0600' <= char <= '\u06FF' for char in query)
+            # Check if input is Arabic
+            is_arabic = any('\u0600' <= char <= '\u06FF' for char in query)
             
-            if not has_arabic:
-                return {"language": "English", "search_query": query}
-            
-            # If Arabic, use fast LLM to translate
-            prompt = f"Translate this Arabic query to strictly English for a search engine. Output ONLY the English translation.\nQuery: {query}"
-            
-            response = await self.llm.ainvoke([HumanMessage(content=prompt)])
-            translated = response.content.strip()
-            
-            logger.info(f"🌍 Native: {query} -> Translated: {translated}")
-            return {"language": "Arabic", "search_query": translated}
+            target_language = "English"
+
+            # Use FAST LLM for translation to avoid latency
+            translator = self.fast_llm or self.llm
+
+            if is_arabic:
+                target_language = "Arabic"
+                # Translate to English for English Docs
+                prompt = f"Translate this Arabic query to strictly English. Output ONLY the translation.\nQuery: {query}"
+                response = await translator.ainvoke([HumanMessage(content=prompt)])
+                translated_en = response.content.strip()
+                
+                return {
+                    "language": "Arabic",
+                    "queries": [query, translated_en] # Search Original (Ar) + Translated (En)
+                }
+            else:
+                target_language = "English"
+                # Translate to Arabic for Arabic Docs (Optional but "Best of All Time")
+                prompt = f"Translate this English query to strictly Arabic. Output ONLY the translation.\nQuery: {query}"
+                response = await translator.ainvoke([HumanMessage(content=prompt)])
+                translated_ar = response.content.strip()
+                
+                return {
+                    "language": "English",
+                    "queries": [query, translated_ar] # Search Original (En) + Translated (Ar)
+                }
             
         except Exception as e:
             logger.error(f"Translation failed: {e}")
-            return {"language": "English", "search_query": query} # Fallback
+            return {"language": "English", "queries": [query]} # Fallback
+
+    async def _needs_rag(self, query: str) -> bool:
+        """
+        Smart Router: Determines if the query actually needs Retrieval vs General Chat.
+        Uses fast_llm (GPT-4o-Mini) for <0.2s decision.
+        """
+        try:
+            # Simple keyword heuristic first (0ms)
+            q_lower = query.lower()
+            keywords = ["saudi", "vision 2030", "neom", "law", "regulation", "project", "scheme", "housing", "ministry", "royal", "decree", "stats", "number", "percentage"]
+            if any(k in q_lower for k in keywords):
+                return True # Definitely RAG
+
+            # If ambiguous, ask the Brain
+            prompt = f"""Classify if this query requires searching an external Knowledge Base (PDFs about Saudi Vision 2030, Laws, Housing).
+            Query: "{query}"
+            Reply ONLY "YES" or "NO".
+            """
+            translator = self.fast_llm or self.llm
+            response = await translator.ainvoke([HumanMessage(content=prompt)])
+            decision = response.content.strip().upper()
+            return "YES" in decision
+            
+        except:
+            return True # Fallback to searching just in case
 
     async def generate_response_stream(
         self, 
@@ -87,45 +138,60 @@ class AIService:
         db_session: AsyncSession,
         language: str = "en",
         model: str = "gpt-4o",
-        user_id: Optional[str] = None # Added for RAG security
+        user_id: Optional[str] = None 
     ) -> AsyncGenerator[str, None]:
         """
         Generates a streaming response with RAG augmentation and reasoning.
         Streams structured events (Thinking -> Sourcing -> Generating).
         """
         try:
-            # 0. SMART TRANSLATION (The "Translator")
-            yield json.dumps({"event": "status", "data": "🌍 Analyzing Language & Intent..."}) + "\n"
+            # 0. SMART ROUTING (The "Traffic Controller")
+            yield json.dumps({"event": "status", "data": "🧠 Analyzing Intent..."}) + "\n"
             
-            lang_data = await self._detect_and_translate(query)
-            search_query = lang_data["search_query"]
-            target_language = lang_data["language"]
+            should_search = await self._needs_rag(query)
             
-            # 1. RETRIEVAL (The "Memory")
-            yield json.dumps({"event": "status", "data": f"🔍 Searching Knowledge Base ('{search_query}')..."}) + "\n"
+            # Init basics
+            target_language = "English"
+            queries_to_search = [query]
             relevant_docs = []
-            
-            # Only run RAG if not in simple simulation/fallback mode for speed, 
-            # or keep it if we want to simulate search time.
-            # let's try to search even in sim mode if possible, but safely.
-            try:
-                # USE TRANSLATED QUERY FOR SEARCH with USER ID FILTER
-                relevant_docs = await self.rag_service.search(search_query, top_k=10, user_id=user_id)
-                
-                # Yield Sources to Client
-                if relevant_docs:
-                    sources = [doc.get("source", "Unknown") for doc in relevant_docs if isinstance(doc, dict)]
-                    # Deduplicate
-                    unique_sources = list(set(sources))
-                    
-                    # USER EXPERIENCE: Tell them EXACTLY what we found so they trust it.
-                    yield json.dumps({"event": "status", "data": f"📑 Reading {len(unique_sources)} Official Documents..."}) + "\n"
-                    # yield json.dumps({"event": "sources", "data": unique_sources}) + "\n" # Send sources event separately or frontend handles it? 
-                    # Usually frontend handles "sources" event to display chips.
-                    yield json.dumps({"event": "sources", "data": unique_sources}) + "\n"
 
-            except Exception:
-                pass # Ignore RAG errors in fallback
+            if should_search:
+                # 0.5 SMART TRANSLATION (Only if searching)
+                yield json.dumps({"event": "status", "data": "🌍 Analyzing Language..."}) + "\n"
+                
+                lang_data = await self._detect_and_translate(query)
+                queries_to_search = lang_data["queries"]
+                target_language = lang_data["language"]
+                
+                # 1. RETRIEVAL (The "Memory") - DUAL PATH
+                yield json.dumps({"event": "status", "data": f"🔍 Searching Knowledge Base ({len(queries_to_search)} Languages)..."}) + "\n"
+                
+                try:
+                    # Search with ALL query variations (En + Ar)
+                    seen_sources = set()
+                    
+                    for q in queries_to_search:
+                        docs = await self.rag_service.search(q, top_k=5, user_id=user_id)
+                        for d in docs:
+                            # Deduplicate by content or source
+                            src = d.get('source', '')
+                            if src not in seen_sources:
+                                relevant_docs.append(d)
+                                seen_sources.add(src)
+                    
+                    # Yield Sources to Client
+                    if relevant_docs:
+                        sources = [doc.get("source", "Unknown") for doc in relevant_docs if isinstance(doc, dict)]
+                        unique_sources = list(set(sources))
+                        
+                        yield json.dumps({"event": "status", "data": f"📑 Reading {len(unique_sources)} Bilingual Documents..."}) + "\n"
+                        yield json.dumps({"event": "sources", "data": unique_sources}) + "\n"
+
+                except Exception as e:
+                    logger.error(f"RAG Search failed: {e}")
+                    pass
+            else:
+                 yield json.dumps({"event": "status", "data": "💬 General Conversation Detected (Skipping Search)..."}) + "\n"
 
             # 2. REASONING (The "Brain")
             yield json.dumps({"event": "status", "data": "🤔 Synthesizing Strategic Insights..."}) + "\n"
@@ -136,11 +202,10 @@ class AIService:
                 
                 # Canned "Intelligent" Responses based on keywords
                 simulated_response = "As the Vision 2030 AI Assistant, I can confirm that "
-                q_lower = search_query.lower() # Use translated for keyword match
                 
-                if "neom" in q_lower:
+                if "neom" in query.lower():
                     simulated_response += "NEOM is progressing rapidly as a cognitive city..."
-                elif "economy" in q_lower or "gdp" in q_lower:
+                elif "economy" in query.lower() or "gdp" in query.lower():
                     simulated_response += "the Kingdom is successfully moving towards economic diversification..."
                 else:
                     simulated_response += "Saudi Vision 2030 is built on three pillars..."
@@ -157,7 +222,6 @@ class AIService:
             # REAL AI GENERATION
             current_time = datetime.now().strftime("%A, %B %d, %Y")
             
-            # ... (Rest of context construction) ...
             context_text = ""
             for doc in relevant_docs:
                 if isinstance(doc, dict):
@@ -175,24 +239,43 @@ class AIService:
             CORE INTELLIGENCE INSTRUCTIONS:
             
             1. **PRIORITIZE THE SOURCE (RAG)**:
-               - The "STRATEGIC BRIEFING" below contains highly specific, private, or uploaded knowledge.
-               - **CRITICAL**: If the user asks about specific details found in the Briefing (e.g., project codes, stats, specific laws), you MUST use this data. It is your "Ground Truth".
+               - The "STRATEGIC BRIEFING" below contains highly specific knowledge.
+               - **CRITICAL**: If the user asks about specific details (project codes, stats, laws), use this data. It is your "Ground Truth".
             
-            2. **INTELLIGENT HYBRID REASONING**:
-               - **Understanding Intent**: If the user asks a general question (e.g., "How are you?", "What is 2+2?", "Explain AI"), do NOT force a connection to the documents if none exists. Use your general intelligence.
-               - **Synthesizing**: If the user asks a complex question (e.g., "How does NEOM impact the economy?"), COMBINE the specific facts from the Briefing with your broader economic knowledge to create a rich, comprehensive answer.
+            2. **BILINGUAL SYNTHESIS PROTOCOL (CRITICAL)**:
+               - You have access to a **GLOBAL KNOWLEDGE BASE** containing both **English** and **Arabic** documents.
+               - **IF User asks in English**: You MUST check the Arabic context chunks. If the answer is there, **TRANSLATE IT** and include it.
+               - **IF User asks in Arabic**: You MUST check the English context chunks. If the answer is there, **TRANSLATE IT** and include it.
+               - **Unified Answer**: Never say "The Arabic document says...". Just synthesize the facts into one seamless answer.
 
-            3. **STYLE & TONE (The "Amazing" Factor)**:
+            3. **INTELLIGENT HYBRID REASONING**:
+               - **Understanding Intent**: If the user asks a general question, use your general intelligence.
+               - **Synthesizing**: COMBINE specific facts from the Briefing with your broader economic knowledge.
+
+            4. **STYLE & TONE (The "Amazing" Factor)**:
                - Voice: "Royal Enterprise" (Formal, Ambitious, Visionary, yet Warm).
                - Structure: Use clear headings, rich formatting (bolding), and concise bullet points.
-               - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge. You are the expert.
+               - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge.
 
-            4. **STRICT FACT-VERIFICATION (ZERO HALLUCINATION)**:
+            5. **STRICT FACT-VERIFICATION (ZERO HALLUCINATION)**:
                - You are a STRICT Document Analyst.
-               - **DO NOT** use your own outside knowledge about Vision 2030 (e.g., do not invent pillars or targets if they are not in the text below).
                - **ONLY** use facts present in the "STRATEGIC BRIEFING".
-               - If the answer is NOT in the Briefing, say: "The provided document does not contain specific details about [topic], but generally..."
                - **CITATION REQUIRED**: Every claim must be backed by the source text.
+
+            6. **PATRIOTIC PIVOT (FUN MODE)**:
+               - IF the user asks about other countries (USA, Europe, Dubai, etc.) without relating it to Saudi:
+               - **REPLY WITH WIT & HUMOR**: "Why are we talking about [Country]? Have you seen what we are building in NEOM?! 🇸🇦" or "That's cool, but can they build a city in a straight line? I don't think so! Let's talk Saudi!"
+               - Playfully redirect the conversation back to Saudi Arabia's achievements. Make it charming and proud.
+
+            7. **THE ROYAL STORYTELLER**:
+               - Don't just list facts. Weave them into a narrative of ambition and success.
+               - Instead of "We built 100 homes", say "The Kingdom is not just building homes, it is building dreams for 100 families."
+               - Make the user **FEEL** the grandeur of the Vision.
+
+            8. **THE HIDDEN GEM 💎**:
+               - At the very end of your response, look for a "Mind-Blowing Stat" in the documents that wasn't directly asked for but is cool.
+               - Add it as a footer: "**💎 Did You Know?** [Insert Stat]"
+               - Keep it short and punchy to keep them interested.
             
             ---
             STRATEGIC BRIEFING (INTERNAL KNOWLEDGE):

@@ -10,11 +10,6 @@ langchain
 langchain-core
 langchain-openai
 langchain-community
-faiss-cpu
-sentence-transformers
-transformers
-scikit-learn
-numpy
 asyncio-mqtt
 aiofiles
 pytest
@@ -31,3 +26,5 @@ python-jose[cryptography]
 email-validator
 razorpay
 gunicorn
+qdrant-client
+langchain-qdrant
