@@ -114,7 +114,8 @@ async def sync_s3_to_vector_db():
             
             processed_doc = await document_service.process_file(
                 content=file_content,
-                filename=filename
+                filename=filename,
+                skip_upload=True  # Optimization: Don't re-upload to S3
             )
             
             # Manually Override Metadata to point to EXISTING S3 URL (avoiding local:// fallback if upload skipped)
