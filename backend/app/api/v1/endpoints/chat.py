@@ -118,13 +118,13 @@ async def stream_chat(
         try:
             # Create a fresh session for the streaming lifetime if needed, or just for the end.
             
-            # Determine Model based on Tier ("GPT-5 Access" for Royal)
-            # Default to "gpt-4o-mini" for speed/efficiency for normal users
-            # Use "gpt-4o" (The Flagship) for Premium/Royal users 
+            # Determine Model: FORCE GPT-4o ("The Best") for Everyone
+            # User requested "Smartest of all time".
+            user_model = "gpt-4o" 
             
-            user_model = "gpt-4o-mini" # Standard/Free
+            # (Legacy Tier Check - Kept for reference but overridden)
             if current_user and current_user.tier in ['premium', 'royal', 'enterprise']:
-                user_model = "gpt-4o" # The "GPT-5" Equivalent
+                user_model = "gpt-4o"
             
             # If user has high credits (bought a Royal pack), we can also treat them as premium
             if current_user and current_user.credits > 150:

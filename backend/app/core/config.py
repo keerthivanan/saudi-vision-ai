@@ -1,6 +1,10 @@
 from typing import List, Optional
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, validator
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Saudi Legal AI Enterprise"
@@ -19,8 +23,16 @@ class Settings(BaseSettings):
     # AI / OpenAI
     OPENAI_API_KEY: Optional[str] = None
     
-    # Vector DB
-    VECTOR_DB_PATH: str = "data/langchain_faiss_index"
+    # Vector DB (Legacy Alias updated for Qdrant)
+    VECTOR_DB_PATH: str = str(BASE_DIR / "data" / "qdrant_storage")
+    
+    # Qdrant Config
+    # Mode: 'server' (Docker) or 'local' (Embedded/Disk)
+    QDRANT_MODE: str = "local" 
+    QDRANT_HOST: str = "localhost"
+    QDRANT_PORT: int = 6333
+    QDRANT_PATH: str = str(BASE_DIR / "data" / "qdrant_storage")
+    QDRANT_COLLECTION_NAME: str = "documents"
 
     # AWS S3 Storage
     AWS_ACCESS_KEY_ID: Optional[str] = None
