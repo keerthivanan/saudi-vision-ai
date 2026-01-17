@@ -90,15 +90,21 @@ class DocumentService:
             logger.error(f"S3 Upload failed: {e}")
             return f"local://{filename}" # Fallback
             
-    async def process_file(self, content: bytes, filename: str) -> Optional[ProcessedDocument]:
+    async def process_file(self, content: bytes, filename: str, skip_upload: bool = False) -> Optional[ProcessedDocument]:
         """Process file content based on extension"""
         ext = filename.lower().split('.')[-1]
         extracted_text = ""
         
         try:
-            # 1. Upload to Cloud (S3) for Persistence
-            storage_url = self._upload_to_s3(content, filename)
-            logger.info(f"File stored at: {storage_url}")
+            # 1. Upload to Cloud (S3) for Persistence (Optional)
+            if not skip_upload:
+                storage_url = self._upload_to_s3(content, filename)
+                logger.info(f"File stored at: {storage_url}")
+            else:
+                # Assume it's already in S3 (Sync Mode)
+                bucket = os.environ.get("S3_BUCKET_NAME", "unknown-bucket")
+                storage_url = f"s3://{bucket}/documents/{filename}"
+                logger.info(f"Skipping S3 Upload (Sync Mode). Using: {storage_url}")
             
             if ext == 'pdf':
                 extracted_text = self._extract_pdf(content)
