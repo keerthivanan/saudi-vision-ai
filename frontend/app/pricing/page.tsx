@@ -103,7 +103,7 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans">
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans">
             {/* Background Decor - Dynamic Aurora */}
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-emerald-saudi/5 rounded-full blur-[120px] pointer-events-none animate-pulse" />
             <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-gold-saudi/5 rounded-full blur-[100px] pointer-events-none" />

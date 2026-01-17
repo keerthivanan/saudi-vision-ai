@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
     if (status === 'loading' || loading) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="w-10 h-10 border-4 border-emerald-saudi border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -66,7 +66,7 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen bg-background">
             <Navbar />
 
             <main className="pt-24 pb-20 px-4">

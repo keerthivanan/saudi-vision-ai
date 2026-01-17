@@ -43,7 +43,7 @@ export default function ContactPage() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <main className="min-h-screen bg-background">
             <Navbar />
 
             <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

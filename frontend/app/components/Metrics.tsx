@@ -15,14 +15,14 @@ export default function Metrics() {
     ];
 
     return (
-        <section id="metrics" className="py-24 bg-midnight-blue relative overflow-hidden">
+        <section id="metrics" className="py-24 bg-primary dark:bg-midnight-blue relative overflow-hidden">
             {/* Background Gradients */}
             <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center mb-20">
-                    <h2 className="font-sans text-4xl md:text-5xl font-bold text-white mb-6">
+                    <h2 className="font-sans text-4xl md:text-5xl font-bold text-primary-foreground dark:text-white mb-6">
                         {t('MetricsTitle')}
                     </h2>
                     <p className="text-slate-400 max-w-2xl mx-auto text-lg">

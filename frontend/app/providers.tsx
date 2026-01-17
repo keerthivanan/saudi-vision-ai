@@ -12,7 +12,7 @@ export function Providers({ children }: { children: any }) {
   return (
     <SessionProvider>
       <LanguageProvider>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           {children}
           <Toaster position="bottom-right" toastOptions={{
             style: {
