@@ -62,10 +62,17 @@ class RAGService:
                 self.qdrant_client = QdrantClient(path=str(path))
             else:
                 logger.info(f"🌐 Initializing Qdrant in SERVER mode at: {settings.QDRANT_HOST}:{settings.QDRANT_PORT}")
-                self.qdrant_client = QdrantClient(
-                    host=settings.QDRANT_HOST, 
-                    port=settings.QDRANT_PORT
-                )
+                # Support Qdrant Cloud with API key
+                if settings.QDRANT_API_KEY:
+                    self.qdrant_client = QdrantClient(
+                        url=f"https://{settings.QDRANT_HOST}",
+                        api_key=settings.QDRANT_API_KEY,
+                    )
+                else:
+                    self.qdrant_client = QdrantClient(
+                        host=settings.QDRANT_HOST, 
+                        port=settings.QDRANT_PORT
+                    )
             
             # Create VectorStore Wrapper
             self.vectorstore = QdrantVectorStore(
