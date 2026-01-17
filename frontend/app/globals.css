@@ -56,10 +56,10 @@
   }
 
   .dark {
-    /* APPLE SYSTEM PALETTE - DARK MODE */
-    /* "iPhone Pro" Aesthetic: Deep blacks, rich grays */
+    /* PURE BLACK THEME - OLED Optimized */
+    /* Full black throughout for maximum contrast */
     --background: 0 0% 0%;
-    /* #000000 (OLED Black) */
+    /* #000000 (Pure Black) */
     --foreground: 0 0% 96%;
     /* #F5F5F7 */
 
@@ -67,22 +67,23 @@
     /* Brighter Emerald for Dark Mode */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Dark Gray (like Control Center) */
-    --secondary: 240 4% 11%;
-    /* #1C1C1E */
+    /* Secondary: Pure Black */
+    --secondary: 0 0% 0%;
+    /* #000000 */
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 4% 11%;
+    --muted: 0 0% 5%;
+    /* #0D0D0D - Slightly off-black for subtle contrast */
     --muted-foreground: 240 5% 64%;
     /* #98989D */
 
-    --card: 240 4% 11%;
-    /* #1C1C1E */
+    --card: 0 0% 5%;
+    /* #0D0D0D - Slightly off-black for cards */
     --card-foreground: 0 0% 98%;
 
-    --border: 240 4% 16%;
-    /* #2C2C2E */
-    --input: 240 4% 16%;
+    --border: 0 0% 12%;
+    /* Subtle borders */
+    --input: 0 0% 12%;
     --ring: 158 45% 40%;
   }
 }

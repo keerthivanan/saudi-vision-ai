@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Send, Mic, Paperclip, Bot, Sparkles, StopCircle, User, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
@@ -262,13 +262,9 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         if (onChatCreated) onChatCreated();
     };
 
-    // Render Welcome Screen - Static (no re-animation on rerenders)
-    const WelcomeScreen = () => (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+    // Render Welcome Screen - MEMOIZED to prevent re-renders on input change
+    const welcomeScreenContent = useMemo(() => (
+        <div
             className="flex-1 flex flex-col items-center justify-center p-4 text-center z-10"
         >
             <div className="mb-8 relative">
@@ -311,8 +307,8 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                     </button>
                 ))}
             </div>
-        </motion.div>
-    );
+        </div>
+    ), [t, handleSubmit]);
 
     return (
         <div className="flex-1 flex flex-col h-screen bg-background relative overflow-hidden font-sans transition-colors duration-500">
@@ -345,88 +341,86 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
             )}
 
             {/* Main Content Area */}
-            <AnimatePresence mode="wait">
-                {isWelcomeState ? (
-                    <WelcomeScreen key="welcome" />
-                ) : (
-                    <motion.div
-                        key="chat-list"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth relative z-10 pt-28 pb-32"
-                    >
-                        {messages.map((msg, idx) => (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                key={idx}
-                                className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div className={`flex flex-col max-w-[85%] md:max-w-[720px] gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+            {isWelcomeState ? (
+                welcomeScreenContent
+            ) : (
+                <motion.div
+                    key="chat-list"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth relative z-10 pt-28 pb-32"
+                >
+                    {messages.map((msg, idx) => (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            key={idx}
+                            className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                            <div className={`flex flex-col max-w-[85%] md:max-w-[720px] gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
 
-                                    <div className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                        {/* Avatar */}
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
+                                <div className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    {/* Avatar */}
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
                                             ${msg.role === 'user'
-                                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
-                                                : 'bg-primary text-primary-foreground'}`}>
-                                            {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                                        </div>
-
-                                        {/* Bubble */}
-                                        <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-md transition-all relative
-                                            ${msg.role === 'user'
-                                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-tr-md'
-                                                : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
-                                            <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
-                                                {msg.content}
-                                            </ReactMarkdown>
-                                        </div>
+                                            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
+                                            : 'bg-primary text-primary-foreground'}`}>
+                                        {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                                     </div>
 
-                                    {/* Sources Section (Only for AI) */}
-                                    {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            className="ml-12 mt-2 flex flex-wrap gap-2"
-                                        >
-                                            <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1 uppercase tracking-wider self-center mr-2">
-                                                <Paperclip className="w-3 h-3" /> Sources:
-                                            </span>
-                                            {msg.sources.map((src, i) => {
-                                                // Clean up S3 URLs to show nice filename
-                                                const fileName = src.split('/').pop() || src;
-                                                const isArabic = /[\u0600-\u06FF]/.test(fileName);
-                                                return (
-                                                    <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-secondary transition-colors cursor-default" title={src}>
-                                                        <span>{isArabic ? '📄 🇸🇦' : '📄'}</span>
-                                                        <span className="max-w-[200px] truncate">{fileName}</span>
-                                                    </span>
-                                                )
-                                            })}
-                                        </motion.div>
-                                    )}
-                                </div>
-                            </motion.div>
-                        ))}
-                        {isLoading && (
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><Bot className="w-4 h-4 text-primary-foreground" /></div>
-                                <div className="bg-card border border-border px-6 py-4 rounded-2xl rounded-tl-md flex items-center gap-3 shadow-sm">
-                                    <div className="flex gap-1.5">
-                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce" />
-                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-75" />
-                                        <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-150" />
+                                    {/* Bubble */}
+                                    <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-md transition-all relative
+                                            ${msg.role === 'user'
+                                            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-tr-md'
+                                            : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
+                                        <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
+                                            {msg.content}
+                                        </ReactMarkdown>
                                     </div>
-                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{thinkingText}</span>
                                 </div>
+
+                                {/* Sources Section (Only for AI) */}
+                                {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="ml-12 mt-2 flex flex-wrap gap-2"
+                                    >
+                                        <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1 uppercase tracking-wider self-center mr-2">
+                                            <Paperclip className="w-3 h-3" /> Sources:
+                                        </span>
+                                        {msg.sources.map((src, i) => {
+                                            // Clean up S3 URLs to show nice filename
+                                            const fileName = src.split('/').pop() || src;
+                                            const isArabic = /[\u0600-\u06FF]/.test(fileName);
+                                            return (
+                                                <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-secondary transition-colors cursor-default" title={src}>
+                                                    <span>{isArabic ? '📄 🇸🇦' : '📄'}</span>
+                                                    <span className="max-w-[200px] truncate">{fileName}</span>
+                                                </span>
+                                            )
+                                        })}
+                                    </motion.div>
+                                )}
                             </div>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        </motion.div>
+                    ))}
+                    {isLoading && (
+                        <div className="flex gap-4">
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><Bot className="w-4 h-4 text-primary-foreground" /></div>
+                            <div className="bg-card border border-border px-6 py-4 rounded-2xl rounded-tl-md flex items-center gap-3 shadow-sm">
+                                <div className="flex gap-1.5">
+                                    <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce" />
+                                    <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-75" />
+                                    <div className="w-1.5 h-1.5 bg-foreground/40 rounded-full animate-bounce delay-150" />
+                                </div>
+                                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{thinkingText}</span>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </motion.div>
+            )}
 
             {/* Input Area - Floating Island */}
             <div className={`z-40 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isWelcomeState ? 'w-full max-w-2xl mx-auto mb-16 px-4' : 'absolute bottom-6 left-0 right-0 px-4 md:px-0 flex justify-center'}`}>
@@ -466,6 +460,6 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 )}
             </div>
 
-        </div>
+        </div >
     );
 }

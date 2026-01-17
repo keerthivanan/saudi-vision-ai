@@ -69,7 +69,7 @@ export default function Projects() {
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            className="min-w-[300px] md:min-w-[420px] bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-700 snap-center relative group"
+                            className="min-w-[300px] md:min-w-[420px] bg-white dark:bg-black rounded-3xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 snap-center relative group"
                         >
                             <div className="h-72 overflow-hidden relative">
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
