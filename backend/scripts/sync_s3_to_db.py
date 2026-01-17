@@ -24,14 +24,11 @@ from app.models.user import User
 from sqlalchemy import select
 from app.core.config import settings
 
-# FIX: Force Absolute Path for Vector DB to avoid "Ghost Index" in root
-# This ensures it ALWAYS goes to backend/data/langchain_faiss_index
+# Setup Path to import app modules
 BASE_DIR = Path(__file__).resolve().parent.parent # backend/
-ABS_VECTOR_PATH = str(BASE_DIR / "data" / "langchain_faiss_index")
 
-# Override settings to use the absolute path
-print(f"🔧 Forcing Vector DB Path: {ABS_VECTOR_PATH}")
-settings.VECTOR_DB_PATH = ABS_VECTOR_PATH
+# No need to override VECTOR_DB_PATH as we are using Qdrant now
+# settings will be loaded from .env and config.py
 
 async def sync_s3_to_vector_db():
     print("🔄 STARTING SYNC: S3 -> VECTOR DATABASE (FAISS)")
