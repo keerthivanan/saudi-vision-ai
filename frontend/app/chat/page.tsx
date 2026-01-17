@@ -16,12 +16,12 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex h-screen bg-background">
+        <div className="flex h-screen w-full bg-background overflow-hidden">
             <ChatSidebar
                 refreshTrigger={refreshTrigger}
                 onSelectChat={handleSelectChat}
             />
-            <main className="flex-1 flex flex-col relative overflow-hidden">
+            <main className="flex-1 flex flex-col w-full relative overflow-hidden">
                 <ChatInterface onChatCreated={() => setRefreshTrigger(prev => prev + 1)} />
             </main>
         </div>
