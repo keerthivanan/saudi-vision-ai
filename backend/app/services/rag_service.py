@@ -67,11 +67,13 @@ class RAGService:
                     self.qdrant_client = QdrantClient(
                         url=f"https://{settings.QDRANT_HOST}",
                         api_key=settings.QDRANT_API_KEY,
+                        timeout=300, # FIX: Increase timeout for large uploads
                     )
                 else:
                     self.qdrant_client = QdrantClient(
                         host=settings.QDRANT_HOST, 
-                        port=settings.QDRANT_PORT
+                        port=settings.QDRANT_PORT,
+                        timeout=300, # FIX: Increased timeout
                     )
             
             # Create VectorStore Wrapper

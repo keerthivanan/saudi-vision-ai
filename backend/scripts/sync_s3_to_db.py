@@ -95,31 +95,18 @@ async def sync_s3_to_vector_db():
                 print("Skipped (Format not supported)")
                 continue
 
-            # Download to temp
-            local_path = f"temp_sync/{filename}"
-            s3.download_file(bucket_name, key, local_path)
+            # Stream direct from S3 (In-Memory)
+            # No disk write needed
+            obj_response = s3.get_object(Bucket=bucket_name, Key=key)
+            file_content = obj_response['Body'].read()
 
-            # Process (Extract Text + Embed)
-            # FIX: Read the file content as bytes, because process_file expects 'content: bytes'
-            with open(local_path, "rb") as f:
-                file_content = f.read()
-
-            # FIX: Call process_file with correct arguments (content, filename)
-            # The service will handle the S3 upload internally, but since we are syncing FROM S3,
-            # we might be re-uploading? 
-            # Actually, DocumentService.process_file Uploads to S3. 
-            # We want to SKIP the upload part if possible, but the service couples them.
-            # However, for a Sync script, re-uploading to the same key is redundant but harmless.
-            # More importantly, we need the ProcessedDocument object.
-            
             processed_doc = await document_service.process_file(
                 content=file_content,
                 filename=filename,
                 skip_upload=True  # Optimization: Don't re-upload to S3
             )
             
-            # Manually Override Metadata to point to EXISTING S3 URL (avoiding local:// fallback if upload skipped)
-            # Manually Override Metadata to point to EXISTING S3 URL (avoiding local:// fallback if upload skipped)
+            # Manually Override Metadata to point to EXISTING S3 URL
             if processed_doc:
                 processed_doc.metadata["source"] = f"s3://{bucket_name}/{key}"
                 processed_doc.metadata["scope"] = "public"
@@ -131,15 +118,9 @@ async def sync_s3_to_vector_db():
             else:
                 print("⚠️  No text content")
 
-            # Cleanup
-            if os.path.exists(local_path):
-                os.remove(local_path)
-
         except Exception as e:
             print(f"❌ Error: {e}")
             errors += 1
-            if os.path.exists(local_path):
-                os.remove(local_path)
 
     print("==============================================")
     print(f"🎉 SYNC COMPLETE!")
