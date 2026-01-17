@@ -100,9 +100,9 @@ export default function Hero() {
                     transition={{ duration: 1 }}
                     className="max-w-3xl mx-auto mb-12"
                 >
-                    <div className="bg-card/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-xl border border-border dark:border-slate-800 
+                    <div className="bg-card/80 dark:bg-black/60 backdrop-blur-xl rounded-2xl p-2 shadow-xl border border-border dark:border-slate-800 
                         focus-within:border-emerald-saudi focus-within:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">
-                        <div className="flex items-center gap-3 bg-secondary dark:bg-slate-800/50 rounded-xl px-4 py-3">
+                        <div className="flex items-center gap-3 bg-secondary dark:bg-black/50 rounded-xl px-4 py-3">
                             <Search className="w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
@@ -147,7 +147,7 @@ export default function Hero() {
                                 onClick={() => {
                                     window.location.href = `/chat?q=${encodeURIComponent(suggestion)}`;
                                 }}
-                                className="px-4 py-2 bg-secondary dark:bg-slate-800/50 border border-border dark:border-slate-700 rounded-full text-sm text-muted-foreground dark:text-slate-300 
+                                className="px-4 py-2 bg-secondary dark:bg-black/50 border border-border dark:border-slate-700 rounded-full text-sm text-muted-foreground dark:text-slate-300 
                                     hover:bg-emerald-saudi/10 hover:border-emerald-saudi hover:text-emerald-bright transition-all backdrop-blur-sm"
                             >
                                 {suggestion}

@@ -145,7 +145,7 @@ export default function ChatPreview() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="relative bg-white dark:bg-slate-800 rounded-[2rem] shadow-[0_32px_64px_rgba(0,108,53,0.08)] border border-slate-100 dark:border-slate-700 overflow-hidden"
+                    className="relative bg-white dark:bg-black rounded-[2rem] shadow-[0_32px_64px_rgba(0,108,53,0.08)] border border-slate-100 dark:border-slate-800 overflow-hidden"
                 >
                     {/* Authentication Lock Overlay */}
                     {!session && (
@@ -209,8 +209,8 @@ export default function ChatPreview() {
                     </div>
 
                     {/* Input Area */}
-                    <div className={`border-t border-slate-100 dark:border-slate-700 p-6 md:p-8 bg-white dark:bg-slate-800 ${!session ? 'blur-sm pointer-events-none' : ''}`}>
-                        <form onSubmit={handleSubmit} className="relative flex items-center bg-white dark:bg-slate-700 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-emerald-saudi/20">
+                    <div className={`border-t border-slate-100 dark:border-slate-800 p-6 md:p-8 bg-white dark:bg-black ${!session ? 'blur-sm pointer-events-none' : ''}`}>
+                        <form onSubmit={handleSubmit} className="relative flex items-center bg-white dark:bg-black rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-emerald-saudi/20">
                             <button type="button" className="p-4 text-slate-400 hover:text-emerald-saudi transition-colors">
                                 <Paperclip size={24} />
                             </button>

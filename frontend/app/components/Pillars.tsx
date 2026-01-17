@@ -56,7 +56,7 @@ export default function Pillars() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                             viewport={{ once: true }}
-                            className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:border-emerald-saudi/20 transition-all duration-500 flex flex-col h-full"
+                            className="group bg-white dark:bg-black rounded-2xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-800 hover:shadow-2xl hover:border-emerald-saudi/20 transition-all duration-500 flex flex-col h-full"
                         >
                             {/* Image Header */}
                             <div className="relative h-64 overflow-hidden">
