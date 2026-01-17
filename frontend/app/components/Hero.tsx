@@ -42,7 +42,7 @@ export default function Hero() {
     };
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-background via-secondary to-background dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
 
             {/* Background Grid Pattern (Code Wiki style) */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
@@ -83,12 +83,12 @@ export default function Hero() {
                         <span className="text-sm font-medium text-emerald-bright tracking-wide">{t('HeroTagline')}</span>
                     </div>
 
-                    <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
+                    <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-foreground dark:text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
                         {t('HeroTitle1')} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-bright to-emerald-saudi">{t('HeroTitle2')}</span>
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-slate-300 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
+                    <p className="text-xl md:text-2xl text-muted-foreground dark:text-slate-300 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
                         {t('HeroSubtitle')}
                     </p>
                 </motion.div>
@@ -100,9 +100,9 @@ export default function Hero() {
                     transition={{ duration: 1 }}
                     className="max-w-3xl mx-auto mb-12"
                 >
-                    <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-800 
+                    <div className="bg-card/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl p-2 shadow-xl border border-border dark:border-slate-800 
                         focus-within:border-emerald-saudi focus-within:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">
-                        <div className="flex items-center gap-3 bg-slate-800/50 rounded-xl px-4 py-3">
+                        <div className="flex items-center gap-3 bg-secondary dark:bg-slate-800/50 rounded-xl px-4 py-3">
                             <Search className="w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
@@ -110,7 +110,7 @@ export default function Hero() {
                                 onChange={(e) => setQuery(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && query.trim() && (window.location.href = `/chat?q=${encodeURIComponent(query)}`)}
                                 placeholder={t('SearchPlaceholder')}
-                                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-slate-400 text-base"
+                                className="flex-1 bg-transparent border-none outline-none text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-slate-400 text-base"
                             />
                             <button
                                 onClick={startListening}
@@ -147,7 +147,7 @@ export default function Hero() {
                                 onClick={() => {
                                     window.location.href = `/chat?q=${encodeURIComponent(suggestion)}`;
                                 }}
-                                className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full text-sm text-slate-300 
+                                className="px-4 py-2 bg-secondary dark:bg-slate-800/50 border border-border dark:border-slate-700 rounded-full text-sm text-muted-foreground dark:text-slate-300 
                                     hover:bg-emerald-saudi/10 hover:border-emerald-saudi hover:text-emerald-bright transition-all backdrop-blur-sm"
                             >
                                 {suggestion}
@@ -188,9 +188,9 @@ export default function Hero() {
                 />
 
                 {/* Premium Gradient Overlays for Text Contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40" />
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-transparent to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background dark:from-slate-950 via-background/80 dark:via-slate-950/80 to-background/40 dark:to-slate-950/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-background/90 dark:from-slate-950/90 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-background/50 dark:from-slate-950/50 via-transparent to-background/50 dark:to-slate-950/50" />
             </div>
         </div>
     );

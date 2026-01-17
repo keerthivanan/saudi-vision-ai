@@ -45,7 +45,7 @@ export default function Projects() {
     ];
 
     return (
-        <section id="projects" className="py-24 bg-slate-50 dark:bg-slate-900">
+        <section id="projects" className="py-24 bg-secondary">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
                     <div>

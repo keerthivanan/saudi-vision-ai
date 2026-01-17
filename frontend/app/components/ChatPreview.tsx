@@ -125,7 +125,7 @@ export default function ChatPreview() {
     };
 
     return (
-        <section id="chat" className="py-24 bg-white dark:bg-slate-900 relative">
+        <section id="chat" className="py-24 bg-background relative">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
                 {/* Header */}
@@ -149,7 +149,7 @@ export default function ChatPreview() {
                 >
                     {/* Authentication Lock Overlay */}
                     {!session && (
-                        <div className="absolute inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div className="absolute inset-0 z-50 bg-background/60 dark:bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -200,7 +200,7 @@ export default function ChatPreview() {
                                 <div className="w-12 h-12 rounded-full bg-slate-900 flex-shrink-0 flex items-center justify-center border-2 border-gold-saudi mr-4 rtl:mr-0 rtl:ml-4">
                                     <Bot className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="bg-slate-50 border border-slate-200 px-8 py-6 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2 text-slate-500 rtl:rounded-tl-2xl rtl:rounded-tr-sm">
+                                <div className="bg-secondary dark:bg-slate-50 border border-border dark:border-slate-200 px-8 py-6 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2 text-muted-foreground dark:text-slate-500 rtl:rounded-tl-2xl rtl:rounded-tr-sm">
                                     <Loader2 className="w-5 h-5 animate-spin" /> {t('Analyzing')}
                                 </div>
                             </div>

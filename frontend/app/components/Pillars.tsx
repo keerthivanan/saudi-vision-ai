@@ -39,7 +39,7 @@ export default function Pillars() {
     ];
 
     return (
-        <section id="pillars" className="py-24 bg-slate-50 dark:bg-slate-900 relative overflow-hidden">
+        <section id="pillars" className="py-24 bg-secondary relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center mb-16">
                     <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">

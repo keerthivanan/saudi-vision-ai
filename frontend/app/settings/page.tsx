@@ -29,7 +29,7 @@ export default function SettingsPage() {
 
     if (status === 'loading' || !mounted) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="w-10 h-10 border-4 border-emerald-saudi border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -42,7 +42,7 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="min-h-screen bg-background">
             <Navbar />
 
             <main className="pt-24 pb-20 px-4">
@@ -78,37 +78,20 @@ export default function SettingsPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-lg"
+                            className="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-lg"
                         >
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <Moon size={20} />
                                 Appearance
                             </h2>
 
-                            <div className="flex items-center justify-between py-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between py-4 border-b border-slate-800">
                                 <div>
-                                    <p className="font-medium text-slate-900 dark:text-white">Theme</p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</p>
+                                    <p className="font-medium text-white">Theme</p>
+                                    <p className="text-sm text-slate-400">System theme</p>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setTheme('light')}
-                                        className={`px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-all ${theme === 'light'
-                                                ? 'bg-emerald-saudi text-white'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                            }`}
-                                    >
-                                        <Sun size={16} /> Light
-                                    </button>
-                                    <button
-                                        onClick={() => setTheme('dark')}
-                                        className={`px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-all ${theme === 'dark'
-                                                ? 'bg-emerald-saudi text-white'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                            }`}
-                                    >
-                                        <Moon size={16} /> Dark
-                                    </button>
+                                <div className="px-4 py-2 rounded-xl bg-emerald-saudi text-white font-medium flex items-center gap-2">
+                                    <Moon size={16} /> Dark Mode
                                 </div>
                             </div>
 
@@ -121,8 +104,8 @@ export default function SettingsPage() {
                                     <button
                                         onClick={() => language !== 'en' && toggleLanguage()}
                                         className={`px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-all ${language === 'en'
-                                                ? 'bg-emerald-saudi text-white'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                            ? 'bg-emerald-saudi text-white'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                                             }`}
                                     >
                                         <Globe size={16} /> English
@@ -130,8 +113,8 @@ export default function SettingsPage() {
                                     <button
                                         onClick={() => language !== 'ar' && toggleLanguage()}
                                         className={`px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-all ${language === 'ar'
-                                                ? 'bg-emerald-saudi text-white'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                            ? 'bg-emerald-saudi text-white'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                                             }`}
                                     >
                                         <Globe size={16} /> العربية

@@ -3,7 +3,7 @@ import { Home } from 'lucide-react';
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen bg-midnight-blue flex items-center justify-center relative overflow-hidden text-center px-4">
+        <div className="min-h-screen bg-background dark:bg-midnight-blue flex items-center justify-center relative overflow-hidden text-center px-4">
             {/* Background Effects */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-10 mix-blend-overlay" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-saudi/20 rounded-full blur-[120px]" />
@@ -12,10 +12,10 @@ export default function NotFound() {
                 <h1 className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-gold-saudi to-emerald-900 mb-4 font-serif">
                     404
                 </h1>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white mb-6">
                     Page Not Found
                 </h2>
-                <p className="text-slate-300 max-w-lg mx-auto mb-10 text-lg">
+                <p className="text-muted-foreground dark:text-slate-300 max-w-lg mx-auto mb-10 text-lg">
                     The page you are looking for seems to have been lost in the digital dunes.
                 </p>
 

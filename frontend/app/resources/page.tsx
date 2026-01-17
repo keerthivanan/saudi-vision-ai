@@ -88,12 +88,12 @@ export default function ResourcesPage() {
     });
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-900 dark:text-slate-100">
+        <div className="min-h-screen bg-background flex flex-col font-sans text-foreground">
             <Navbar />
 
             <main className="flex-1 pt-24 pb-20">
                 {/* Header Section */}
-                <section className="bg-midnight-blue text-white py-16 relative overflow-hidden">
+                <section className="bg-primary dark:bg-midnight-blue text-primary-foreground dark:text-white py-16 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
                         <motion.div

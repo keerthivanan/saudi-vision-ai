@@ -262,13 +262,13 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         if (onChatCreated) onChatCreated();
     };
 
-    // Render Welcome Screen
+    // Render Welcome Screen - Static (no re-animation on rerenders)
     const WelcomeScreen = () => (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="flex-1 flex flex-col items-center justify-center p-4 text-center z-10"
         >
             <div className="mb-8 relative">
@@ -276,11 +276,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 <Bot className="w-20 h-20 text-emerald-saudi relative z-10 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
             </div>
 
-            <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-            >
+            <div>
                 <div className="inline-block px-4 py-1.5 rounded-full border border-emerald-saudi/30 bg-emerald-saudi/5 mb-6">
                     <span className="text-emerald-bright font-bold tracking-widest text-xs uppercase flex items-center gap-2">
                         {t('ChatBadge') || "Saudi People's Chat"}
@@ -301,15 +297,10 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 <p className="text-slate-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
                     {t('ChatWelcomeSubtitle') || "I am your Saudi Vision 2030 Oracle. Ask me anything."}
                 </p>
-            </motion.div>
+            </div>
 
             {/* Quick Suggestions Bubbles */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-12 flex flex-wrap justify-center gap-3 max-w-2xl"
-            >
+            <div className="mt-12 flex flex-wrap justify-center gap-3 max-w-2xl">
                 {[t('Suggestion1'), t('Suggestion2'), t('Suggestion3')].map((s, i) => (
                     <button
                         key={i}
@@ -319,7 +310,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                         {s}
                     </button>
                 ))}
-            </motion.div>
+            </div>
         </motion.div>
     );
 

@@ -101,17 +101,8 @@ export default function Navbar() {
 
                         {/* Right Actions */}
                         <div className="hidden md:flex items-center gap-4">
-                            {/* Theme Toggle */}
-                            {mounted && (
-                                <button
-                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                    className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                                    title="Toggle Theme"
-                                >
-                                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                                </button>
-                            )}
 
+                            {/* Language Toggle */}
                             <button
                                 onClick={toggleLanguage}
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-saudi/20 text-emerald-saudi hover:bg-emerald-saudi/5 transition-colors text-sm dark:border-emerald-saudi/40 dark:text-emerald-400"
@@ -219,13 +210,7 @@ export default function Navbar() {
                                     {link.name}
                                 </Link>
                             ))}
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between px-4">
-                                <button
-                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                    className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300"
-                                >
-                                    {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />} Theme
-                                </button>
+                            <div className="pt-4 border-t border-slate-800 flex items-center justify-center px-4">
                                 <button onClick={toggleLanguage} className="flex items-center gap-2 text-sm font-medium text-emerald-saudi">
                                     <Globe size={16} /> Language
                                 </button>
