@@ -90,7 +90,7 @@ export default function ChatSidebar({ refreshTrigger, onSelectChat }: ChatSideba
 
                     const labelToday = t('Today') || 'Today';
                     const labelYesterday = t('Yesterday') || 'Yesterday';
-                    const labelWeek = t('Previous7Days') || 'Previous 7 Days';
+                    const labelWeek = t('Last7Days') || 'Previous 7 Days';
                     const labelOlder = t('Older') || 'Older';
 
                     const groups: Record<string, any[]> = {
