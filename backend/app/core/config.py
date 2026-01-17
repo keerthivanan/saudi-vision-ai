@@ -27,12 +27,13 @@ class Settings(BaseSettings):
     VECTOR_DB_PATH: str = str(BASE_DIR / "data" / "qdrant_storage")
     
     # Qdrant Config
-    # Mode: 'server' (Docker) or 'local' (Embedded/Disk)
+    # Mode: 'server' (Docker/Cloud) or 'local' (Embedded/Disk)
     QDRANT_MODE: str = "local" 
     QDRANT_HOST: str = "localhost"
     QDRANT_PORT: int = 6333
     QDRANT_PATH: str = str(BASE_DIR / "data" / "qdrant_storage")
     QDRANT_COLLECTION_NAME: str = "documents"
+    QDRANT_API_KEY: Optional[str] = None  # Required for Qdrant Cloud
 
     # AWS S3 Storage
     AWS_ACCESS_KEY_ID: Optional[str] = None
