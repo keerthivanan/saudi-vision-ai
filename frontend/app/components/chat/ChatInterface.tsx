@@ -210,6 +210,15 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                         setThinkingText(data.data);
                                         break;
 
+                                    case 'sources':
+                                        setMessages(prev => {
+                                            const newMsgs = [...prev];
+                                            const msg = newMsgs[newMsgs.length - 1];
+                                            if (msg) msg.sources = data.data; // Store sources
+                                            return newMsgs;
+                                        });
+                                        break;
+
                                     case 'billing':
                                         if (data.data.remaining !== undefined) {
                                             setCredits(data.data.remaining);
@@ -273,8 +282,16 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                 transition={{ delay: 0.2 }}
             >
                 <div className="inline-block px-4 py-1.5 rounded-full border border-emerald-saudi/30 bg-emerald-saudi/5 mb-6">
-                    <span className="text-emerald-bright font-bold tracking-widest text-xs uppercase">
-                        {t('ChatBadge') || "Saudi People's Chat"} 🇸🇦
+                    <span className="text-emerald-bright font-bold tracking-widest text-xs uppercase flex items-center gap-2">
+                        {t('ChatBadge') || "Saudi People's Chat"}
+                        <img
+                            src="https://flagcdn.com/w40/sa.png"
+                            srcSet="https://flagcdn.com/w80/sa.png 2x"
+                            width="20"
+                            height="15"
+                            alt="Saudi Flag"
+                            className="inline-block rounded-sm object-cover shadow-sm"
+                        />
                     </span>
                 </div>
 
@@ -354,24 +371,51 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                 key={idx}
                                 className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div className={`flex max-w-[85%] md:max-w-[720px] gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                    {/* Avatar */}
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
-                                        ${msg.role === 'user'
-                                            ? 'bg-secondary text-muted-foreground'
-                                            : 'bg-primary text-primary-foreground'}`}>
-                                        {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                <div className={`flex flex-col max-w-[85%] md:max-w-[720px] gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+
+                                    <div className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                        {/* Avatar */}
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
+                                            ${msg.role === 'user'
+                                                ? 'bg-secondary text-muted-foreground'
+                                                : 'bg-primary text-primary-foreground'}`}>
+                                            {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                        </div>
+
+                                        {/* Bubble */}
+                                        <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-sm transition-all relative
+                                            ${msg.role === 'user'
+                                                ? 'bg-primary text-primary-foreground rounded-tr-md'
+                                                : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
+                                            <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
                                     </div>
 
-                                    {/* Bubble */}
-                                    <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-sm transition-all relative
-                                        ${msg.role === 'user'
-                                            ? 'bg-primary text-primary-foreground rounded-tr-md'
-                                            : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
-                                        <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
-                                            {msg.content}
-                                        </ReactMarkdown>
-                                    </div>
+                                    {/* Sources Section (Only for AI) */}
+                                    {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="ml-12 mt-2 flex flex-wrap gap-2"
+                                        >
+                                            <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1 uppercase tracking-wider self-center mr-2">
+                                                <Paperclip className="w-3 h-3" /> Sources:
+                                            </span>
+                                            {msg.sources.map((src, i) => {
+                                                // Clean up S3 URLs to show nice filename
+                                                const fileName = src.split('/').pop() || src;
+                                                const isArabic = /[\u0600-\u06FF]/.test(fileName);
+                                                return (
+                                                    <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-secondary transition-colors cursor-default" title={src}>
+                                                        <span>{isArabic ? '📄 🇸🇦' : '📄'}</span>
+                                                        <span className="max-w-[200px] truncate">{fileName}</span>
+                                                    </span>
+                                                )
+                                            })}
+                                        </motion.div>
+                                    )}
                                 </div>
                             </motion.div>
                         ))}
