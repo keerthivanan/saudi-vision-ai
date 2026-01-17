@@ -99,12 +99,30 @@ class RAGService:
             self.qdrant_client.delete_collection(settings.QDRANT_COLLECTION_NAME)
             logger.info("✅ Collection deleted.")
             
-            # Re-create is handled automatically by Langchain on next add, 
-            # OR we can force create it here if we want specific config (vectors config).
-            # For local mode/simplicity, we let Langchain lazy-create it.
+            # FORCE RE-CREATE immediately to avoid 404s
+            logger.info("🆕 Re-creating empty collection...")
+            self.qdrant_client.recreate_collection(
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                vectors_config=models.VectorParams(
+                    size=3072, 
+                    distance=models.Distance.COSINE
+                )
+            )
+            logger.info("✅ Collection re-created and ready.")
              
         except Exception as e:
-            logger.warning(f"Could not delete collection (might not exist yet): {e}")
+            logger.warning(f"Reset index error: {e}")
+            # Try to create anyway if delete failed (maybe it didn't exist)
+            try:
+                self.qdrant_client.recreate_collection(
+                    collection_name=settings.QDRANT_COLLECTION_NAME,
+                    vectors_config=models.VectorParams(
+                        size=3072, 
+                        distance=models.Distance.COSINE
+                    )
+                )
+            except Exception as create_error:
+                logger.error(f"Failed to force create collection: {create_error}")
 
     async def ingest_document(self, doc: ProcessedDocument):
         """Wrapper for single document ingestion"""
