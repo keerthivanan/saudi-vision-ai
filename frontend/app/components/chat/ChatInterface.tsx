@@ -377,15 +377,15 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                         {/* Avatar */}
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm
                                             ${msg.role === 'user'
-                                                ? 'bg-secondary text-muted-foreground'
+                                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
                                                 : 'bg-primary text-primary-foreground'}`}>
                                             {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                                         </div>
 
                                         {/* Bubble */}
-                                        <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-sm transition-all relative
+                                        <div className={`px-6 py-4 rounded-2xl text-[16px] leading-7 shadow-md transition-all relative
                                             ${msg.role === 'user'
-                                                ? 'bg-primary text-primary-foreground rounded-tr-md'
+                                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-tr-md'
                                                 : 'bg-card border border-border text-foreground rounded-tl-md'}`}>
                                             <ReactMarkdown className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-loose prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border prose-pre:rounded-xl">
                                                 {msg.content}
