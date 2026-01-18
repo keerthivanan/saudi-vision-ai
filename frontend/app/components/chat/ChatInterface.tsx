@@ -162,7 +162,6 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         setIsLoading(true);
 
         try {
-            console.log(">>> [ChatInterface] Sending Request with Conversation ID:", conversationId);
             const response = await fetch('/api/v1/chat/stream', {
                 method: 'POST',
                 headers: {
@@ -210,16 +209,15 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                     case 'conversation_created':
                                         if (data.data.id) {
                                             const newId = data.data.id;
-                                            console.log(">>> [ChatInterface] Conversation Created/Resumed ID:", newId);
                                             setConversationId(newId);
-
                                             // 1. Update URL without reload to persist state
                                             window.history.replaceState({ id: newId }, '', `/chat?id=${newId}`);
-
                                             // 2. IMPORTANT: Notify Sidebar to refresh list immediately
                                             if (onChatCreated) onChatCreated();
                                         }
                                         break;
+
+                                    case 'status':
                                         setThinkingText(data.data);
                                         break;
 
@@ -240,18 +238,6 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                                 duration: 2000,
                                                 icon: '⚡'
                                             });
-                                        }
-                                        break;
-
-                                    case 'conversation_created':
-                                        if (data.data.id) {
-                                            const newId = data.data.id;
-                                            setConversationId(newId);
-                                            // 1. Update URL without reload to persist state
-                                            window.history.replaceState({ id: newId }, '', `/chat?id=${newId}`);
-
-                                            // 2. IMPORTANT: Notify Sidebar to refresh list immediately
-                                            if (onChatCreated) onChatCreated();
                                         }
                                         break;
                                 }

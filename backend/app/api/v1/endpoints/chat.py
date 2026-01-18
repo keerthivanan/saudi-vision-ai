@@ -33,7 +33,7 @@ async def get_chat_history(
 
 @router.get("/{conversation_id}", response_model=List[MessageResponse])
 async def get_conversation_messages(
-    conversation_id: UUID,
+    conversation_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -87,7 +87,7 @@ async def stream_chat(
         user_id = current_user.id
         
         conversation_id = request.conversation_id
-        print(f">>> REQUEST CONVERSATION ID: {conversation_id} (Type: {type(conversation_id)})")
+        conversation_id = request.conversation_id
         
         if not conversation_id:
             conv = await chat_service.create_conversation(db, current_user.id, request.message[:50])
