@@ -30,7 +30,7 @@ function SignInContent() {
         'SessionRequired': 'Please sign in to access this page.',
         'default': 'Unable to sign in.',
       };
-      setError(errorMap[urlError] || errorMap['default']);
+      setError(errorMap[urlError] || errorMap['default'] || "An unknown error occurred");
     }
   }, [urlError]);
 
@@ -232,6 +232,7 @@ function SignInContent() {
 
 export default function SignIn() {
   return (
+    // @ts-ignore
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
         <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
