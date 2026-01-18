@@ -87,6 +87,8 @@ async def stream_chat(
         user_id = current_user.id
         
         conversation_id = request.conversation_id
+        print(f">>> REQUEST CONVERSATION ID: {conversation_id} (Type: {type(conversation_id)})")
+        
         if not conversation_id:
             conv = await chat_service.create_conversation(db, current_user.id, request.message[:50])
             conversation_id = conv.id
