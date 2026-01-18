@@ -91,6 +91,9 @@ async def stream_chat(
             conv = await chat_service.create_conversation(db, current_user.id, request.message[:50])
             conversation_id = conv.id
             await chat_service.add_message(db, conversation_id, "user", request.message)
+        else:
+             # FIX: For existing conversation, we MUST add the user message to history
+             await chat_service.add_message(db, conversation_id, "user", request.message)
         
         # 2. Get History for Context
         history = []

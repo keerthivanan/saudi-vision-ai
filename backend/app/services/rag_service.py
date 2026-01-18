@@ -233,7 +233,8 @@ class RAGService:
         # SAFE APPROACH: Fetch more (fetch_k*2), then filter in Python to ensure perfect privacy.
         
         for q in queries:
-            sub_results = self.vectorstore.similarity_search_with_score(q, k=fetch_k * 2) # Fetch extra for filtering
+            # Use ASYNC search to prevent blocking the Event Loop
+            sub_results = await self.vectorstore.asimilarity_search_with_score(q, k=fetch_k * 2) 
             
             for doc, score in sub_results:
                 metadata = doc.metadata
