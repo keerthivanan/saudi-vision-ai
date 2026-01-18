@@ -31,7 +31,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-secondary dark:bg-[#022c22] text-foreground dark:text-white pt-24 pb-0 relative overflow-hidden font-sans">
+    <footer className="bg-white dark:bg-black text-foreground dark:text-white pt-24 pb-0 relative overflow-hidden font-sans border-t border-white/5">
       {/* Dynamic Background Pattern */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] mix-blend-overlay pointer-events-none" />
