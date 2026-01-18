@@ -9,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 type Message = {
     role: 'user' | 'ai';
     content: string;
+    sources?: string[];
 };
 
 export default function ChatPreview() {
@@ -102,7 +103,22 @@ export default function ChatPreview() {
                                             const msg = newMsgs[lastIndex]!;
                                             newMsgs[lastIndex] = {
                                                 role: msg.role,
-                                                content: aiResponseContent
+                                                content: aiResponseContent,
+                                                ...(msg.sources ? { sources: msg.sources } : {})
+                                            };
+                                        }
+                                        return newMsgs;
+                                    });
+                                }
+                                else if (data.event === 'sources') {
+                                    setMessages(prev => {
+                                        const newMsgs = [...prev];
+                                        const lastIndex = newMsgs.length - 1;
+                                        if (lastIndex >= 0) {
+                                            const msg = newMsgs[lastIndex]!;
+                                            newMsgs[lastIndex] = {
+                                                ...msg,
+                                                sources: data.data
                                             };
                                         }
                                         return newMsgs;
@@ -184,12 +200,37 @@ export default function ChatPreview() {
                                     </div>
                                 )}
 
-                                <div className={`max-w-xl px-8 py-6 rounded-2xl text-lg leading-relaxed shadow-sm
-                            ${msg.role === 'user'
-                                        ? 'bg-emerald-saudi text-white rounded-tr-sm shadow-emerald-saudi/10 rtl:rounded-tr-2xl rtl:rounded-tl-sm'
-                                        : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-tl-sm rtl:rounded-tl-2xl rtl:rounded-tr-sm'
-                                    }`}>
-                                    {msg.content}
+                                <div className="flex flex-col max-w-xl">
+                                    <div className={`px-8 py-6 rounded-2xl text-lg leading-relaxed shadow-sm
+                                ${msg.role === 'user'
+                                            ? 'bg-emerald-saudi text-white rounded-tr-sm shadow-emerald-saudi/10 rtl:rounded-tr-2xl rtl:rounded-tl-sm'
+                                            : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-tl-sm rtl:rounded-tl-2xl rtl:rounded-tr-sm'
+                                        }`}>
+                                        {msg.content}
+                                    </div>
+
+                                    {/* Sources Display (Copied logic from ChatInterface) */}
+                                    {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
+                                        <div className="mt-3 flex flex-wrap gap-2 ml-1">
+                                            {msg.sources.map((src, i) => {
+                                                const fileName = src.split('/').pop() || src;
+                                                const isArabic = /[\u0600-\u06FF]/.test(fileName);
+                                                return (
+                                                    <a
+                                                        key={i}
+                                                        href={src}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-emerald-saudi/10 hover:text-emerald-saudi hover:border-emerald-saudi transition-all cursor-pointer group"
+                                                        title={src}
+                                                    >
+                                                        <span className="group-hover:scale-110 transition-transform">{isArabic ? '📄 🇸🇦' : '📄'}</span>
+                                                        <span className="max-w-[200px] truncate font-medium">{fileName}</span>
+                                                    </a>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -208,19 +249,19 @@ export default function ChatPreview() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input Area */}
+                    {/* Input Area - NO PAPERCLIP */}
                     <div className={`border-t border-slate-100 dark:border-slate-800 p-6 md:p-8 bg-white dark:bg-black ${!session ? 'blur-sm pointer-events-none' : ''}`}>
                         <form onSubmit={handleSubmit} className="relative flex items-center bg-white dark:bg-black rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-emerald-saudi/20">
-                            <button type="button" className="p-4 text-slate-400 hover:text-emerald-saudi transition-colors">
+                            {/* <button type="button" className="p-4 text-slate-400 hover:text-emerald-saudi transition-colors">
                                 <Paperclip size={24} />
-                            </button>
+                            </button> REMOVED AS PER REQUEST */}
                             <input
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={session ? t('ChatPlaceholder') : t('GuestPlaceholder')}
                                 disabled={isLoading || !session}
-                                className="flex-1 py-4 text-lg bg-transparent border-none focus:ring-0 placeholder:text-slate-400 text-slate-800 dark:text-white disabled:opacity-50"
+                                className="flex-1 py-4 px-6 text-lg bg-transparent border-none focus:ring-0 placeholder:text-slate-400 text-slate-800 dark:text-white disabled:opacity-50"
                             />
                             <div className="flex items-center gap-2 pr-2">
                                 <button type="button" className="p-3 text-slate-400 hover:text-emerald-saudi transition-colors">
