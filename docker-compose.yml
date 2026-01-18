@@ -128,20 +128,7 @@ services:
           memory: 256M
           cpus: '0.1'
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: saudi-qdrant
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    networks:
-      - saudi-network
+
 
   # Nginx removed for now (no config present). We can re-add later with proper config.
 

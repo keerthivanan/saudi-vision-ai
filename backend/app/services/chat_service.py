@@ -156,7 +156,7 @@ class ChatService:
 
         messages = [
             {"role": "system", "content": system_prompt},
-            *history[-5:],
+            *history[-10:],
             {"role": "user", "content": message}
         ]
 
