@@ -160,11 +160,11 @@ export default function Hero() {
 
             {/* 3D LIQUID CHROME BACKGROUND - Premium Interactive Shader */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                <div className="absolute inset-0 opacity-40 mix-blend-color-dodge">
+                <div className="absolute inset-0 opacity-100">
                     <LiquidChrome
-                        baseColor={[0.5, 0.5, 0.5]} // Silver/Chrome for visibility on dark bg
-                        speed={0.4}
-                        amplitude={0.6}
+                        baseColor={[0.1, 0.8, 0.6]} // Vibrant Emerald Chrome - High Visibility
+                        speed={0.6}
+                        amplitude={1.0}
                         interactive={true}
                     />
                 </div>
