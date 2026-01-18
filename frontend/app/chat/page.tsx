@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChatSidebar from '../components/chat/ChatSidebar';
 import ChatInterface from '../components/chat/ChatInterface';
@@ -22,7 +22,10 @@ export default function ChatPage() {
                 onSelectChat={handleSelectChat}
             />
             <main className="flex-1 flex flex-col w-full relative overflow-hidden">
-                <ChatInterface onChatCreated={() => setRefreshTrigger(prev => prev + 1)} />
+                {/* @ts-ignore */}
+                <React.Suspense fallback={<div className="flex-1 flex items-center justify-center text-muted-foreground">Loading Chat...</div>}>
+                    <ChatInterface onChatCreated={() => setRefreshTrigger(prev => prev + 1)} />
+                </React.Suspense>
             </main>
         </div>
     );

@@ -9,7 +9,7 @@ class ChatRequest(BaseModel):
     Enforces strong typing for the reasoning engine.
     """
     message: str = Field(..., min_length=1, description="The user's query or message.")
-    conversation_id: Optional[UUID] = Field(None, description="UUID of the existing conversation.")
+    conversation_id: Optional[str] = Field(None, description="UUID of the existing conversation.")
     language: Optional[str] = Field("en", description="Target language code (en/ar)")
 
 class ChatResponse(BaseModel):
