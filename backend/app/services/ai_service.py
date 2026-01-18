@@ -26,32 +26,32 @@ class LegalAnalysisResult(BaseModel):
 
 # Smart Registry: Defines the "Personality" and "Constraints" of each model.
 MODEL_REGISTRY = {
-    # The Genius (High IQ, Strict Params)
+    # Primary Reasoning Model (High IQ, Strict Params)
     "gpt-5.2-chat-latest": {
         "tiktoken_fallback": "gpt-5",
         "supports_temperature": False, # Forces default (1)
-        "description": "Best for complex reasoning and final answers."
+        "description": "Optimized for complex reasoning and final outputs."
     },
-    # The Workhorse (Balanced)
+    # Standard Model (Balanced)
     "gpt-5": {
         "tiktoken_fallback": "gpt-5",
         "supports_temperature": True,
         "default_temp": 0.7,
-        "description": "Good baseline."
+        "description": "Balanced baseline performance."
     },
-    # The Intern (Fast, Cheap)
+    # High-Efficiency Router (Fast, Cost-Effective)
     "gpt-5-nano": {
         "tiktoken_fallback": "gpt-5-nano",
         "supports_temperature": True,
         "default_temp": 0.0,
-        "description": "Best for routing and simple classification."
+        "description": "Optimized for routing and classification."
     }
 }
 
 class AIService:
     """
-    State-of-the-Art AI Service for Saudi Legal Enterprise.
-    Uses 'Reasoning' patterns and structured outputs for maximum reliability.
+    Enterprise-Grade AI Service for Saudi Vision 2030.
+    Utilizes 'Reasoning' patterns and structured outputs for maximum reliability.
     """
     
     def __init__(self):
@@ -67,10 +67,10 @@ class AIService:
             self.is_simulation = True
         else:
             try:
-                # Initialize Main Brain (The "Genius")
+                # Initialize Main Brain (Primary Model)
                 self.llm = self._create_client("gpt-5.2-chat-latest")
                 
-                # Initialize Fast Router (The "Intern") - Optimized for Cost
+                # Initialize Fast Router (Efficiency Model)
                 self.fast_llm = self._create_client("gpt-5-nano")
                 
                 self.is_simulation = False
@@ -182,7 +182,7 @@ class AIService:
         """
         try:
             # 0. SMART ROUTING (The "Traffic Controller")
-            yield json.dumps({"event": "status", "data": "🧠 Analyzing Intent..."}) + "\n"
+            yield json.dumps({"event": "status", "data": "🧠 Analyzing User Intent..."}) + "\n"
             
             should_search = await self._needs_rag(query)
             
@@ -193,14 +193,14 @@ class AIService:
 
             if should_search:
                 # 0.5 SMART TRANSLATION (Only if searching)
-                yield json.dumps({"event": "status", "data": "🌍 Analyzing Language..."}) + "\n"
+                yield json.dumps({"event": "status", "data": "🌍 Detecting Language Context..."}) + "\n"
                 
                 lang_data = await self._detect_and_translate(query)
                 queries_to_search = lang_data["queries"]
                 target_language = lang_data["language"]
                 
                 # 1. RETRIEVAL (The "Memory") - DUAL PATH
-                yield json.dumps({"event": "status", "data": f"🔍 Searching Knowledge Base ({len(queries_to_search)} Languages)..."}) + "\n"
+                yield json.dumps({"event": "status", "data": f"🔍 Scanning Knowledge Base ({len(queries_to_search)} Languages)..."}) + "\n"
                 
                 try:
                     # Search with ALL query variations (En + Ar)
@@ -220,21 +220,21 @@ class AIService:
                         sources = [doc.get("source", "Unknown") for doc in relevant_docs if isinstance(doc, dict)]
                         unique_sources = list(set(sources))
                         
-                        yield json.dumps({"event": "status", "data": f"📑 Reading {len(unique_sources)} Bilingual Documents..."}) + "\n"
+                        yield json.dumps({"event": "status", "data": f"📑 Analyzing {len(unique_sources)} Official Documents..."}) + "\n"
                         yield json.dumps({"event": "sources", "data": unique_sources}) + "\n"
 
                 except Exception as e:
                     logger.error(f"RAG Search failed: {e}")
                     pass
             else:
-                 yield json.dumps({"event": "status", "data": "💬 General Conversation Detected (Skipping Search)..."}) + "\n"
+                 yield json.dumps({"event": "status", "data": "💬 Engaging General Conversation..."}) + "\n"
 
             # 2. REASONING (The "Brain")
             yield json.dumps({"event": "status", "data": "🤔 Synthesizing Strategic Insights..."}) + "\n"
             
             # SIMULATION / FALLBACK CHECK
             if self.is_simulation or not self.llm:
-                yield json.dumps({"event": "status", "data": "✨ Drafting Response (Simulation)..."}) + "\n"
+                yield json.dumps({"event": "status", "data": "✨ Simulation Mode Active..."}) + "\n"
                 
                 # Canned "Intelligent" Responses based on keywords
                 simulated_response = "As the Vision 2030 AI Assistant, I can confirm that "
@@ -266,50 +266,52 @@ class AIService:
                     context_text += f"Content: {doc.page_content}\n\n"
 
             system_prompt = f"""You are the Official Strategic AI Consultant for Saudi Vision 2030.
-            Your goal is to provide world-class, executive-level insights that "WOW" the user.
+            Your role is to provide executive-level, document-based insights.
 
             CURRENT DATE: {current_time}
-            TARGET LANGUAGE: {target_language} (You MUST output in this language)
+            TARGET LANGUAGE: {target_language} (Output strictly in this language)
 
             ---
-            CORE INTELLIGENCE INSTRUCTIONS:
-            
-            1. **PRIORITIZE THE SOURCE (RAG)**:
-               - The "STRATEGIC BRIEFING" below contains highly specific knowledge.
-               - **CRITICAL**: If the user asks about specific details (project codes, stats, laws), use this data. It is your "Ground Truth".
-            
-            2. **BILINGUAL SYNTHESIS PROTOCOL (CRITICAL)**:
-               - You have access to a **GLOBAL KNOWLEDGE BASE** containing both **English** and **Arabic** documents.
-               - **IF User asks in English**: You MUST check the Arabic context chunks. If the answer is there, **TRANSLATE IT** and include it.
-               - **IF User asks in Arabic**: You MUST check the English context chunks. If the answer is there, **TRANSLATE IT** and include it.
-               - **Unified Answer**: Never say "The Arabic document says...". Just synthesize the facts into one seamless answer.
+            CORE OPERATIONAL DIRECTIVES:
 
-            3. **STRICT KNOWLEDGE BOUNDARY (CRITICAL)**:
-               - **NO OUTSIDE KNOWLEDGE**: You are NOT a general purpose AI. You are a **Document Analyst**.
-               - **IF** the answer is not in the "STRATEGIC BRIEFING" below, you must politely REFUSE.
-               - Say: "I apologize, but this information is not available in the official Saudi Vision 2030 documents I have access to."
-               - **EXCEPTION**: You may answer basic greetings (Hello, Hi) and questions about YOU (Who are you?).
-               - **DO NOT** answer questions about history, world events (e.g. World Cup), or general trivia unless it is explicitly in             4. **STYLE & TONE (COMPREHENSIVE & WISE)**:
-                 - **FORMAT**: Do NOT use lazy bullet points. Write **detailed, comprehensive paragraphs**.
-                 - **DEPTH**: The user wants "ALL the information". Do not summarize. Expand on the details found in the text.
-                 - **Professionalism**: Keep the tone formal and high-level (Executive Report), but ensure it is easy to read.
+            0. **KINGDOM LEADERSHIP & DEFINITIONS (AXIOMS)**:
+               - **Sovereign**: The Kingdom of Saudi Arabia is a Monarchy.
+                 * **King**: Custodian of the Two Holy Mosques, King Salman bin Abdulaziz Al Saud.
+                 * **Crown Prince**: His Royal Highness Prince Mohammed bin Salman Al Saud (MBS), Prime Minister and Chairman of CEDA (Vision 2030 Architecture).
+               - **Protocol**: If asked for a "President", politely correct that it is a Kingdom led by the King and Crown Prince.
+               - **Definitions**: Answer "What is Vision 2030?" or "Who are you?" instantly using general knowledge aligned with official narratives.
 
-             5. **ZERO LOCATION HALLUCINATION**:
-                - You are a STRICT Document Analyst.
-                - **ONLY** use facts present in the "STRATEGIC BRIEFING".
-                - **CITATION REQUIRED**: Every claim must be backed by the source text.
-                - If the document lists specific schemes, list them EXACTLY as they appear.
+            1. **STRICT RAG PRIORITY**:
+               - The "STRATEGIC BRIEFING" below is your absolute Ground Truth.
+               - Used for: Specific projects, statistics, laws, and regulations.
 
-             6. **THE "WISE" FOOTER (CRITICAL)**:
-                - **Smart Check**: Does the document mentioned an old date (e.g., "by 2020") or an old target?
-                - **IF OUTDATED**: You MUST append a footer:
-                  "**📅 2026 Update:** [State the current 2026 status/reality based on your general knowledge if the document is old]."
-                - **IF CURRENT**: You MUST append a value-add footer:
-                  "**💎 Did You Know?** [Add a relevant, non-hallucinated fact about this topic to show wisdom]."
-                - **Constraint**: The footer is the ONLY place you can add 2026 context. The main body MUST be document-only.
+            2. **BILINGUAL SYNTHESIS**:
+               - **Cross-Reference**: Check BOTH Arabic and English context chunks.
+               - **Translation**: Translate findings across languages to answer the user's specific query language.
+               - **Integration**: Synthesize facts seamlessly; do not explicitly state "The Arabic doc says...".
+
+            3. **KNOWLEDGE BOUNDARIES**:
+               - **Role**: You are a DOCUMENT ANALYST, not a general chatbot.
+               - **Refusal**: IF the answer is not in the text AND not covered by Axioms (Rule 0), state:
+                 "I apologize, but this information is not available in the official Saudi Vision 2030 documents I have access to."
+               - **Prohibitions**: Do not answer questions on unrelated global events (e.g., sports results) or general trivia.
+
+            4. **RESPONSE QUALITY**:
+               - **Format**: Use professional, comprehensive paragraphs. Avoid excessive bullet points unless listing distinct data.
+               - **Tone**: Formal, Executive, and Insightful.
+
+            5. **ZERO HALLUCINATION**:
+               - Citations are implicit but must be factual based *only* on the provided text.
+               - List schemes/projects exactly as named in the source.
+
+            6. **CONTEXTUAL WISDOM (FOOTER)**:
+               - **Update Logic**: If listing outdated targets (e.g., 2020), append a footer:
+                 "**📅 2026 Update:** [Brief status update based on general knowledge]."
+               - **Value Add**: If data is current, append a relevant fact:
+                 "**💎 Insight:** [Relevant context to enhance the answer]."
              
              ---
-             STRATEGIC BRIEFING (INTERNAL KNOWLEDGE):
+             STRATEGIC BRIEFING:
              {context_text}
              ---
              """
@@ -328,7 +330,7 @@ class AIService:
             messages.append(HumanMessage(content=query))
 
             # 3. GENERATION
-            yield json.dumps({"event": "status", "data": "✨ Drafting Response..."}) + "\n"
+            yield json.dumps({"event": "status", "data": "✨ Generating Strategic Output..."}) + "\n"
             
             # Dynamic Model Switching (e.g. for high-tier users or fallbacks)
             client = self.llm
