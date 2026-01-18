@@ -24,6 +24,30 @@ class LegalAnalysisResult(BaseModel):
     citations: List[str] = Field(description="References to Saudi laws, regulations, or uploaded documents.")
     confidence_score: float = Field(description="Confidence score between 0.0 and 1.0")
 
+# Smart Registry: Defines the "Personality" and "Constraints" of each model.
+MODEL_REGISTRY = {
+    # The Genius (High IQ, Strict Params)
+    "gpt-5.2-chat-latest": {
+        "tiktoken_fallback": "gpt-5",
+        "supports_temperature": False, # Forces default (1)
+        "description": "Best for complex reasoning and final answers."
+    },
+    # The Workhorse (Balanced)
+    "gpt-5": {
+        "tiktoken_fallback": "gpt-5",
+        "supports_temperature": True,
+        "default_temp": 0.7,
+        "description": "Good baseline."
+    },
+    # The Intern (Fast, Cheap)
+    "gpt-5-nano": {
+        "tiktoken_fallback": "gpt-5-nano",
+        "supports_temperature": True,
+        "default_temp": 0.0,
+        "description": "Best for routing and simple classification."
+    }
+}
+
 class AIService:
     """
     State-of-the-Art AI Service for Saudi Legal Enterprise.
@@ -39,32 +63,42 @@ class AIService:
         if not settings.OPENAI_API_KEY or "YOUR_SUPER_SECRET" in settings.OPENAI_API_KEY or "sk-..." in settings.OPENAI_API_KEY:
             logger.warning("⚠️ No valid OpenAI API Key found. Switching to SIMULATION MODE.")
             self.llm = None
+            self.fast_llm = None
             self.is_simulation = True
         else:
             try:
-                self.llm = ChatOpenAI(
-                    model="gpt-5.2-chat-latest", 
-                    temperature=0.3, # The "Golden Ratio" for RAG (Accurate but Natural)
-                    api_key=settings.OPENAI_API_KEY,
-                    streaming=True,
-                    tiktoken_model_name="gpt-5" # FALLBACK: Ensure using latest tokenizer
-                )
+                # Initialize Main Brain (The "Genius")
+                self.llm = self._create_client("gpt-5.2-chat-latest")
+                
+                # Initialize Fast Router (The "Intern") - Optimized for Cost
+                self.fast_llm = self._create_client("gpt-5-nano")
+                
                 self.is_simulation = False
             except Exception as e:
                 logger.error(f"Failed to init OpenAI: {e}")
                 self.llm = None
+                self.fast_llm = None
                 self.is_simulation = True
+
+    def _create_client(self, model_name: str) -> ChatOpenAI:
+        """
+        Factory method to create a properly configured OpenAI Client.
+        Reference: MODEL_REGISTRY
+        """
+        config = MODEL_REGISTRY.get(model_name, MODEL_REGISTRY["gpt-5"])
+        
+        params = {
+            "model": model_name,
+            "api_key": settings.OPENAI_API_KEY,
+            "streaming": True,
+            "tiktoken_model_name": config["tiktoken_fallback"]
+        }
+        
+        # Only add temperature if the model supports it
+        if config["supports_temperature"]:
+            params["temperature"] = config.get("default_temp", 0.7)
             
-            # OPTIMIZATION: Use "Mini" model for internal tasks (Translation) to keep it FAST.
-            try:
-                self.fast_llm = ChatOpenAI(
-                    model="gpt-5-nano",
-                    tiktoken_model_name="gpt-5-nano", # FALLBACK 
-                    temperature=0, 
-                    api_key=settings.OPENAI_API_KEY
-                )
-            except:
-                self.fast_llm = self.llm # Fallback
+        return ChatOpenAI(**params)
 
     async def _detect_and_translate(self, query: str) -> Dict[str, Any]:
         """
@@ -250,20 +284,23 @@ class AIService:
                - **IF User asks in Arabic**: You MUST check the English context chunks. If the answer is there, **TRANSLATE IT** and include it.
                - **Unified Answer**: Never say "The Arabic document says...". Just synthesize the facts into one seamless answer.
 
-            3. **INTELLIGENT HYBRID REASONING**:
-               - **Understanding Intent**: If the user asks a general question, use your general intelligence.
-               - **Synthesizing**: COMBINE specific facts from the Briefing with your broader economic knowledge.
+            3. **STRICT KNOWLEDGE BOUNDARY (CRITICAL)**:
+               - **NO OUTSIDE KNOWLEDGE**: You are NOT a general purpose AI. You are a **Document Analyst**.
+               - **IF** the answer is not in the "STRATEGIC BRIEFING" below, you must politely REFUSE.
+               - Say: "I apologize, but this information is not available in the official Saudi Vision 2030 documents I have access to."
+               - **EXCEPTION**: You may answer basic greetings (Hello, Hi) and questions about YOU (Who are you?).
+               - **DO NOT** answer questions about history, world events (e.g. World Cup), or general trivia unless it is explicitly in the text.
 
-            4. **STYLE & TONE (The "Amazing" Factor)**:
-                - Voice: "Royal Enterprise" (Formal, Ambitious, Visionary, yet Warm).
-               - Structure: Use clear headings, rich formatting (bolding), and concise bullet points.
-               - **SCHEMES & LISTS**: If asked about Schemes/Initiatives, **LIST THEM ALL**. Do not summarize excessively. "Perfection" means completeness.
-               - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge.
+             4. **STYLE & TONE (The "Amazing" Factor)**:
+                 - Voice: "Royal Enterprise" (Formal, Ambitious, Visionary, yet Warm).
+                - Structure: Use clear headings, rich formatting (bolding), and concise bullet points.
+                - **SCHEMES & LISTS**: If asked about Schemes/Initiatives, **LIST THEM ALL**. Do not summarize excessively. "Perfection" means completeness.
+                - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge.
 
-            5. **STRICT FACT-VERIFICATION (ZERO HALLUCINATION)**:
-               - You are a STRICT Document Analyst.
-               - **ONLY** use facts present in the "STRATEGIC BRIEFING".
-               - **CITATION REQUIRED**: Every claim must be backed by the source text.
+             5. **ZERO HALLUCINATION PROTOCOL**:
+                - You are a STRICT Document Analyst.
+                - **ONLY** use facts present in the "STRATEGIC BRIEFING".
+                - **CITATION REQUIRED**: Every claim must be backed by the source text.
 
             6. **PATRIOTIC PIVOT (FUN MODE)**:
                - IF the user asks about other countries (USA, Europe, Dubai, etc.) without relating it to Saudi:
@@ -307,14 +344,8 @@ class AIService:
             # Dynamic Model Switching (e.g. for high-tier users or fallbacks)
             client = self.llm
             if model != self.llm.model_name:
-                 # Create temp client for this request (Lightweight)
-                 client = ChatOpenAI(
-                    model=model,
-                    temperature=0.3,
-                    api_key=settings.OPENAI_API_KEY,
-                    streaming=True,
-                    tiktoken_model_name="gpt-5" # Safety net
-                 )
+                 # Create temp client using strict factory logic
+                 client = self._create_client(model)
 
             async for chunk in client.astream(messages):
                 if chunk.content:
