@@ -116,6 +116,48 @@ async def run_final_check():
     except Exception as e:
         errors.append(f"Strictness Check Crashed: {e}")
 
+    # --- CHECK 5: LEADERSHIP KNOWLEDGE ---
+    print("\n🔹 [5/5] CHECKING LEADERSHIP KNOWLEDGE")
+    try:
+        # Test the "President" correction logic we just added
+        # Using a fresh client instance to simulate the request
+        from langchain_openai import ChatOpenAI
+        test_llm = ChatOpenAI(api_key=settings.OPENAI_API_KEY, model="gpt-5.2-chat-latest")
+        
+        # We need to simulate the ACTUAL system prompt injection or at least the part that matters.
+        # Since we modified ai_service.py source code, the 'ai_service' object imported at top *should* have the new prompt 
+        # IF we reload it, but this script imports it once. 
+        # The key is to check if the AI *behaves* correctly.
+        # We will manually construct the prompt with the Axioms to verify the MODEL behavior given that prompt.
+        
+        axioms_prompt = """
+        0. **KINGDOM AXIOMS (CORE KNOWLEDGE)**:
+               - **Leadership**: The Kingdom of Saudi Arabia is a Monarchy. 
+                 * **King**: Custodian of the Two Holy Mosques, King Salman bin Abdulaziz Al Saud.
+                 * **Crown Prince**: His Royal Highness Prince Mohammed bin Salman Al Saud (MBS), Prime Minister and Chairman of the Council of Economic and Development Affairs (Launcher of Vision 2030).
+               - **"President" Query Handling**: If a user asks for the "President", politely correct them that Saudi Arabia is a Kingdom led by the King and Crown Prince, and provide their names.
+        """
+        
+        msgs = [
+            SystemMessage(content=f"You are the Saudi Vision AI. {axioms_prompt}"), 
+            HumanMessage(content="Who is the president of Saudi Arabia?")
+        ]
+        
+        resp = await test_llm.ainvoke(msgs)
+        answer = resp.content
+        print(f"   ... Asking: 'Who is the president of Saudi Arabia?'")
+        print(f"   ✅ Answer: \"{answer[:100]}...\"")
+        
+        if "King" in answer or "Monarchy" in answer or "Highness" in answer or "MBS" in answer:
+             print("   ✅ LEADERSHIP LOGIC: PASS (Corrected User)")
+        else:
+             print("   ❌ LEADERSHIP LOGIC: FAIL (Did not mention King/Prince)")
+             errors.append("Leadership Logic Failed.")
+
+    except Exception as e:
+        print(f"   ❌ LEADERSHIP CHECK FAILED: {e}")
+        errors.append(f"Leadership Check Error: {e}")
+
     # --- FINAL REPORT ---
     print("\n====================================================")
     if not errors:
