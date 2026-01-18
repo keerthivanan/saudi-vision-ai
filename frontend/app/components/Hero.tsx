@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+import LiquidChrome from './LiquidChrome';
 
 export default function Hero() {
     const { t, language } = useLanguage();
@@ -157,40 +158,20 @@ export default function Hero() {
                 </motion.div>
             </div>
 
-            {/* ANIMATED 8K RIYADH SKYLINE - Premium Cinematic Background */}
-            <div className="absolute bottom-0 left-0 right-0 h-full w-full z-0 pointer-events-none overflow-hidden">
-                {/* Ken Burns Animated Background - Slow Zoom Effect */}
-                <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: 1.1 }}
-                    transition={{
-                        duration: 30,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        ease: "linear"
-                    }}
-                    className="absolute inset-0 w-full h-full"
-                >
-                    {/* 8K Quality Riyadh KAFD Night Skyline */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url('https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?q=100&w=3840&auto=format&fit=crop')`,
-                        }}
+            {/* 3D LIQUID CHROME BACKGROUND - Premium Interactive Shader */}
+            <div className="absolute inset-0 z-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-40 mix-blend-color-dodge">
+                    <LiquidChrome
+                        baseColor={[0.0, 0.0, 0.0]} // Pure Black Base for Chrome Reflection
+                        speed={0.4}
+                        amplitude={0.3}
+                        interactive={true}
                     />
-                </motion.div>
+                </div>
 
-                {/* Breathing Glow Overlay */}
-                <motion.div
-                    animate={{ opacity: [0.4, 0.6, 0.4] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-emerald-saudi/10 mix-blend-overlay"
-                />
-
-                {/* Premium Gradient Overlays for Text Contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background dark:from-slate-950 via-background/80 dark:via-slate-950/80 to-background/40 dark:to-slate-950/40" />
-                <div className="absolute inset-0 bg-gradient-to-b from-background/90 dark:from-slate-950/90 via-transparent to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-background/50 dark:from-slate-950/50 via-transparent to-background/50 dark:to-slate-950/50" />
+                {/* Overlays for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background dark:from-black via-transparent to-background dark:to-black/80 pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
             </div>
         </div>
     );
