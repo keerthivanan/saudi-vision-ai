@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 import LiquidChrome from './LiquidChrome';
+import AnimatedSplitText from './ui/SplitText';
 
 export default function Hero() {
     const { t, language } = useLanguage();
@@ -56,20 +57,41 @@ export default function Hero() {
 
                 {/* Headlines */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="pt-10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="pt-10 flex flex-col items-center"
                 >
+                    <div className="mb-6">
+                        <AnimatedSplitText
+                            text={t('HeroTitle1')}
+                            className="font-sans text-4xl md:text-6xl font-extrabold text-foreground dark:text-white leading-tight tracking-tight drop-shadow-2xl"
+                            delay={100}
+                            duration={0.8}
+                            splitType="chars"
+                            tag="h1"
+                            textAlign="center"
+                        />
+                        <AnimatedSplitText
+                            text={t('HeroTitle2')}
+                            className="font-sans text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-bright to-emerald-saudi leading-tight tracking-tight drop-shadow-2xl mt-2"
+                            delay={300} // slight delay after first line
+                            duration={0.8}
+                            splitType="chars"
+                            tag="h1"
+                            textAlign="center"
+                        />
+                    </div>
 
-                    <h1 className="font-sans text-4xl md:text-6xl font-extrabold text-foreground dark:text-white mb-6 leading-tight tracking-tight drop-shadow-2xl">
-                        {t('HeroTitle1')} <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-bright to-emerald-saudi">{t('HeroTitle2')}</span>
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-muted-foreground dark:text-slate-300 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
-                        {t('HeroSubtitle')}
-                    </p>
+                    <AnimatedSplitText
+                        text={t('HeroSubtitle')}
+                        className="text-lg md:text-xl text-muted-foreground dark:text-slate-300 font-medium max-w-2xl mx-auto mb-10 leading-relaxed block"
+                        delay={600}
+                        duration={0.5}
+                        splitType="words" // Animate words for subtitle
+                        tag="p"
+                        from={{ opacity: 0, y: 20 }}
+                        textAlign="center"
+                    />
                 </motion.div>
 
                 {/* Search Card - Dark Glassmorphism with Emerald Glow */}

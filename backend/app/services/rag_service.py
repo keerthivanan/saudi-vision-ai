@@ -190,7 +190,7 @@ class RAGService:
             Original question: {original_query}"""
             
             response = await client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-5-nano",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 max_tokens=100
@@ -271,7 +271,7 @@ class RAGService:
         fused_results = []
         
         # Key terms structure boost
-        priority_terms = ["pillar", "society", "economy", "nation", "law", "article", "vision 2030"]
+        priority_terms = ["pillar", "society", "economy", "nation", "law", "article", "vision 2030", "scheme", "initiative", "program"]
         
         for key, item in unique_docs.items():
             doc = item["doc"]
@@ -314,8 +314,9 @@ class RAGService:
         fused_results.sort(key=lambda x: x["score"], reverse=True)
         
         # 5. LLM Cross-Check (The "Judge")
-        # Only rerank the top 10 candidates to save latency
-        candidates = fused_results[:10]
+        # Rerank the top candidates (Matching top_k request) to ensure high precision
+        # For "Big Context", we check enough candidates to fill the quota
+        candidates = fused_results[:(top_k + 10)]
         
         # If we have very few results, skip the expensive check
         if len(candidates) < 2:
@@ -350,7 +351,7 @@ class RAGService:
             Return ONLY the valid JSON list."""
             
             response = await client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-5-nano",
                 messages=[{"role": "system", "content": "You are a precise relevance filter."},
                           {"role": "user", "content": prompt}],
                 temperature=0,
