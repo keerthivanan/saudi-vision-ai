@@ -58,3 +58,6 @@ coverage/
 
 # Qdrant Local Storage
 backend/data/qdrant_storage/
+
+# Personal Assets
+frontend/public/assets/keerthivanan.jpg
