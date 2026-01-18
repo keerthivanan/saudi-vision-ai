@@ -29,7 +29,7 @@ class ChatService:
             
         self.model = "gpt-4o"
 
-    async def create_conversation(self, db: AsyncSession, user_id: UUID, title: str) -> Conversation:
+    async def create_conversation(self, db: AsyncSession, user_id: str, title: str) -> Conversation:
         """Create a new conversation entry."""
         conv = Conversation(user_id=user_id, title=title)
         db.add(conv)
@@ -37,7 +37,7 @@ class ChatService:
         await db.refresh(conv)
         return conv
 
-    async def add_message(self, db: AsyncSession, conversation_id: UUID, role: str, content: str) -> Message:
+    async def add_message(self, db: AsyncSession, conversation_id: str, role: str, content: str) -> Message:
         """Add a message to the conversation history."""
         msg = Message(conversation_id=conversation_id, role=role, content=content)
         db.add(msg)
@@ -54,7 +54,7 @@ class ChatService:
         await db.refresh(msg)
         return msg
 
-    async def get_history(self, db: AsyncSession, conversation_id: UUID, limit: int = 10) -> List[Message]:
+    async def get_history(self, db: AsyncSession, conversation_id: str, limit: int = 10) -> List[Message]:
         """Retrieve recent messages for context."""
         query = select(Message).where(
             Message.conversation_id == conversation_id
