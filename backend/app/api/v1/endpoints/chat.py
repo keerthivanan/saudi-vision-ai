@@ -138,7 +138,7 @@ async def stream_chat(
             async for chunk in ai_service.generate_response_stream(
                 request.message, 
                 history, 
-                None, 
+                db, 
                 language=request.language or "en",
                 model=user_model,
                 user_id=str(current_user.id) if current_user else None
