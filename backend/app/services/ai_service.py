@@ -46,7 +46,8 @@ class AIService:
                     model="gpt-5.2-chat-latest", 
                     temperature=0.3, # The "Golden Ratio" for RAG (Accurate but Natural)
                     api_key=settings.OPENAI_API_KEY,
-                    streaming=True
+                    streaming=True,
+                    tiktoken_model_name="gpt-4o" # FALLBACK: Prevent crash on unknown 2026 model names
                 )
                 self.is_simulation = False
             except Exception as e:
@@ -57,7 +58,8 @@ class AIService:
             # OPTIMIZATION: Use "Mini" model for internal tasks (Translation) to keep it FAST.
             try:
                 self.fast_llm = ChatOpenAI(
-                    model="gpt-5-nano", 
+                    model="gpt-5-nano",
+                    tiktoken_model_name="gpt-4o-mini", # FALLBACK 
                     temperature=0, 
                     api_key=settings.OPENAI_API_KEY
                 )
@@ -302,7 +304,19 @@ class AIService:
             # 3. GENERATION
             yield json.dumps({"event": "status", "data": "✨ Drafting Response..."}) + "\n"
             
-            async for chunk in self.llm.astream(messages):
+            # Dynamic Model Switching (e.g. for high-tier users or fallbacks)
+            client = self.llm
+            if model != self.llm.model_name:
+                 # Create temp client for this request (Lightweight)
+                 client = ChatOpenAI(
+                    model=model,
+                    temperature=0.3,
+                    api_key=settings.OPENAI_API_KEY,
+                    streaming=True,
+                    tiktoken_model_name="gpt-4o" # Safety net
+                 )
+
+            async for chunk in client.astream(messages):
                 if chunk.content:
                     yield json.dumps({"event": "token", "data": chunk.content}) + "\n"
 
