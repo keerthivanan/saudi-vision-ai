@@ -64,9 +64,9 @@ const ProfileCardComponent = ({
     avatarUrl = '/assets/keerthivanan.jpg',
     iconUrl, // Optional
     grainUrl, // Optional
-    innerGradient = 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(5,50,40,0.4) 100%)', // Adjusted to Emerald
+    innerGradient = 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 100%)', // Clean White/Glass
     behindGlowEnabled = true,
-    behindGlowColor = 'rgba(16, 185, 129, 0.4)', // Emerald Glow
+    behindGlowColor = 'rgba(255, 255, 255, 0.2)', // White Glow
     behindGlowSize,
     className = '',
     enableTilt = true,
@@ -377,7 +377,7 @@ const ProfileCardComponent = ({
             onContactClick();
         } else {
             // Default action: Open LinkedIn or Email
-            window.open('https://www.linkedin.com/in/keerthivanansa/', '_blank');
+            window.open('https://www.linkedin.com/in/keerthi-vanan-s', '_blank');
         }
     }, [onContactClick]);
 
@@ -610,7 +610,7 @@ const ProfileCardComponent = ({
                                     className="font-semibold m-0"
                                     style={{
                                         fontSize: 'min(5svh, 3em)',
-                                        backgroundImage: 'linear-gradient(to bottom, #fff, #10b981)', // Emerald Gradient
+                                        backgroundImage: 'linear-gradient(to bottom, #fff, #b8c6db)', // White/Silver Gradient
                                         backgroundSize: '1em 1.5em',
                                         WebkitTextFillColor: 'transparent',
                                         backgroundClip: 'text',
@@ -631,7 +631,7 @@ const ProfileCardComponent = ({
                                         top: '-6px',
                                         fontSize: '16px',
                                         margin: '0 auto',
-                                        backgroundImage: 'linear-gradient(to bottom, #fff, #10b981)', // Emerald
+                                        backgroundImage: 'linear-gradient(to bottom, #fff, #b8c6db)', // White/Silver
                                         backgroundSize: '1em 1.5em',
                                         WebkitTextFillColor: 'transparent',
                                         backgroundClip: 'text',
