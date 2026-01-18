@@ -43,7 +43,6 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     // Refs
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // 1. Fetch Credits Logic
     useEffect(() => {
@@ -114,6 +113,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
     }, [input, isWelcomeState]);
 
     // Handlers
+    // Voice Handler
     const startListening = () => {
         if ('webkitSpeechRecognition' in window) {
             const SpeechRecognition = (window as any).webkitSpeechRecognition;
@@ -129,26 +129,6 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         } else {
             toast.error("Voice search not supported in this browser.");
         }
-    };
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        // ... (Keep existing file upload logic, omitted for brevity but assumed present if I were rewriting whole file. 
-        // Wait, replace_file_content replaces the BLOCK. I need to be careful not to delete the helper functions if I target the whole file content.
-        // The instruction is "Refactor ChatInterface...". I should implement the full component logic here or target specific blocks. 
-        // Since I'm changing the RENDER logic significantly, I will provide the FULL render block and state block.
-        // I will keep the handleFileUpload logic if I can, but to ensure safety, I'll re-include the minimal version or assume it's there if I target specific lines.
-        // Actually, to be safe, I will include the full `handleFileUpload` implementation in this tool call to ensure I don't break it.)
-
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const toastId = toast.loading(`Uploading ${file.name}...`);
-
-        // Mock upload for UI demo consistency, or real logic
-        setTimeout(() => {
-            toast.success("File analyzed", { id: toastId });
-            setMessages(prev => [...prev, { role: 'user', content: `📎 Uploaded: ${file.name}` }]);
-            setMessages(prev => [...prev, { role: 'ai', content: `I have analyzed **${file.name}**. What would you like to know?` }]);
-        }, 1500);
     };
 
     const handleSubmit = async (e?: React.FormEvent, manualMessage?: string) => {
@@ -393,10 +373,17 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                                             const fileName = src.split('/').pop() || src;
                                             const isArabic = /[\u0600-\u06FF]/.test(fileName);
                                             return (
-                                                <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-secondary transition-colors cursor-default" title={src}>
-                                                    <span>{isArabic ? '📄 🇸🇦' : '📄'}</span>
-                                                    <span className="max-w-[200px] truncate">{fileName}</span>
-                                                </span>
+                                                <a
+                                                    key={i}
+                                                    href={src}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-muted-foreground flex items-center gap-1.5 hover:bg-emerald-saudi/10 hover:text-emerald-saudi hover:border-emerald-saudi transition-all cursor-pointer group"
+                                                    title={t('ViewSource') || "View Source"}
+                                                >
+                                                    <span className="group-hover:scale-110 transition-transform">{isArabic ? '📄 🇸🇦' : '📄'}</span>
+                                                    <span className="max-w-[200px] truncate font-medium">{fileName}</span>
+                                                </a>
                                             )
                                         })}
                                     </motion.div>
