@@ -322,7 +322,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
                     <div className="bg-background/80 backdrop-blur-xl border border-border px-4 py-2 rounded-full shadow-sm flex items-center gap-2.5 transition-all">
                         <span className="text-purple-500 drop-shadow-sm">⚡</span>
                         <span className={`text-[15px] font-semibold font-mono tracking-tight ${credits < 10 ? 'text-red-500' : 'text-foreground'}`}>
-                            {credits.toFixed(1)}
+                            {Math.floor(credits)}
                         </span>
                         <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Credits</span>
                     </div>

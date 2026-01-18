@@ -135,7 +135,7 @@ export default function ProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-slate-500 dark:text-slate-400 text-sm">Available Credits</p>
-                                    <p className="text-3xl font-bold text-slate-900 dark:text-white">{profile?.credits ?? 0}</p>
+                                    <p className="text-3xl font-bold text-slate-900 dark:text-white">{Math.floor(profile?.credits ?? 0)}</p>
                                 </div>
                             </div>
                             <Link href="/pricing" className="mt-4 block w-full py-2 text-center rounded-xl bg-gold-saudi/10 text-gold-saudi font-semibold hover:bg-gold-saudi/20 transition-colors">
