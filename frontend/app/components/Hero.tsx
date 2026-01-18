@@ -54,42 +54,20 @@ export default function Hero() {
             {/* Content Container */}
             <div className="relative z-10 w-full max-w-5xl mx-auto px-4 text-center">
 
-                {/* Vision 2030 Logo (Official High-Res) */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6 }}
-                    className="mb-12"
-                >
-                    <div className="inline-flex items-center justify-center">
-                        <Image
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Saudi_Vision_2030_logo.svg/800px-Saudi_Vision_2030_logo.svg.png"
-                            alt="Saudi Vision 2030"
-                            width={600}
-                            height={400}
-                            className="h-32 md:h-48 w-auto brightness-0 invert drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
-                            unoptimized
-                        />
-                    </div>
-                </motion.div>
-
                 {/* Headlines */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
+                    className="pt-10"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-saudi/10 border border-emerald-saudi/20 mb-8 backdrop-blur-md">
-                        <Sparkles className="w-4 h-4 text-emerald-bright" />
-                        <span className="text-sm font-medium text-emerald-bright tracking-wide">{t('HeroTagline')}</span>
-                    </div>
 
-                    <h1 className="font-sans text-5xl md:text-7xl font-extrabold text-foreground dark:text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
+                    <h1 className="font-sans text-4xl md:text-6xl font-extrabold text-foreground dark:text-white mb-6 leading-tight tracking-tight drop-shadow-2xl">
                         {t('HeroTitle1')} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-bright to-emerald-saudi">{t('HeroTitle2')}</span>
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-muted-foreground dark:text-slate-300 font-medium max-w-3xl mx-auto mb-20 leading-relaxed">
+                    <p className="text-lg md:text-xl text-muted-foreground dark:text-slate-300 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
                         {t('HeroSubtitle')}
                     </p>
                 </motion.div>
@@ -99,7 +77,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}
-                    className="max-w-3xl mx-auto mb-12"
+                    className="max-w-3xl mx-auto mb-10"
                 >
                     <div className="bg-card/80 dark:bg-black/60 backdrop-blur-xl rounded-2xl p-2 shadow-xl border border-border dark:border-slate-800 
                         focus-within:border-emerald-saudi focus-within:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">

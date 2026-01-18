@@ -71,14 +71,6 @@ export default function Navbar() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="relative w-12 h-12 flex items-center justify-center">
-                                {/* Official High-Res Logo */}
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Saudi_Vision_2030_logo.svg/1200px-Saudi_Vision_2030_logo.svg.png"
-                                    alt="Saudi Vision 2030"
-                                    className="w-full h-full object-contain dark:brightness-0 dark:invert transition-all duration-300 group-hover:scale-105"
-                                />
-                            </div>
                             <div className="flex flex-col">
                                 <span className="font-serif text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight">Vision 2030</span>
                                 <span className="text-[10px] uppercase tracking-widest text-emerald-saudi font-medium">Intelligence Hub</span>
