@@ -27,7 +27,7 @@ class ChatService:
             logger.error(f"Failed to initialize OpenAI Client: {e}")
             self.client = None
             
-        self.model = "gpt-4o"
+        self.model = "gpt-5.2-chat-latest"
 
     async def create_conversation(self, db: AsyncSession, user_id: str, title: str) -> Conversation:
         """Create a new conversation entry."""
@@ -84,7 +84,7 @@ class ChatService:
         
         try:
             response = await self.client.chat.completions.create(
-                model="gpt-4o-mini", # Use latest lightweight model for routing
+                model="gpt-5-nano", # Use latest lightweight model for routing (2026)
                 messages=[
                     {"role": "system", "content": system_router_prompt},
                     {"role": "user", "content": message}
@@ -104,7 +104,7 @@ class ChatService:
         message: str, 
         history: List[Dict[str, str]], 
         use_rag: bool = True,
-        model: str = "gpt-4-turbo"  # Default fallback
+        model: str = "gpt-5.2-chat-latest"  # Balanced High-Performance Model
     ) -> AsyncGenerator[str, None]:
         """
         Enterprise-grade message processing with intelligent routing.
@@ -123,7 +123,9 @@ class ChatService:
 
         # 3. RAG Retrieval
         if final_use_rag:
-            results = await rag_service.search(safe_message, top_k=8)
+            # COST OPTIMIZATION: Broad Search (50) -> Rerank -> Top 15 (High Precision)
+            # This balances "Full Context" recall with "Low Billing" input tokens.
+            results = await rag_service.search(safe_message, top_k=15)
             if results:
                 
                 context_blocks = [
@@ -133,7 +135,7 @@ class ChatService:
                 context_text = "\n\n".join(context_blocks)
 
         # 3. Prompt Engineering
-        system_prompt = f"""You are SaudiAI, a state-of-the-art enterprise assistant for Saudi Arabia.
+        system_prompt = f"""You are SaudiAI, a state-of-the-art enterprise assistant for Saudi Arabia (Powered by GPT-5.2).
         
         CONTEXT:
         {context_text}

@@ -123,17 +123,17 @@ async def stream_chat(
         try:
             # Create a fresh session for the streaming lifetime if needed, or just for the end.
             
-            # Determine Model: FORCE GPT-4o ("The Best") for Everyone
+            # Determine Model: FORCE GPT-5.2 ("The Best") for Everyone
             # User requested "Smartest of all time".
-            user_model = "gpt-4o" 
+            user_model = "gpt-5.2-chat-latest" 
             
             # (Legacy Tier Check - Kept for reference but overridden)
             if current_user and current_user.tier in ['premium', 'royal', 'enterprise']:
-                user_model = "gpt-4o"
+                user_model = "gpt-5.2-chat-latest"
             
             # If user has high credits (bought a Royal pack), we can also treat them as premium
             if current_user and current_user.credits > 150:
-                 user_model = "gpt-4o"
+                  user_model = "gpt-5.2-chat-latest"
 
             async for chunk in ai_service.generate_response_stream(
                 request.message, 
@@ -165,7 +165,10 @@ async def stream_chat(
                     
                     # 5. Calculate & Deduct Credits
                     import tiktoken
-                    enc = tiktoken.encoding_for_model("gpt-4o")
+                    try:
+                        enc = tiktoken.encoding_for_model("gpt-4o") # Use gpt-4o as proxy for 5.2
+                    except:
+                        enc = tiktoken.get_encoding("cl100k_base")
                     
                     input_tokens = len(enc.encode(request.message))
                     output_tokens = len(enc.encode(full_response))

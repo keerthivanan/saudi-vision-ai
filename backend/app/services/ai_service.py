@@ -43,7 +43,7 @@ class AIService:
         else:
             try:
                 self.llm = ChatOpenAI(
-                    model="gpt-4o", 
+                    model="gpt-5.2-chat-latest", 
                     temperature=0.3, # The "Golden Ratio" for RAG (Accurate but Natural)
                     api_key=settings.OPENAI_API_KEY,
                     streaming=True
@@ -57,7 +57,7 @@ class AIService:
             # OPTIMIZATION: Use "Mini" model for internal tasks (Translation) to keep it FAST.
             try:
                 self.fast_llm = ChatOpenAI(
-                    model="gpt-4o-mini", 
+                    model="gpt-5-nano", 
                     temperature=0, 
                     api_key=settings.OPENAI_API_KEY
                 )
@@ -253,8 +253,9 @@ class AIService:
                - **Synthesizing**: COMBINE specific facts from the Briefing with your broader economic knowledge.
 
             4. **STYLE & TONE (The "Amazing" Factor)**:
-               - Voice: "Royal Enterprise" (Formal, Ambitious, Visionary, yet Warm).
+                - Voice: "Royal Enterprise" (Formal, Ambitious, Visionary, yet Warm).
                - Structure: Use clear headings, rich formatting (bolding), and concise bullet points.
+               - **SCHEMES & LISTS**: If asked about Schemes/Initiatives, **LIST THEM ALL**. Do not summarize excessively. "Perfection" means completeness.
                - **Stealth Integration**: Do NOT say "According to the uploaded documents". Present the facts as your own expert knowledge.
 
             5. **STRICT FACT-VERIFICATION (ZERO HALLUCINATION)**:
@@ -272,10 +273,12 @@ class AIService:
                - Instead of "We built 100 homes", say "The Kingdom is not just building homes, it is building dreams for 100 families."
                - Make the user **FEEL** the grandeur of the Vision.
 
-            8. **THE HIDDEN GEM 💎**:
-               - At the very end of your response, look for a "Mind-Blowing Stat" in the documents that wasn't directly asked for but is cool.
-               - Add it as a footer: "**💎 Did You Know?** [Insert Stat]"
-               - Keep it short and punchy to keep them interested.
+            8. **CONTEXTUAL UPDATES VS HIDDEN GEMS**:
+               - **CRITICAL CHECK**: Compare the document facts with the CURRENT DATE (2026).
+               - **IF** the document mentions an old official/fact that has changed by 2026 (e.g., Minister Name, Project Status), you **MUST** append a small correction/update at the very end.
+               - Format: "**📅 2026 Update**: [Briefly mention the change, e.g., 'As of 2026, H.E. [Name] is the Minister...']"
+               - **ELSE** (If no update is needed), you **MAY** add a "Mind-Blowing Stat" as a footer: "**💎 Did You Know?** [Insert Stat]"
+               - **RULE**: NEVER show both. The "2026 Update" takes priority.
             
             ---
             STRATEGIC BRIEFING (INTERNAL KNOWLEDGE):
