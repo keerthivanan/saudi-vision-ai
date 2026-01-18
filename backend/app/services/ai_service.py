@@ -47,7 +47,7 @@ class AIService:
                     temperature=0.3, # The "Golden Ratio" for RAG (Accurate but Natural)
                     api_key=settings.OPENAI_API_KEY,
                     streaming=True,
-                    tiktoken_model_name="gpt-4o" # FALLBACK: Prevent crash on unknown 2026 model names
+                    tiktoken_model_name="gpt-5" # FALLBACK: Ensure using latest tokenizer
                 )
                 self.is_simulation = False
             except Exception as e:
@@ -59,7 +59,7 @@ class AIService:
             try:
                 self.fast_llm = ChatOpenAI(
                     model="gpt-5-nano",
-                    tiktoken_model_name="gpt-4o-mini", # FALLBACK 
+                    tiktoken_model_name="gpt-5-nano", # FALLBACK 
                     temperature=0, 
                     api_key=settings.OPENAI_API_KEY
                 )
@@ -313,7 +313,7 @@ class AIService:
                     temperature=0.3,
                     api_key=settings.OPENAI_API_KEY,
                     streaming=True,
-                    tiktoken_model_name="gpt-4o" # Safety net
+                    tiktoken_model_name="gpt-5" # Safety net
                  )
 
             async for chunk in client.astream(messages):
@@ -323,7 +323,8 @@ class AIService:
         except Exception as e:
             logger.error(f"AI Generation Error: {e}")
             # FALLBACK IN CASE OF CRASH
-            yield json.dumps({"event": "token", "data": "I apologize, but I am currently updating my strategic database. \n\nHowever, I can confirm that Vision 2030 continues to drive progress across all sectors."}) + "\n"
+            error_msg = f"I apologize, but I am currently updating my strategic database. (Error: {str(e)})"
+            yield json.dumps({"event": "token", "data": error_msg}) + "\n"
 
     async def get_chat_completion(self, messages: List[Dict[str, str]]) -> str:
         """
