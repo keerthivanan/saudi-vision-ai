@@ -162,9 +162,9 @@ export default function Hero() {
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div className="absolute inset-0 opacity-40 mix-blend-color-dodge">
                     <LiquidChrome
-                        baseColor={[0.0, 0.0, 0.0]} // Pure Black Base for Chrome Reflection
+                        baseColor={[0.5, 0.5, 0.5]} // Silver/Chrome for visibility on dark bg
                         speed={0.4}
-                        amplitude={0.3}
+                        amplitude={0.6}
                         interactive={true}
                     />
                 </div>
