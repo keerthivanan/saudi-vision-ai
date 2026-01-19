@@ -606,21 +606,17 @@ const ProfileCardComponent = ({
                                 pointerEvents: 'none'
                             }}
                         >
-                            <div className="w-full absolute flex flex-col items-center" style={{ top: '3em', display: 'flex', gridArea: 'auto' }}>
+                            <div className="w-full absolute flex flex-col items-center" style={{ bottom: '100px', display: 'flex', gridArea: 'auto' }}>
                                 <h3
                                     className="font-semibold m-0"
                                     style={{
-                                        fontSize: 'min(5svh, 3em)',
-                                        backgroundImage: 'linear-gradient(to bottom, #fff, #b8c6db)', // White/Silver Gradient
-                                        backgroundSize: '1em 1.5em',
-                                        WebkitTextFillColor: 'transparent',
-                                        backgroundClip: 'text',
-                                        WebkitBackgroundClip: 'text',
+                                        fontSize: 'min(5svh, 2.5em)', // Slightly smaller to fit
+                                        color: '#fff',
                                         display: 'block',
                                         gridArea: 'auto',
                                         borderRadius: '0',
                                         pointerEvents: 'auto',
-                                        textShadow: '0px 4px 20px rgba(0,0,0,0.5)'
+                                        textShadow: '0px 2px 8px rgba(0,0,0,0.8)'
                                     }}
                                 >
                                     {name}
@@ -629,19 +625,14 @@ const ProfileCardComponent = ({
                                     className="font-semibold whitespace-nowrap mx-auto w-min"
                                     style={{
                                         position: 'relative',
-                                        top: '-6px',
-                                        fontSize: '16px',
+                                        fontSize: '15px',
                                         margin: '0 auto',
-                                        backgroundImage: 'linear-gradient(to bottom, #fff, #b8c6db)', // White/Silver
-                                        backgroundSize: '1em 1.5em',
-                                        WebkitTextFillColor: 'transparent',
-                                        backgroundClip: 'text',
-                                        WebkitBackgroundClip: 'text',
+                                        color: 'rgba(255, 255, 255, 0.8)',
                                         display: 'block',
                                         gridArea: 'auto',
                                         borderRadius: '0',
                                         pointerEvents: 'auto',
-                                        textShadow: '0px 2px 10px rgba(0,0,0,0.5)'
+                                        textShadow: '0px 1px 4px rgba(0,0,0,0.8)'
                                     }}
                                 >
                                     {title}

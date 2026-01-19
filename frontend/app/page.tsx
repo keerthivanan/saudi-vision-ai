@@ -16,6 +16,14 @@ export default function Home() {
       <Navbar />
       <Hero />
 
+
+
+      <Pillars />
+      <ChatPreview />
+      <Metrics />
+      <Projects />
+      <KnowledgeBase />
+
       {/* 🔹 Creator Section - Added by Request */}
       <section className="relative z-10 py-20 flex flex-col justify-center items-center bg-gradient-to-b from-transparent to-black/5">
         <div className="text-center mb-10">
@@ -28,12 +36,6 @@ export default function Home() {
           <ProfileCard />
         </div>
       </section>
-
-      <Pillars />
-      <ChatPreview />
-      <Metrics />
-      <Projects />
-      <KnowledgeBase />
       <Footer />
     </main>
   );
