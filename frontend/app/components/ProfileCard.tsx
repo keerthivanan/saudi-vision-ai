@@ -61,12 +61,13 @@ interface TiltEngine {
 }
 
 const ProfileCardComponent = ({
+
     avatarUrl = '/assets/keerthivanan.jpg',
     iconUrl, // Optional
     grainUrl, // Optional
-    innerGradient = 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 100%)', // Clean White/Glass
-    behindGlowEnabled = true,
-    behindGlowColor = 'rgba(255, 255, 255, 0.2)', // White Glow
+    innerGradient = 'none', // No background gradient interfering
+    behindGlowEnabled = false, // Disabled glow
+    behindGlowColor = 'rgba(255, 255, 255, 0)', // Transparent
     behindGlowSize,
     className = '',
     enableTilt = true,
@@ -502,11 +503,11 @@ const ProfileCardComponent = ({
                             gridArea: '1 / -1'
                         }}
                     >
-                        {/* Shine layer */}
-                        <div style={shineStyle} />
+                        {/* Shine layer - Removed for fidelity */}
+                        {/* <div style={shineStyle} /> */}
 
-                        {/* Glare layer */}
-                        <div style={glareStyle} />
+                        {/* Glare layer - Removed for fidelity */}
+                        {/* <div style={glareStyle} /> */}
 
                         {/* Avatar content */}
                         <div
