@@ -148,13 +148,25 @@ class AIService:
         Uses fast_llm (GPT-4o-Mini) for <0.2s decision.
         """
         try:
-            # Simple keyword heuristic first (0ms)
-            q_lower = query.lower()
-            keywords = ["saudi", "vision 2030", "neom", "law", "regulation", "project", "scheme", "housing", "ministry", "royal", "decree", "stats", "number", "percentage"]
+            # 1. Zero-Latency Path (Greetings & Axioms)
+            q_lower = query.lower().strip()
+            
+            # Greetings map
+            greetings = ["hello", "hi", "salam", "hey", "good morning", "good evening", "marhaba", "welcome"]
+            if q_lower in greetings or len(q_lower) < 4:
+                return False # Instant Chat
+            
+            # Core Axiom Definitions (What is Vision 2030? Who are you?)
+            definitions = ["what is vision 2030", "who are you", "what is this", "tell me about vision 2030"]
+            if any(d in q_lower for d in definitions):
+                return False # Instant Knowledge
+
+            # 2. Strict RAG Heuristic
+            keywords = ["saudi", "vision 2030", "neom", "law", "regulation", "project", "scheme", "housing", "ministry", "royal", "decree", "stats", "number", "percentage", "program", "initiative", "giga"]
             if any(k in q_lower for k in keywords):
                 return True # Definitely RAG
 
-            # If ambiguous, ask the Brain
+            # 3. If ambiguous, ask the Brain (Fast Router)
             prompt = f"""Classify if this query requires searching an external Knowledge Base (PDFs about Saudi Vision 2030, Laws, Housing).
             Query: "{query}"
             Reply ONLY "YES" or "NO".
@@ -304,11 +316,11 @@ class AIService:
                - Citations are implicit but must be factual based *only* on the provided text.
                - List schemes/projects exactly as named in the source.
 
-            6. **CONTEXTUAL WISDOM (FOOTER)**:
-               - **Update Logic**: If listing outdated targets (e.g., 2020), append a footer:
-                 "**📅 2026 Update:** [Brief status update based on general knowledge]."
-               - **Value Add**: If data is current, append a relevant fact:
-                 "**💎 Insight:** [Relevant context to enhance the answer]."
+            6. **TEMPORAL INTELLIGENCE (2026 UPDATE)**:
+               - **Mandatory Check**: If the document mentions a target year in the past (e.g., "By 2020", "In 2023"), you MUST append a footer.
+               - **Footer Format**:
+                 "**📅 2026 Update:** [Provide a brief, general-knowledge status update on where this project/target stands today. Example: 'This target was successfully exceeded in Q4 2024...']"
+               - **Prohibition**: Do NOT add "Insights" or general trivia. Only add the 2026 Update if relevant.
              
              ---
              STRATEGIC BRIEFING:
