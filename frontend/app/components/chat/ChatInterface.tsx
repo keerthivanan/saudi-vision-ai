@@ -246,10 +246,7 @@ export default function ChatInterface({ onChatCreated }: ChatInterfaceProps) {
         <div
             className="flex-1 flex flex-col items-center justify-center p-4 text-center z-10"
         >
-            <div className="mb-8 relative">
-                <div className="absolute inset-0 bg-emerald-saudi/20 blur-3xl rounded-full" />
-                <Bot className="w-20 h-20 text-emerald-saudi relative z-10 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
-            </div>
+
 
             <div>
                 <div className="inline-block px-4 py-1.5 rounded-full border border-emerald-saudi/30 bg-emerald-saudi/5 mb-6">
